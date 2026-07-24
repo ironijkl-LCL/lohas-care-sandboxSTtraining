@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>樂活金掌家 - 高齡長者語音復康訓練系統</title>
+    <style>
+        /* ==========================================
+           1. 全域樣式與手機外殼模擬（微立體/新野獸派風格）
+           ========================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft JhengHei", sans-serif;
+        }
+
+        body {
+            background-color: #cbd5e1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            transition: background-color 0.3s;
+        }
+
+        /* 模擬手機容器 */
+        .phone-container {
+            width: 390px;
+            height: 844px;
+            background-color: #FAF6F0;
+            border-radius: 48px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            border: 14px solid #1e293b;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 放大全螢幕狀態下的樣式控制 */
+        .phone-container.fullscreen-mode {
+            width: 100vw;
+            height: 100vh;
+            max-width: 100vw;
+            max-height: 100vh;
+            border-radius: 0px;
+            border: 0px solid transparent;
+            box-shadow: none;
+        }
+
+        /* 隱藏滾動條並保持滾動功能 */
+        .screen {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding-bottom: 40px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .screen::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* 頁面圖層定位與動態切換邏輯 */
+        #cover-screen {
+            z-index: 10;
+            background-color: #A0E7E5; /* 馬卡龍藍 */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 50px 30px;
+        }
+
+        #list-screen {
+            z-index: 1;
+            background-color: #FAF6F0;
+        }
+
+        #detail-screen {
+            z-index: 5;
+            background-color: #F8F9FA;
+        }
+
+        #end-screen {
+            z-index: 20;
+            background-color: #E8AEFF; /* 薰衣草紫 */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 50px 30px;
+        }
+
+        .screen.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0) !important;
+        }
+
+        .screen:not(.active) {
+            transform: translateX(100%);
+        }
+        
+        #cover-screen:not(.active) {
+            transform: translateX(-100%);
+        }
+
+        /* ==========================================
+           2. 開頭頁與結尾頁專屬佈局樣式
+           ========================================== */
+        .cover-content {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .cover-title {
+            font-size: 32px;
+            font-weight: 900;
+            color: #1e293b;
+            line-height: 1.25;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .cover-subtitle {
+            font-size: 15px;
+            font-weight: 600;
+            color: rgba(30, 41, 59, 0.8);
+            line-height: 1.5;
+            padding: 0 10px;
+        }
+
+        /* 開頭頁大圓圈，點擊可直接修改上傳相片/檔案 */
+        .cover-img-box {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            border: 4px solid #1e293b;
+            box-shadow: 8px 8px 0px #1e293b;
+            margin: 45px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #fff;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        
+        .cover-img-box:active {
+            transform: scale(0.95);
+        }
+
+        .cover-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .action-btn {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            background-color: #FF9F1C; 
+            color: #1e293b;
+            font-size: 18px;
+            font-weight: 800;
+            border: 3px solid #1e293b;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 5px 5px 0px #1e293b;
+            transition: transform 0.1s, box-shadow 0.1s;
+            text-align: center;
+            position: relative;
+            z-index: 50;
+        }
+
+        .action-btn:active {
+            transform: translate(3px, 3px);
+            box-shadow: 2px 2px 0px #1e293b;
+        }
+
+        .end-card-box {
+            background: white;
+            border: 3px solid #1e293b;
+            border-radius: 32px;
+            padding: 22px;
+            box-shadow: 6px 6px 0px #1e293b;
+            margin-top: 30px;
+        }
+
+        /* ==========================================
+           3. 課程列表頁與詳情頁樣式 (List & Detail)
+           ========================================== */
+        .header-title-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 35px 20px 20px 24px;
+        }
+
+        .header-title {
+            font-size: 24px; 
+            font-weight: 900;
+            color: #1a1a1a;
+            letter-spacing: -0.5px;
+            flex-shrink: 0;
+        }
+
+        .nav-btn-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-arrow-btn, .next-end-btn, .zoom-btn {
+            background: #ffffff;
+            border: 2px solid #1e293b;
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px #1e293b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.1s, box-shadow 0.1s;
+            color: #1e293b;
+        }
+
+        .nav-arrow-btn:active, .next-end-btn:active, .zoom-btn:active {
+            transform: translate(1px, 1px);
+            box-shadow: 1px 1px 0px #1e293b;
+        }
+
+        .zoom-btn {
+            position: absolute;
+            right: 20px;
+            top: 25px;
+            font-size: 18px;
+            z-index: 30;
+        }
+
+        .recipe-list {
+            padding: 0 20px;
+        }
+
+        .recipe-card {
+            height: 175px;
+            border-radius: 40px 25px 35px 50px;
+            margin-bottom: 24px;
+            position: relative;
+            cursor: pointer;
+            border: 2px solid #1e293b;
+            box-shadow: 
+              6px 6px 0px #1e293b,
+              inset -4px -4px 8px rgba(0, 0, 0, 0.1),
+              inset 4px 4px 8px rgba(255, 255, 255, 0.6);
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .recipe-card:active {
+            transform: translate(3px, 3px);
+            box-shadow: 2px 2px 0px #1e293b;
+        }
+
+        .card-content {
+            width: 58%;
+            padding: 18px 0 18px 22px;
+            color: #1e293b; 
+        }
+
+        .card-title-container {
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .card-title-line1 {
+            font-size: 14px;
+            font-weight: 700;
+            color: rgba(30, 41, 59, 0.7);
+        }
+
+        .card-title-line2 {
+            font-size: 18px;
+            font-weight: 800;
+            color: #1e293b;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .card-desc {
+            font-size: 12px;
+            font-weight: 600;
+            opacity: 0.85;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-img-wrapper {
+            position: absolute;
+            right: 15px;
+            top: -10px;
+            width: 125px;
+            height: 125px;
+            border-radius: 50%;
+            border: 3px solid #1e293b;
+            box-shadow: 4px 4px 0px #1e293b;
+            overflow: hidden;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 頂部橫幅容器 */
+        .detail-top-bar {
+            height: 280px;
+            border-radius: 0 0 36px 36px;
+            border-bottom: 3px solid #1e293b;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background-color: #FAF6F0;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 20px;
+            top: 25px;
+            width: 44px;
+            height: 44px;
+            background-color: #FAF6F0;
+            border: 2px solid #1e293b;
+            border-radius: 50%;
+            color: #1e293b;
+            font-size: 22px;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 2px 2px 0px #1e293b;
+            z-index: 30;
+        }
+
+        /* 滿版圖片容器 (Auto Fit In) */
+        .detail-main-img {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            padding: 10px;
+        }
+
+        .detail-main-img img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain; /* 自動 Fit In 不裁切 */
+            transition: transform 0.2s ease;
+        }
+
+        .detail-main-img img:hover {
+            transform: scale(1.02);
+        }
+
+        /* 浮動按鈕區 */
+        .detail-img-actions {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            display: flex;
+            gap: 8px;
+            z-index: 20;
+        }
+
+        .img-action-badge {
+            background: #FAF6F0;
+            border: 2px solid #1e293b;
+            padding: 5px 12px;
+            font-size: 12px;
+            font-weight: 800;
+            border-radius: 14px;
+            box-shadow: 2px 2px 0px #1e293b;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .img-action-badge:active {
+            transform: translate(1px, 1px);
+            box-shadow: 1px 1px 0px #1e293b;
+        }
+
+        /* 點擊放大全螢幕彈窗 Lightbox Modal */
+        .lightbox-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .lightbox-modal.active {
+            display: flex;
+        }
+
+        .lightbox-img {
+            max-width: 95%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 12px;
+            border: 3px solid #fff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .lightbox-close-btn {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            width: 44px;
+            height: 44px;
+            background: #fff;
+            border: 2px solid #1e293b;
+            border-radius: 50%;
+            font-size: 22px;
+            font-weight: 900;
+            color: #1e293b;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 3px 3px 0px #1e293b;
+        }
+
+        .steps-container {
+            padding: 30px 20px;
+        }
+
+        .detail-title {
+            font-size: 21px;
+            font-weight: 900;
+            color: #1e293b;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .detail-goal {
+            font-size: 14px;
+            font-weight: 600;
+            color: #475569;
+            background-color: rgba(0,0,0,0.04);
+            padding: 12px 16px;
+            border-radius: 20px;
+            margin-bottom: 24px;
+            border-left: 4px solid #1e293b;
+            line-height: 1.4;
+        }
+
+        .step-card {
+            background-color: #ffffff;
+            border-radius: 28px;
+            padding: 20px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            border: 2px solid #1e293b;
+            box-shadow: 4px 4px 0px rgba(30, 41, 59, 0.15);
+        }
+
+        .step-number {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            color: #1e293b;
+            font-weight: 800;
+            font-size: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+            border: 2px solid #1e293b;
+            box-shadow: 2px 2px 0px #1e293b;
+        }
+
+        .step-text-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .step-tag {
+            font-size: 11px;
+            font-weight: 800;
+            color: #64748b;
+        }
+
+        .step-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+            line-height: 1.5;
+        }
+
+        .tool-box {
+            margin-top: 25px;
+            background-color: #fff;
+            border: 2px dashed #1e293b;
+            border-radius: 28px;
+            padding: 20px;
+            box-shadow: 4px 4px 0px rgba(30, 41, 59, 0.08);
+        }
+
+        .tool-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        /* 課後練習工具 (STT 模擬) 樣式 */
+        .stt-practice-box {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .stt-text-target {
+            background: #F8F9FA;
+            border: 2px dashed #1e293b;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 800;
+            color: #333;
+            text-align: center;
+        }
+
+        .stt-live-wave {
+            height: 36px;
+            background: #1e293b;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 0 16px;
+        }
+
+        .wave-bar {
+            width: 4px;
+            height: 12px;
+            background: #A0E7E5;
+            border-radius: 2px;
+        }
+
+        .wave-bar.active {
+            animation: waveMotion 0.6s infinite ease-in-out alternate;
+        }
+
+        @keyframes waveMotion {
+            0% { height: 6px; }
+            100% { height: 24px; }
+        }
+
+        .btn-action-tool {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            font-weight: 800;
+            border: 2px solid #1e293b;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 3px 3px 0px #1e293b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background-color: #A0E7E5;
+            color: #1e293b;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 手機本體外殼 -->
+    <div class="phone-container" id="app-phone-shell">
+        
+        <!-- 隱藏的本地圖片/檔案上傳器 -->
+        <input type="file" id="image-file-picker" accept="image/*" style="display: none;">
+        
+        <!-- 畫面 1：開頭歡迎頁 -->
+        <div class="screen active" id="cover-screen">
+            <div class="cover-content">
+                <div class="cover-title">樂活金掌家 👴💬</div>
+                <div class="cover-subtitle">高齡長者數位言語治療與口肌訓練沙盒系統</div>
+                <div class="cover-img-box" id="cover-img-container" onclick="triggerFilePicker('cover')" title="點擊修改歡迎頁相片"></div>
+            </div>
+            <button class="action-btn" onclick="navigateTo('list-screen')">開啟復康沙盒 🚀</button>
+        </div>
+        
+        <!-- 畫面 2：訓練課程大綱牆列表 -->
+        <div class="screen" id="list-screen">
+            <div class="header-title-container">
+                <div class="header-title">訓練項目牆 🗺️</div>
+                
+                <div class="nav-btn-group">
+                    <button class="nav-arrow-btn" onclick="navigateTo('cover-screen')" title="返回歡迎頁">←</button>
+                    <button class="nav-arrow-btn" onclick="navigateTo('end-screen')" title="向前進結業頁">→</button>
+                    <button class="next-end-btn" onclick="navigateTo('end-screen')" title="前往結業頁">🎓</button>
+                </div>
+            </div>
+            <div class="recipe-list" id="recipe-list-container">
+                <!-- 由 JavaScript 動態注入課程卡片 -->
+            </div>
+        </div>
+
+        <!-- 畫面 3：訓練環節與實踐詳細頁 -->
+        <div class="screen" id="detail-screen">
+            <div class="detail-top-bar" id="detail-top-bar">
+                <button class="back-btn" onclick="closeDetail()">←</button>
+                <button class="zoom-btn" onclick="toggleFullscreen()" id="zoom-toggle-icon" title="切換全螢幕模式">⤢</button>
+                
+                <!-- 【自動 Fit In 全格滿版顯示區域】 -->
+                <div class="detail-main-img" id="detail-img-container" onclick="openLightbox()" title="點擊放大圖片">
+                    <!-- 由 JS 動態注入 <img> 或 SVG -->
+                </div>
+
+                <!-- 浮動按鈕：上傳換圖 & 放大 -->
+                <div class="detail-img-actions">
+                    <span class="img-action-badge" onclick="event.stopPropagation(); triggerFilePicker('detail');">📷 換圖</span>
+                    <span class="img-action-badge" onclick="event.stopPropagation(); openLightbox();">🔍 放大</span>
+                </div>
+            </div>
+            <div class="steps-container">
+                <div class="detail-title" id="detail-title">第一節：核心名稱</div>
+                <div class="detail-goal" id="detail-goal">【核心目標】</div>
+                <div id="steps-list-wrapper">
+                    <!-- 由 JavaScript 動態渲染步驟 -->
+                </div>
+                <div class="tool-box" id="tool-box-container">
+                    <!-- 動態渲染課後練習工具 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 畫面 4：結尾結盟頁 -->
+        <div class="screen" id="end-screen">
+            <button class="back-btn" style="top:25px; left:20px;" onclick="navigateTo('list-screen')">←</button>
+            <div class="cover-content" style="margin-top: 35px;">
+                <div class="cover-title" style="font-size: 30px;">樂活語音大師 🏆</div>
+                <div class="cover-subtitle">恭喜老友記完成所有精準語音復康里程碑！</div>
+                
+                <div class="end-card-box">
+                    <div style="font-size: 18px; font-weight: 800; color: #1e293b; margin-bottom: 8px;">🎓 畢業榮譽</div>
+                    <p style="font-size: 14px; font-weight: 600; color: #475569; line-height: 1.5; text-align: left;">
+                        獲頒發「樂活言語復康大使」證書！重拾清晰咬字，自信溝通無阻隔，隨時與家人溫馨連線！
+                    </p>
+                </div>
+            </div>
+            <button class="action-btn" style="background-color: #25D366; color: white; border-color: #128C7E; box-shadow: 5px 5px 0px #128C7E;" onclick="shareToWhatsApp()">
+                發送喜訊給家人 💬
+            </button>
+        </div>
+
+    </div>
+
+    <!-- 【全螢幕大圖放大彈窗 Lightbox Modal】 -->
+    <div class="lightbox-modal" id="lightboxModal" onclick="closeLightbox()">
+        <button class="lightbox-close-btn" onclick="closeLightbox()">✕</button>
+        <div id="lightboxContentWrapper" style="display:flex; justify-content:center; align-items:center; width:100%; height:100%;">
+            <!-- 大圖或大 SVG 會動態傳入至此 -->
+        </div>
+    </div>
+
+    <!-- ==========================================
+       5. JavaScript 邏輯控制與資料渲染
+       ========================================== -->
+    <script>
+        let coverImageUrl = ""; 
+        const coverDefaultSvg = `<svg width="110" height="110" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 50C20 45 25 35 50 35C75 35 80 45 80 50C80 55 75 65 50 65C25 65 20 55 20 50Z" fill="#1e293b"/><path d="M30 50C30 48 35 42 50 42C65 42 70 48 70 50C70 52 65 58 50 58C35 58 30 52 30 50Z" fill="#FFB7B2"/><circle cx="50" cy="50" r="4" fill="#1e293b"/><path d="M10 50H15M85 50H90M50 15V23M50 77V85" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/></svg>`;
+
+        let uploadTargetMode = "cover"; 
+        let currentActiveCourse = null;
+        let sttTimer = null;
+
+        // 核心內容資料庫：樂活金掌家言語治療訓練系列
+        const coursesData = [
+            {
+                id: '1',
+                title: '🌟 第一節：',
+                titleTitle: '日常唇齒啟動',
+                subtitle: '基礎張口與嘴唇控制力激活',
+                description: '改善因面部肌肉無力造成的說話含糊，加強「波、摸、科」等雙唇音的清晰度。',
+                imageUrl: "", 
+                svgIcon: `<svg width="180" height="180" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><path d="M30 45C35 40 40 40 45 45M55 45C60 40 65 40 70 45" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/><path d="M35 60C40 68 60 68 65 60" stroke="#1e293b" stroke-width="4" stroke-linecap="round" fill="white"/></svg>`,
+                themeColor: '#A0E7E5', 
+                goal: '改善因面部肌肉無力造成的說話含糊，加強「波、摸、科」等雙唇音的清晰度。',
+                steps: [
+                    { tag: '嘟唇練習', text: '深吸一口氣，將雙唇用力向前嘟起，維持穩定 5 秒鐘。' },
+                    { tag: '嘴角展平', text: '慢慢將嘴角向兩側拉開，做出誇張的「一」字笑容，維持 5 秒。' },
+                    { tag: '交替發音', text: '連續交替呼出「嗚—」「一—」聲音，重覆做 10 次，運動面部肌肉。' }
+                ],
+                toolName: '🛠️ 課後練習工具 (雙唇音自主發音比對)',
+                targetText: '波波放手，摸摸面仔，科科大笑。'
+            },
+            {
+                id: '2',
+                title: '🌟 第二節：',
+                titleTitle: '舌尖力量彈跳',
+                subtitle: '提升舌頭靈活性與速度',
+                description: '解決說話「條條條」不靈活的問題，幫助發清「得、特、呢、勒」等舌尖音。',
+                imageUrl: "", 
+                svgIcon: `<svg width="180" height="180" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="#FFF275" stroke="#1e293b" stroke-width="4"/><path d="M30 42C30 42 38 38 44 42M56 42C62 38 70 42 70 42" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/><path d="M40 56C40 56 42 72 50 72C58 72 60 56 40 56Z" fill="#FFB7B2" stroke="#1e293b" stroke-width="3"/></svg>`,
+                themeColor: '#FFF275', 
+                goal: '解決說話「條條條」不靈活的問題，幫助發清「得、特、呢、勒」等舌尖音。',
+                steps: [
+                    { tag: '舌頭延伸', text: '將舌頭用力伸出，嘗試向上頂到鼻尖，再向下舔到下巴。' },
+                    { tag: '彈舌練習', text: '將舌尖頂住上顎硬腭位置，用力向下彈撥發出清脆的「噠」聲。' },
+                    { tag: '頂頰對抗', text: '在口腔內部左右輪流頂雙頰，外部用手指給予輕微阻力對抗。' }
+                ],
+                toolName: '🛠️ 課後練習工具 (Web Speech API 語音對齊)',
+                targetText: '大老豆，食豆腐，豆腐軟，豆豆硬。'
+            },
+            {
+                id: '3',
+                title: '🌟 第三節：',
+                titleTitle: '聲帶穩定共鳴',
+                subtitle: '增強肺活量與發聲響度',
+                description: '改善老友記講話聲小、氣促或音調單調無力的現象，延長發聲時長。',
+                imageUrl: "", 
+                svgIcon: `<svg width="180" height="180" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="#FFB7B2" stroke="#1e293b" stroke-width="4"/><circle cx="35" cy="45" r="4" fill="#1e293b"/><circle cx="65" cy="45" r="4" fill="#1e293b"/><path d="M25 60Q35 50 50 60T75 60" stroke="#1e293b" stroke-width="4" stroke-linecap="round" fill="none"/></svg>`,
+                themeColor: '#FFB7B2', 
+                goal: '改善老友記講話聲小、氣促或音調單調無力的現象，延長發聲時長。',
+                steps: [
+                    { tag: '腹式呼吸', text: '雙手放在腹部，用鼻深吸氣讓腹部隆起，緩慢用口吐氣。' },
+                    { tag: '長音維持', text: '維持穩定氣流，發出平穩的「啊——」聲，目標持續 8 秒以上。' },
+                    { tag: '音調滑音', text: '嘗試聲音由低到高，再由高到低地滑音發聲「阿~啊~呀~」。' }
+                ],
+                toolName: '🛠️ 課後自主發聲時長觀測計 (MongoDB 同步)',
+                targetText: '請深吸氣後呼出穩定「啊——」長音'
+            },
+            {
+                id: '4',
+                title: '🌟 第四節：',
+                titleTitle: '實戰吞嚥安全',
+                subtitle: '喉部肌肉協調與吞嚥安全',
+                description: '鍛鍛進食時的吞嚥安全肌群，預防誤吸，同時讓說話底氣更充足。',
+                imageUrl: "", 
+                svgIcon: `<svg width="180" height="180" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="#BFFCC6" stroke="#1e293b" stroke-width="4"/><path d="M32 45L42 45M58 45L68 45" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/><path d="M40 62Q50 72 60 62" stroke="#1e293b" stroke-width="4" stroke-linecap="round" fill="none"/></svg>`,
+                themeColor: '#BFFCC6', 
+                goal: '鍛鍛進食時的吞嚥安全肌群，預防誤吸，同時讓說話底氣更充足。',
+                steps: [
+                    { tag: '孟德爾頌吞嚥', text: '空吞嚥口水，並在吞嚥最頂點時嘗試憋氣維持 2 秒，隨後放鬆。' },
+                    { tag: '清喉聲防誤吸', text: '用力做出咳嗽的動作，清空喉嚨可能存在的模擬殘留物。' },
+                    { tag: '壓下巴吞嚥', text: '下巴用力向下壓緊胸口，在此姿勢下進行數次空吞嚥練習。' }
+                ],
+                toolName: '🛠️ 課後練習工具 (安全吞嚥計時提醒卡)',
+                targetText: '吞嚥時請保持下巴收緊，確保進食安全。'
+            }
+        ];
+
+        function renderMediaHtml(imageUrl, fallbackSvg) {
+            if (imageUrl && imageUrl.trim() !== "") {
+                return `<img src="${imageUrl}" alt="Uploaded Resource">`;
+            }
+            return fallbackSvg;
+        }
+
+        function navigateTo(screenId) {
+            clearTimeout(sttTimer);
+
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function toggleFullscreen() {
+            const shell = document.getElementById('app-phone-shell');
+            const iconBtn = document.getElementById('zoom-toggle-icon');
+            shell.classList.toggle('fullscreen-mode');
+            
+            if (shell.classList.contains('fullscreen-mode')) {
+                iconBtn.innerText = "⤡"; 
+                iconBtn.title = "結束全螢幕模式";
+                document.body.style.backgroundColor = "#F8F9FA";
+            } else {
+                iconBtn.innerText = "⤢"; 
+                iconBtn.title = "切換全螢幕模式";
+                document.body.style.backgroundColor = "#cbd5e1";
+            }
+        }
+
+        function triggerFilePicker(mode) {
+            uploadTargetMode = mode;
+            document.getElementById('image-file-picker').click();
+        }
+
+        document.getElementById('image-file-picker').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64Url = e.target.result;
+                    
+                    if (uploadTargetMode === "cover") {
+                        coverImageUrl = base64Url;
+                        document.getElementById('cover-img-container').innerHTML = `<img src="${base64Url}" alt="Uploaded Cover Photo">`;
+                    } else if (uploadTargetMode === "detail" && currentActiveCourse) {
+                        currentActiveCourse.imageUrl = base64Url;
+                        document.getElementById('detail-img-container').innerHTML = `<img src="${base64Url}" alt="Uploaded Session Photo">`;
+                        const targetCardImgWrapper = document.getElementById(`card-img-wrapper-${currentActiveCourse.id}`);
+                        if (targetCardImgWrapper) {
+                            targetCardImgWrapper.innerHTML = `<img src="${base64Url}" alt="Uploaded Card Photo">`;
+                        }
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // 點擊放大彈窗邏輯 Lightbox
+        function openLightbox() {
+            if (!currentActiveCourse) return;
+            const modal = document.getElementById('lightboxModal');
+            const wrapper = document.getElementById('lightboxContentWrapper');
+
+            if (currentActiveCourse.imageUrl && currentActiveCourse.imageUrl.trim() !== "") {
+                wrapper.innerHTML = `<img src="${currentActiveCourse.imageUrl}" class="lightbox-img">`;
+            } else {
+                wrapper.innerHTML = `<div style="transform: scale(2); display:flex; justify-content:center; align-items:center;">${currentActiveCourse.svgIcon}</div>`;
+            }
+            modal.classList.add('active');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightboxModal').classList.remove('active');
+        }
+
+        // 初始化渲染開頭歡迎頁
+        document.getElementById('cover-img-container').innerHTML = renderMediaHtml(coverImageUrl, coverDefaultSvg);
+
+        // 初始化渲染大綱列表牆卡片
+        const listContainer = document.getElementById('recipe-list-container');
+        coursesData.forEach(course => {
+            const card = document.createElement('div');
+            card.className = 'recipe-card';
+            card.style.backgroundColor = course.themeColor;
+            card.onclick = () => openDetail(course);
+
+            card.innerHTML = `
+                <div class="card-content">
+                    <div class="card-title-container">
+                        <span class="card-title-line1">${course.title}</span>
+                        <span class="card-title-line2">${course.titleTitle}</span>
+                    </div>
+                    <div class="card-desc">${course.subtitle} — ${course.description}</div>
+                </div>
+                <div class="card-img-wrapper" id="card-img-wrapper-${course.id}">
+                    ${renderMediaHtml(course.imageUrl, course.svgIcon)}
+                </div>
+            `;
+            listContainer.appendChild(card);
+        });
+
+        function openDetail(course) {
+            currentActiveCourse = course;
+
+            const topBar = document.getElementById('detail-top-bar');
+            const imgContainer = document.getElementById('detail-img-container');
+            const title = document.getElementById('detail-title');
+            const goal = document.getElementById('detail-goal');
+            const stepsListWrapper = document.getElementById('steps-list-wrapper');
+            const toolBoxContainer = document.getElementById('tool-box-container');
+
+            topBar.style.backgroundColor = course.themeColor;
+            imgContainer.innerHTML = renderMediaHtml(course.imageUrl, course.svgIcon);
+
+            title.innerHTML = `<span style="font-size: 14px; color:#475569;">${course.title}</span><br>${course.titleTitle}<br><span style="font-size: 15px; font-weight: 700; color: #475569;">${course.subtitle}</span>`;
+            goal.innerText = `🎯 核心目標：${course.goal}`;
+
+            stepsListWrapper.innerHTML = '';
+            course.steps.forEach((step, index) => {
+                const stepCard = document.createElement('div');
+                stepCard.className = 'step-card';
+                stepCard.innerHTML = `
+                    <div class="step-number" style="background-color: ${course.themeColor}">${index + 1}</div>
+                    <div class="step-text-wrapper">
+                        <div class="step-tag">${step.tag}</div>
+                        <div class="step-text">${step.text}</div>
+                    </div>
+                `;
+                stepsListWrapper.appendChild(stepCard);
+            });
+
+            // 全面統一渲染課後自主練習工具面板 (STT 語音比對 / 雲端同步)
+            toolBoxContainer.innerHTML = `
+                <div class="tool-title">${course.toolName}</div>
+                <div class="stt-practice-box">
+                    <div class="stt-text-target">🎯 請老友記跟我讀：<br><span style="color:#FF9F1C; font-size:15px;">${course.targetText}</span></div>
+                    <div class="stt-live-wave" id="liveWave" style="visibility:hidden;">
+                        <div class="wave-bar active" style="animation-delay: 0.1s;"></div>
+                        <div class="wave-bar active" style="animation-delay: 0.3s;"></div>
+                        <div class="wave-bar active" style="animation-delay: 0.5s;"></div>
+                        <div class="wave-bar active" style="animation-delay: 0.2s;"></div>
+                        <div class="wave-bar active" style="animation-delay: 0.4s;"></div>
+                    </div>
+                    <button class="btn-action-tool" id="btnSttAction" onclick="toggleSttSimulation()">
+                        按此開始居家錄音複習 🎙️
+                    </button>
+                </div>
+            `;
+
+            navigateTo('detail-screen');
+        }
+
+        function closeDetail() {
+            currentActiveCourse = null;
+            navigateTo('list-screen');
+        }
+
+        // 模擬 Web Speech API (STT) 語音對齊與雲端同步
+        function toggleSttSimulation() {
+            const btn = document.getElementById('btnSttAction');
+            const wave = document.getElementById('liveWave');
+            
+            if (btn.innerText.includes("開始")) {
+                btn.innerText = "聆聽中...請大聲朗讀上圖字詞 🛑";
+                btn.style.backgroundColor = "#FFB7B2";
+                wave.style.visibility = "visible";
+
+                sttTimer = setTimeout(() => {
+                    wave.style.visibility = "hidden";
+                    btn.style.backgroundColor = "#BFFCC6";
+                    btn.innerHTML = "✅ 辨識成功！發音正確率：<span style='color:red;'>89%</span><br><span style='font-size:11px; font-weight:600;'>數據已上傳至治療師雲端庫 (MongoDB)</span>";
+                }, 3500);
+            } else {
+                clearTimeout(sttTimer);
+                wave.style.visibility = "hidden";
+                btn.innerText = "按此開始居家錄音複習 🎙️";
+                btn.style.backgroundColor = "#A0E7E5";
+            }
+        }
+
+        function shareToWhatsApp() {
+            const text = encodeURIComponent("好高興同你分享！我啱啱喺「樂活金掌家」完成咗全套長者語音復康訓練，發音同咬字清晰咗好多，溝通更有自信啦！💪🎉");
+            window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+        }
+    </script>
+</body>
+</html>
