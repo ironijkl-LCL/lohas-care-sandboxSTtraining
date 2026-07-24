@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>沙盒-高齡長者語音復康訓練系統 (Firebase Storage)</title>
+    <title>沙盒-高齡長者語音復康訓練</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background-color: #cbd5e1; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; transition: background-color 0.3s; }
@@ -53,7 +53,6 @@
         .detail-img-actions { position: absolute; bottom: 12px; right: 12px; display: flex; gap: 8px; z-index: 20; }
         .img-action-badge { background: #FAF6F0; border: 2px solid #1e293b; padding: 5px 12px; font-size: 12px; font-weight: 800; border-radius: 14px; box-shadow: 2px 2px 0px #1e293b; cursor: pointer; }
         
-        /* 圖片放大 Lightbox 彈窗 */
         .lightbox-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.85); z-index: 9999; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px); }
         .lightbox-modal.active { display: flex; }
         .lightbox-img { max-width: 95%; max-height: 90vh; object-fit: contain; border-radius: 12px; border: 3px solid #fff; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
@@ -78,7 +77,6 @@
         @keyframes waveMotion { 0% { height: 6px; } 100% { height: 24px; } }
         .btn-action-tool { width: 100%; padding: 10px; font-size: 14px; font-weight: 800; border: 2px solid #1e293b; border-radius: 12px; cursor: pointer; box-shadow: 3px 3px 0px #1e293b; display: flex; align-items: center; justify-content: center; gap: 6px; background-color: #A0E7E5; color: #1e293b; }
 
-        /* 雲端上傳遮罩 */
         .loading-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); color: white; font-weight: 800; justify-content: center; align-items: center; z-index: 1000; border-radius: 36px; backdrop-filter: blur(2px); }
         .loading-overlay.active { display: flex; }
     </style>
@@ -88,7 +86,6 @@
     <div class="phone-container" id="app-phone-shell">
         <input type="file" id="image-file-picker" accept="image/*" style="display: none;">
         
-        <!-- 雲端上傳提示遮罩 -->
         <div class="loading-overlay" id="loadingOverlay">☁️ 正在同步照片至 Firebase Storage...</div>
 
         <!-- 畫面 1：開頭歡迎頁 -->
@@ -101,7 +98,7 @@
             <button class="action-btn" onclick="navigateTo('list-screen')">開啟復康沙盒 🚀</button>
         </div>
         
-        <!-- 畫面 2：訓練課程大綱牆列表 -->
+        <!-- 畫面 2：訓練課程牆列表 -->
         <div class="screen" id="list-screen">
             <div class="header-title-container">
                 <div class="header-title">訓練項目牆 🗺️</div>
@@ -114,7 +111,7 @@
             <div class="recipe-list" id="recipe-list-container"></div>
         </div>
 
-        <!-- 畫面 3：訓練環節與實踐詳細頁 -->
+        <!-- 畫面 3：詳情頁 -->
         <div class="screen" id="detail-screen">
             <div class="detail-top-bar" id="detail-top-bar">
                 <button class="back-btn" onclick="closeDetail()">←</button>
@@ -135,7 +132,7 @@
             </div>
         </div>
 
-        <!-- 畫面 4：結尾結盟頁 -->
+        <!-- 畫面 4：結尾頁 -->
         <div class="screen" id="end-screen">
             <button class="back-btn" style="top:25px; left:20px;" onclick="navigateTo('list-screen')">←</button>
             <div class="cover-content" style="margin-top: 35px;">
@@ -161,13 +158,12 @@
         <div id="lightboxContentWrapper" style="display:flex; justify-content:center; align-items:center; width:100%; height:100%;"></div>
     </div>
 
-    <!-- ================= Firebase SDK 與核心邏輯 ================= -->
+    <!-- ================= Firebase SDK 與核心持久化邏輯 ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-        // ✅ 已填入你的專屬 Firebase 配置
         const firebaseConfig = {
             apiKey: "AIzaSyBG65952X2d1pzpfrtWEBnthzCxDWFePXA",
             authDomain: "lohas-smart-housekeeper.firebaseapp.com",
@@ -182,13 +178,14 @@
         const analytics = getAnalytics(app);
         const storage = getStorage(app);
 
-        let coverImageUrl = ""; 
+        let coverImageUrl = localStorage.getItem('lohas_cover_image') || ""; 
         const coverDefaultSvg = `<svg width="110" height="110" viewBox="0 0 100 100" fill="none"><path d="M20 50C20 45 25 35 50 35C75 35 80 45 80 50C80 55 75 65 50 65C25 65 20 55 20 50Z" fill="#1e293b"/><path d="M30 50C30 48 35 42 50 42C65 42 70 48 70 50C70 52 65 58 50 58C35 58 30 52 30 50Z" fill="#FFB7B2"/><circle cx="50" cy="50" r="4" fill="#1e293b"/><path d="M10 50H15M85 50H90M50 15V23M50 77V85" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/></svg>`;
 
         window.uploadTargetMode = "cover"; 
         window.currentActiveCourse = null;
         let sttTimer = null;
 
+        // 核心資料庫，加入 localStorage 讀取機制
         window.coursesData = [
             {
                 id: '1',
@@ -196,7 +193,7 @@
                 titleTitle: '日常唇齒啟動',
                 subtitle: '基礎張口與嘴唇控制力激活',
                 description: '改善因面部肌肉無力造成的說話含糊，加強「波、摸、科」等雙唇音的清晰度。',
-                imageUrl: "", 
+                imageUrl: localStorage.getItem('lohas_course_1') || "", 
                 svgIcon: `<svg width="180" height="180" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><path d="M30 45C35 40 40 40 45 45M55 45C60 40 65 40 70 45" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/><path d="M35 60C40 68 60 68 65 60" stroke="#1e293b" stroke-width="4" stroke-linecap="round" fill="white"/></svg>`,
                 themeColor: '#A0E7E5', 
                 goal: '改善因面部肌肉無力造成的說話含糊，加強「波、摸、科」等雙唇音的清晰度。',
@@ -214,7 +211,7 @@
                 titleTitle: '舌尖力量彈跳',
                 subtitle: '提升舌頭靈活性與速度',
                 description: '解決說話「條條條」不靈活的問題，幫助發清「得、特、呢、勒」等舌尖音。',
-                imageUrl: "", 
+                imageUrl: localStorage.getItem('lohas_course_2') || "", 
                 svgIcon: `<svg width="180" height="180" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFF275" stroke="#1e293b" stroke-width="4"/><path d="M30 42C30 42 38 38 44 42M56 42C62 38 70 42 70 42" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/><path d="M40 56C40 56 42 72 50 72C58 72 60 56 40 56Z" fill="#FFB7B2" stroke="#1e293b" stroke-width="3"/></svg>`,
                 themeColor: '#FFF275', 
                 goal: '解決說話「條條條」不靈活的問題，幫助發清「得、特、呢、勒」等舌尖音。',
@@ -232,7 +229,7 @@
                 titleTitle: '聲帶穩定共鳴',
                 subtitle: '增強肺活量與發聲響度',
                 description: '改善老友記講話聲小、氣促或音調單調無力的現象，延長發聲時長。',
-                imageUrl: "", 
+                imageUrl: localStorage.getItem('lohas_course_3') || "", 
                 svgIcon: `<svg width="180" height="180" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFB7B2" stroke="#1e293b" stroke-width="4"/><circle cx="35" cy="45" r="4" fill="#1e293b"/><circle cx="65" cy="45" r="4" fill="#1e293b"/><path d="M25 60Q35 50 50 60T75 60" stroke="#1e293b" stroke-width="4" stroke-linecap="round" fill="none"/></svg>`,
                 themeColor: '#FFB7B2', 
                 goal: '改善老友記講話聲小、氣促或音調單調無力的現象，延長發聲時長。',
@@ -250,7 +247,7 @@
                 titleTitle: '實戰吞嚥安全',
                 subtitle: '喉部肌肉協調與吞嚥安全',
                 description: '鍛鍛進食時的吞嚥安全肌群，預防誤吸，同時讓說話底氣更充足。',
-                imageUrl: "", 
+                imageUrl: localStorage.getItem('lohas_course_4') || "", 
                 svgIcon: `<svg width="180" height="180" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#BFFCC6" stroke="#1e293b" stroke-width="4"/><path d="M32 45L42 45M58 45L68 45" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/><path d="M40 62Q50 72 60 62" stroke="#1e293b" stroke-width="4" stroke-linecap="round" fill="none"/></svg>`,
                 themeColor: '#BFFCC6', 
                 goal: '鍛鍛進食時的吞嚥安全肌群，預防誤吸，同時讓說話底氣更充足。',
@@ -289,7 +286,7 @@
             document.getElementById('image-file-picker').click();
         };
 
-        // Firebase Storage 上傳觸發邏輯
+        // 上傳與持久化邏輯
         document.getElementById('image-file-picker').addEventListener('change', async function(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -298,16 +295,20 @@
             loading.classList.add('active');
 
             try {
-                // 上傳至 Firebase Storage 目錄: lohas_photos/
                 const storageRef = ref(storage, `lohas_photos/${Date.now()}_${file.name}`);
                 const snapshot = await uploadBytes(storageRef, file);
                 const downloadURL = await getDownloadURL(snapshot.ref);
 
                 if (window.uploadTargetMode === "cover") {
                     coverImageUrl = downloadURL;
+                    // 【關鍵持久化】：將 URL 寫入 LocalStorage
+                    localStorage.setItem('lohas_cover_image', downloadURL);
                     document.getElementById('cover-img-container').innerHTML = `<img src="${downloadURL}">`;
                 } else if (window.uploadTargetMode === "detail" && window.currentActiveCourse) {
                     window.currentActiveCourse.imageUrl = downloadURL;
+                    // 【關鍵持久化】：將對應章節的 URL 寫入 LocalStorage
+                    localStorage.setItem(`lohas_course_${window.currentActiveCourse.id}`, downloadURL);
+                    
                     document.getElementById('detail-img-container').innerHTML = `<img src="${downloadURL}">`;
                     const targetCardImgWrapper = document.getElementById(`card-img-wrapper-${window.currentActiveCourse.id}`);
                     if (targetCardImgWrapper) {
@@ -316,7 +317,7 @@
                 }
             } catch (err) {
                 console.error("Firebase Storage 上傳出錯:", err);
-                alert("上傳失敗，請檢查 Firebase Console -> Storage -> Rules 是否設定為允許測試讀寫！");
+                alert("上傳失敗，請檢查 Firebase 網路連線！");
             } finally {
                 loading.classList.remove('active');
             }
@@ -371,8 +372,9 @@
             window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
         };
 
-        // 初始化列表
-        document.getElementById('cover-img-container').innerHTML = coverDefaultSvg;
+        // 初始化畫面：如果有紀錄就載入紀錄圖，否則載入預設 SVG
+        document.getElementById('cover-img-container').innerHTML = coverImageUrl ? `<img src="${coverImageUrl}">` : coverDefaultSvg;
+        
         const listContainer = document.getElementById('recipe-list-container');
         window.coursesData.forEach(course => {
             const card = document.createElement('div');
