@@ -91,7 +91,7 @@
         <!-- 畫面 1：開頭歡迎頁 -->
         <div class="screen active" id="cover-screen">
             <div class="cover-content">
-                <div class="cover-title">樂活金掌家 👴💬</div>
+                <div class="cover-title">Lohas Gerontech</div>
                 <div class="cover-subtitle">高齡長者數位言語治療與口肌訓練沙盒系統</div>
                 <div class="cover-img-box" id="cover-img-container" onclick="triggerFilePicker('cover')" title="點擊修改歡迎頁相片"></div>
             </div>
@@ -185,7 +185,6 @@
         window.currentActiveCourse = null;
         let sttTimer = null;
 
-        // 核心資料庫，加入 localStorage 讀取機制
         window.coursesData = [
             {
                 id: '1',
@@ -286,7 +285,6 @@
             document.getElementById('image-file-picker').click();
         };
 
-        // 上傳與持久化邏輯
         document.getElementById('image-file-picker').addEventListener('change', async function(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -301,12 +299,10 @@
 
                 if (window.uploadTargetMode === "cover") {
                     coverImageUrl = downloadURL;
-                    // 【關鍵持久化】：將 URL 寫入 LocalStorage
                     localStorage.setItem('lohas_cover_image', downloadURL);
                     document.getElementById('cover-img-container').innerHTML = `<img src="${downloadURL}">`;
                 } else if (window.uploadTargetMode === "detail" && window.currentActiveCourse) {
                     window.currentActiveCourse.imageUrl = downloadURL;
-                    // 【關鍵持久化】：將對應章節的 URL 寫入 LocalStorage
                     localStorage.setItem(`lohas_course_${window.currentActiveCourse.id}`, downloadURL);
                     
                     document.getElementById('detail-img-container').innerHTML = `<img src="${downloadURL}">`;
@@ -317,7 +313,7 @@
                 }
             } catch (err) {
                 console.error("Firebase Storage 上傳出錯:", err);
-                alert("上傳失敗，請檢查 Firebase 網路連線！");
+                alert("上傳失敗，請檢查 Firebase 網路連線或 Storage 規則！");
             } finally {
                 loading.classList.remove('active');
             }
@@ -368,11 +364,10 @@
         };
 
         window.shareToWhatsApp = function() {
-            const text = encodeURIComponent("好高興同你分享！我啱啱喺「樂活金掌家」完成咗全套長者語音復康訓練，發音同咬字清晰咗好多，溝通更有自信啦！💪🎉");
+            const text = encodeURIComponent("好高興同你分享！我啱啱喺「Lohas Gerontech」完成咗全套長者語音復康訓練，發音同咬字清晰咗好多，溝通更有自信啦！💪🎉");
             window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
         };
 
-        // 初始化畫面：如果有紀錄就載入紀錄圖，否則載入預設 SVG
         document.getElementById('cover-img-container').innerHTML = coverImageUrl ? `<img src="${coverImageUrl}">` : coverDefaultSvg;
         
         const listContainer = document.getElementById('recipe-list-container');
