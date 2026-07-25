@@ -191,7 +191,7 @@
         <div id="lightboxContentWrapper" style="display:flex; justify-content:center; align-items:center; width:100%; height:100%;"></div>
     </div>
 
-    <!-- Firebase SDK 與核心持久化邏輯 -->
+    <!-- Firebase SDK 與核心邏輯 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
@@ -218,6 +218,7 @@
 
         window.uploadTargetMode = "cover"; 
         window.currentActiveCourse = null;
+        window.currentCategoryId = '1';
         window.dbImageCache = {};
 
         // 24項完整口腦與吞嚥復康訓練資料庫
@@ -236,7 +237,7 @@
                     { tag: '步驟二', text: '全身集中注意力，用全身最大力量進行一次吞嚥。' },
                     { tag: '步驟三', text: '吞嚥時感覺喉嚨與舌頭用力緊縮，隨後放鬆呼吸。' }
                 ],
-                toolName: '🛠️ 課後練習輔助工具', targetText: '無（或少量飲用水/凝固粉水）。'
+                toolName: '🛠️ 課後練習輔助工具', targetText: '用力吞嚥'
             },
             {
                 id: '2', categoryId: '1',
@@ -251,7 +252,7 @@
                     { tag: '步驟二', text: '用力向下壓球，保持下巴緊壓姿勢持續 10 至 60 秒。' },
                     { tag: '步驟三', text: '保持身體直立不駝背，時間結束後慢慢放鬆休息。' }
                 ],
-                toolName: '🛠️ 課後練習輔助工具', targetText: 'CTAR專用球或小彈性膠球。'
+                toolName: '🛠️ 課後練習輔助工具', targetText: '下巴壓球'
             },
             {
                 id: '3', categoryId: '1',
@@ -266,7 +267,7 @@
                     { tag: '步驟二', text: '用力快速向下壓球到底，隨後立即放鬆回原位。' },
                     { tag: '步驟三', text: '連續重複進行快速壓球動作，達到指定次數後休息。' }
                 ],
-                toolName: '🛠️ 課後練習輔助工具', targetText: 'CTAR專用球或小彈性膠球。'
+                toolName: '🛠️ 課後練習輔助工具', targetText: '快速低頭壓球'
             },
             {
                 id: '4', categoryId: '1',
@@ -281,7 +282,7 @@
                     { tag: '步驟二', text: '保持舌頭被咬住的狀態，嘗試用力完成吞嚥動作。' },
                     { tag: '步驟三', text: '吞嚥完成後鬆開舌頭，恢復正常呼吸並適度休息。' }
                 ],
-                toolName: '🛠️ 課後練習輔助工具', targetText: '壓舌板（輔助固定舌頭，可選）。'
+                toolName: '🛠️ 課後練習輔助工具', targetText: '輕咬舌尖吞嚥'
             },
             {
                 id: '5', categoryId: '1',
@@ -296,7 +297,7 @@
                     { tag: '步驟二', text: '保持嘴巴張開狀態，嘗試用力完成一次吞嚥動作。' },
                     { tag: '步驟三', text: '吞嚥後慢慢閉上嘴巴，放鬆下顎肌肉並進行休息。' }
                 ],
-                toolName: '🛠️ 課後練習輔助工具', targetText: '無。'
+                toolName: '🛠️ 課後練習輔助工具', targetText: '張口吞嚥'
             },
             {
                 id: '6', categoryId: '1',
@@ -311,7 +312,7 @@
                     { tag: '步驟二', text: '將聲音逐漸拉高到個人能達到的最高假聲音階。' },
                     { tag: '步驟三', text: '維持最高音高並持續用力數秒，隨後放鬆呼氣。' }
                 ],
-                toolName: '🛠️ 課後練習輔助工具', targetText: '錄音APP或音高輔助軟體。'
+                toolName: '🛠️ 課後練習輔助工具', targetText: '高音發出伊聲'
             },
             {
                 id: '7', categoryId: '1',
@@ -326,7 +327,7 @@
                     { tag: '步驟二', text: '將頭部向下傾斜，讓下巴盡量貼近胸口位置。' },
                     { tag: '步驟三', text: '保持低頭姿勢進行吞嚥，完成後抬頭回復原位。' }
                 ],
-                toolName: '🛠️ 課後練習輔助工具', targetText: '無。'
+                toolName: '🛠️ 課後練習輔助工具', targetText: '低頭收下巴吞嚥'
             },
             {
                 id: '8', categoryId: '1',
@@ -341,7 +342,7 @@
                     { tag: '步驟二', text: '保持憋氣狀態完成吞嚥，吞嚥過程中絕對不可呼吸。' },
                     { tag: '步驟三', text: '吞嚥完畢後區域用力咳嗽一聲，隨後才呼氣。' }
                 ],
-                toolName: '🛠️ 課後練習輔助工具', targetText: '無。'
+                toolName: '🛠️ 課後練習輔助工具', targetText: '吸氣憋氣再吞嚥'
             },
             {
                 id: '9', categoryId: '1',
@@ -356,7 +357,7 @@
                     { tag: '步驟二', text: '當喉結升至最高點時，用肌肉力量將喉結卡住 2-3 秒。' },
                     { tag: '步驟三', text: '保持卡住狀態後放鬆喉部，讓喉結降回原本位置。' }
                 ],
-                toolName: '🛠️ 課後練習輔助工具', targetText: '生物回饋儀（鏡子或喉部感應器，可選）。'
+                toolName: '🛠️ 課後練習輔助工具', targetText: '吞嚥時提緊喉結'
             },
             {
                 id: '10', categoryId: '1',
@@ -371,7 +372,7 @@
                     { tag: '步驟二', text: '輕輕觸碰並摩擦前顎弓兩側肌肉數次，刺激感受器。' },
                     { tag: '步驟三', text: '移除棉棒後，立即引導患者進行一次空吞嚥動作。' }
                 ],
-                toolName: '🛠️ 課後練習輔助工具', targetText: '冰棒、冰棉棒、檸檬冰棒。'
+                toolName: '🛠️ 課後練習輔助工具', targetText: '冰棒刺激口腔'
             },
 
             // 二、 舌部控球與推動力訓練 (Module 2)
@@ -388,7 +389,7 @@
                     { tag: '步驟二', text: '用力將舌頭盡量向嘴唇外伸出，保持直線上向前。' },
                     { tag: '步驟三', text: '在最伸展位置維持 3-5 秒，隨後將舌頭縮回口中。' }
                 ],
-                toolName: '🛠️ 課後練習輔助工具', targetText: '壓舌板或鏡子。'
+                toolName: '🛠️ 課後練習輔助工具', targetText: '舌頭用力向前伸'
             },
             {
                 id: '12', categoryId: '2',
@@ -403,7 +404,7 @@
                     { tag: '步驟二', text: '將舌尖慢慢向左側嘴角移動，隨後再轉向右側嘴角。' },
                     { tag: '步驟三', text: '兩側交替移動，每次在嘴角邊緣停留 3 秒後放鬆。' }
                 ],
-                toolName: '🛠️ 課後練習輔助工具', targetText: '壓舌板或棒棒糖。'
+                toolName: '🛠️ 課後練習輔助工具', targetText: '舌頭左右移動'
             },
             {
                 id: '13', categoryId: '2',
@@ -418,7 +419,7 @@
                     { tag: '步驟二', text: '用力將舌尖向上抬起，頂住門牙後方的上顎位置。' },
                     { tag: '步驟三', text: '頂住上顎並用力按壓 3-5 秒，隨後放鬆回到口底。' }
                 ],
-                toolName: '🛠️ 課後練習輔助工具', targetText: '壓舌板。'
+                toolName: '🛠️ 課後練習輔助工具', targetText: '舌尖向上頂顎'
             },
             {
                 id: '14', categoryId: '2',
@@ -433,7 +434,7 @@
                     { tag: '步驟二', text: '將舌頭後段（舌根）用力向上抬起，貼緊軟顎位置。' },
                     { tag: '步驟三', text: '保持舌根向上頂壓 3 秒，隨後放鬆回到休息位置。' }
                 ],
-                toolName: '🛠️ 課後練習輔助工具', targetText: '壓舌板或海綿棒。'
+                toolName: '🛠️ 課後練習輔助工具', targetText: '發出卡音頂舌根'
             },
             {
                 id: '15', categoryId: '2',
@@ -448,7 +449,7 @@
                     { tag: '步驟二', text: '沿著牙齦外側順時針方向進行 360 度環繞塗抹。' },
                     { tag: '步驟三', text: '完成順時針圈數後，換逆時針方向進行相同環繞。' }
                 ],
-                toolName: '🛠️ 課後練習輔助工具', targetText: '無。'
+                toolName: '🛠️ 課後練習輔助工具', targetText: '舌頭繞牙齦舔圈'
             },
 
             // 三、 唇頰密封與呼吸協調訓練 (Module 3)
@@ -465,7 +466,7 @@
                     { tag: '步驟二', text: '透過吸管發出穩定低音「嗚—」，並使水面產生氣泡。' },
                     { tag: '步驟三', text: '保持氣流均勻輸出數秒，結束後放鬆並進行深呼吸。' }
                 ],
-                toolName: '🛠️ 課後練習輔助工具', targetText: '細吸管、水杯。'
+                toolName: '🛠️ 課後練習輔助工具', targetText: '吸管吹氣發嗚聲'
             },
             {
                 id: '17', categoryId: '3',
@@ -480,7 +481,7 @@
                     { tag: '步驟二', text: '深吸一口氣，用嘴巴持續用力吹氣使吹龍完全展開。' },
                     { tag: '步驟三', text: '盡量維持吹龍展開狀態 3-5 秒，隨後緩慢放鬆。' }
                 ],
-                toolName: '🛠️ 課後練習輔助工具', targetText: '派對吹龍（派對笛）。'
+                toolName: '🛠️ 課後練習輔助工具', targetText: '長氣吹展開吹龍'
             },
             {
                 id: '18', categoryId: '3',
@@ -495,7 +496,7 @@
                     { tag: '步驟二', text: '用力吹氣使吹笛發出持續且穩定的聲音。' },
                     { tag: '步驟三', text: '保持聲音穩定不中斷數秒，隨後放鬆並進行休息。' }
                 ],
-                toolName: '🛠️ 課後練習輔助工具', targetText: 'TalkTools 吹笛組（Horn Kit）。'
+                toolName: '🛠️ 課後練習輔助工具', targetText: '吹笛持續發聲'
             },
             {
                 id: '19', categoryId: '3',
@@ -510,7 +511,7 @@
                     { tag: '步驟二', text: '用力將雙唇向內抿緊，感覺唇部肌肉收縮發力。' },
                     { tag: '步驟三', text: '維持緊抿姿勢 5-10 秒，隨後完全放鬆嘴唇。' }
                 ],
-                toolName: '🛠️ 課後練習輔助工具', targetText: '壓舌板、唇力扣或鈕扣綁線。'
+                toolName: '🛠️ 課後練習輔助工具', targetText: '雙唇抿緊不漏氣'
             },
             {
                 id: '20', categoryId: '3',
@@ -525,7 +526,7 @@
                     { tag: '步驟二', text: '保持空氣不從嘴唇洩漏，將氣體在左右兩頰間轉移。' },
                     { tag: '步驟三', text: '維持鼓頰狀態 5 秒，隨後將空氣緩慢呼出放鬆。' }
                 ],
-                toolName: '🛠️ 課後練習輔助工具', targetText: '無。'
+                toolName: '🛠️ 課後練習輔助工具', targetText: '用力鼓起兩頰'
             },
             {
                 id: '21', categoryId: '3',
@@ -540,7 +541,7 @@
                     { tag: '步驟二', text: '迅速打開嘴唇發出「吧」或嘖嘖的啵啵聲響。' },
                     { tag: '步驟三', text: '重複進行抿唇與打開動作，練習不同節奏與力道。' }
                 ],
-                toolName: '🛠️ 課後練習輔助工具', targetText: '鏡子。'
+                toolName: '🛠️ 課後練習輔助工具', targetText: '嘴唇發出吧吧聲'
             },
             {
                 id: '22', categoryId: '3',
@@ -555,7 +556,7 @@
                     { tag: '步驟二', text: '隨後將嘴唇盡量向兩側拉開咧嘴笑發「伊」音。' },
                     { tag: '步驟三', text: '交替進行噘嘴與咧嘴動作，重複數次以拉伸肌肉。' }
                 ],
-                toolName: '🛠️ 課後練習輔助工具', targetText: '鏡子。'
+                toolName: '🛠️ 課後練習輔助工具', targetText: '伊嗚咧嘴噘嘴'
             },
 
             // 四、 下顎咀嚼與飲食調整 (Module 4)
@@ -572,7 +573,7 @@
                     { tag: '步驟二', text: '將嘴巴閉合，隨後將下巴分別向左側與右側移動。' },
                     { tag: '步驟三', text: '將下巴向前推突出，保持數秒後恢復至正常咬合。' }
                 ],
-                toolName: '🛠️ 課後練習輔助工具', targetText: '下顎訓練器（如 Therabite）或咬合棒。'
+                toolName: '🛠️ 課後練習輔助工具', targetText: '張口移動下巴'
             },
             {
                 id: '24', categoryId: '4',
@@ -587,32 +588,57 @@
                     { tag: '步驟二', text: '立即使用攪拌棒快速攪拌 1-2 分鐘至完全溶解。' },
                     { tag: '步驟三', text: '靜置 1-3 分鐘達到預期的黏稠度後，方可安全飲用。' }
                 ],
-                toolName: '🛠️ 課後練習輔助工具', targetText: '凝固粉（增稠劑）、攪拌棒、量匙、水杯。'
+                toolName: '🛠️ 課後練習輔助工具', targetText: '加入凝固粉攪拌'
             }
         ];
+
+        // 計算文字重疊匹配分數（文字相似度算法）
+        function calculateScore(target, spoken) {
+            if (!target || !spoken) return 0;
+            const targetChars = [...target.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, '')];
+            const spokenChars = [...spoken.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, '')];
+            
+            if (targetChars.length === 0) return 100;
+
+            let match = 0;
+            targetChars.forEach(ch => {
+                if (spokenChars.includes(ch)) {
+                    match++;
+                }
+            });
+
+            const rawScore = Math.round((match / targetChars.length) * 100);
+            return Math.min(100, Math.max(0, rawScore));
+        }
 
         // 實時監聽 Firebase Realtime Database
         onValue(dbRef(database, 'lohas_images/'), (snapshot) => {
             const data = snapshot.val() || {};
             window.dbImageCache = data;
 
-            // 同步封面圖片
+            // 1. 同步封面圖片
             if (data.cover) {
                 document.getElementById('cover-img-container').innerHTML = `<img src="${data.cover}">`;
             }
 
-            // 同步各課程圖片
+            // 2. 同步各課程圖片快取
             window.coursesData.forEach(c => {
                 if (data[`course_${c.id}`]) {
                     c.imageUrl = data[`course_${c.id}`];
                 }
             });
 
-            // 詳情頁即時連動
+            // 3. 詳情頁即時連動
             if (window.currentActiveCourse && data[`course_${window.currentActiveCourse.id}`]) {
                 const currentUrl = data[`course_${window.currentActiveCourse.id}`];
                 window.currentActiveCourse.imageUrl = currentUrl;
                 document.getElementById('detail-img-container').innerHTML = `<img src="${currentUrl}">`;
+            }
+
+            // 4. 即時修復：若當前正在課程牆（list-screen），自動重新 render 課程卡片以同步圖片
+            const listScreen = document.getElementById('list-screen');
+            if (listScreen && listScreen.classList.contains('active')) {
+                window.filterAndNavigate(window.currentCategoryId || '1');
             }
         });
 
@@ -622,6 +648,7 @@
         };
 
         window.filterAndNavigate = function(catId) {
+            window.currentCategoryId = catId;
             const listContainer = document.getElementById('recipe-list-container');
             const headerTitle = document.getElementById('list-header-title');
             listContainer.innerHTML = '';
@@ -736,7 +763,7 @@
             navigateTo('list-screen');
         };
 
-        // Web Speech API 原生粵語辨識整合
+        // Web Speech API 原生粵語辨識整合與真實匹配度計算
         window.isListening = false;
 
         window.toggleSttSimulation = function() {
@@ -766,10 +793,12 @@
                 window.recognition.onresult = function(event) {
                     const transcript = event.results[0][0].transcript;
                     if (event.results[0].isFinal) {
-                        const score = Math.floor(80 + Math.random() * 20);
+                        const targetText = (window.currentActiveCourse && window.currentActiveCourse.targetText) ? window.currentActiveCourse.targetText : "";
+                        const score = calculateScore(targetText, transcript);
+
                         wave.style.visibility = "hidden";
-                        btn.style.backgroundColor = "#BFFCC6";
-                        btn.innerHTML = `✅ 辨識結果：「${transcript}」<br>🏆 發音分數：${score}/100<br><span style='font-size:11px; font-weight:600;'>數據已紀錄至復康日誌</span>`;
+                        btn.style.backgroundColor = score >= 60 ? "#BFFCC6" : "#FFF275";
+                        btn.innerHTML = `✅ 辨識結果：「${transcript}」<br>🏆 語音匹配度：${score}/100<br><span style='font-size:11px; font-weight:600;'>數據已紀錄至復康日誌</span>`;
                     } else {
                         btn.innerText = `聆聽中... 「${transcript}」`;
                     }
