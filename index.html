@@ -2,8 +2,18 @@
 <html lang="zh-HK">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>630樂活科技 - 語音與吞嚥復康訓練沙盒</title>
+
+    <!-- PWA Manifest 與 顏色設定 -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#1e293b">
+
+    <!-- iOS / iPad 專用 PWA 標籤 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="樂活吞嚥沙盒">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3063/3063822.png">
 
     <!-- AdMob / Google AdSense 應用程式識別碼設定 -->
     <meta name="google-adsense-account" content="ca-pub-5403745127757660">
@@ -611,11 +621,9 @@
             }
         ];
 
-        // 🟡 修正問題 5：精準位置比對算法 (Positional Match Algorithm)
+        // 位置匹配比對算法
         function calculateScore(target, spoken) {
             if (!target || !spoken) return 0;
-            
-            // 清除空格與標點符號
             const targetClean = target.replace(/\s+/g, '').replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, '');
             const spokenClean = spoken.replace(/\s+/g, '').replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, '');
 
@@ -633,7 +641,7 @@
             return Math.round((matchCount / targetClean.length) * 100);
         }
 
-        // 更新 UI 完成度進度條
+        // 更新完成度進度條
         function updateProgressBar() {
             const total = window.coursesData.length;
             const completedCount = window.completedCoursesSet.size;
@@ -643,7 +651,7 @@
             document.getElementById('progress-bar-fill').style.width = `${percent}%`;
         }
 
-        // 實時監聽 Firebase Realtime Database (圖片與復康日誌)
+        // 監聽 Firebase 資料庫圖片變更
         onValue(dbRef(database, 'lohas_images/'), (snapshot) => {
             const data = snapshot.val() || {};
             window.dbImageCache = data;
@@ -670,7 +678,7 @@
             }
         });
 
-        // 監聽歷史復康日誌以更新進度條
+        // 監聽復康日誌
         onValue(dbRef(database, 'lohas_logs/'), (snapshot) => {
             const logs = snapshot.val() || {};
             window.completedCoursesSet.clear();
@@ -751,7 +759,6 @@
             document.getElementById('image-file-picker').click();
         };
 
-        // 🟡 修正問題 7：刪除舊 Storage 圖檔，避免空間無窮膨脹
         document.getElementById('image-file-picker').addEventListener('change', async function(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -769,26 +776,23 @@
                 let dbKey = window.uploadTargetMode === "cover" ? 'cover' : `course_${window.currentActiveCourse.id}`;
                 let oldUrl = window.dbImageCache[dbKey];
 
-                // 刪除舊的 Storage 圖檔
                 if (oldUrl && oldUrl.includes("firebasestorage.googleapis.com")) {
                     try {
                         const oldStorageRef = storageRef(storage, oldUrl);
                         await deleteObject(oldStorageRef);
-                        console.log("舊圖檔已清理:", oldUrl);
                     } catch (e) {
-                        console.warn("清理舊圖檔失敗（可能已被刪除）:", e);
+                        console.warn("清理舊圖檔失敗:", e);
                     }
                 }
 
-                // 上傳新圖片
                 const storageReference = storageRef(storage, `lohas_photos/${Date.now()}_${file.name}`);
                 const snapshot = await uploadBytes(storageReference, file);
                 const downloadURL = await getDownloadURL(snapshot.ref);
 
                 await set(dbRef(database, `lohas_images/${dbKey}`), downloadURL);
             } catch (err) {
-                console.error("Firebase Storage/Database 出錯:", err);
-                alert("處理失敗，請檢查網路連線或 Firebase 權限！");
+                console.error("Firebase 出錯:", err);
+                alert("處理失敗，請檢查網路連線！");
             } finally {
                 loading.classList.remove('active');
                 event.target.value = "";
@@ -813,7 +817,6 @@
         };
 
         window.closeDetail = function() {
-            // 離開詳情頁時強制停止語音
             if (window.recognition) {
                 window.recognition.abort();
                 window.isListening = false;
@@ -822,7 +825,7 @@
             navigateTo('list-screen');
         };
 
-        // 🟡 修正問題 6：SpeechRecognition 狀態重置與獨立建立機制 + 日誌自動紀錄
+        // 語音辨識機制
         window.isListening = false;
         window.recognition = null;
 
@@ -836,7 +839,6 @@
                 return;
             }
 
-            // 若已有實例，先 abort 中止並重新建立，避免狀態殘留
             if (window.recognition) {
                 try {
                     window.recognition.abort();
@@ -867,7 +869,6 @@
                     btn.style.backgroundColor = score >= 60 ? "#BFFCC6" : "#FFF275";
                     btn.innerHTML = `✅ 辨識結果：「${transcript}」<br>🏆 語音匹配度：${score}/100<br><span style='font-size:11px; font-weight:600;'>數據已實時寫入復康日誌 ☁️</span>`;
 
-                    // 寫入復康日誌至 Firebase Realtime Database (`lohas_logs/`)
                     if (window.currentActiveCourse) {
                         const logRef = push(dbRef(database, 'lohas_logs/'));
                         set(logRef, {
@@ -967,6 +968,15 @@
             `;
 
             navigateTo('detail-screen');
+        }
+
+        // 註冊外置 service-worker.js
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(reg => console.log('Service Worker 註冊成功！ Scope:', reg.scope))
+                    .catch(err => console.error('Service Worker 註冊失敗:', err));
+            });
         }
     </script>
 </body>
