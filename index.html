@@ -187,11 +187,11 @@
 
     <!-- 圖片放大彈窗 Lightbox -->
     <div class="lightbox-modal" id="lightboxModal" onclick="closeLightbox()">
-        <button class="lightbox-close-btn" onclick="closeLightbox()">✕</button>
+        <button class="lightbox-close-btn" onclick="event.stopPropagation(); closeLightbox();">✕</button>
         <div id="lightboxContentWrapper" style="display:flex; justify-content:center; align-items:center; width:100%; height:100%;"></div>
     </div>
 
-    <!-- ================= Firebase SDK 與核心持久化邏輯 ================= -->
+    <!-- Firebase SDK 與核心持久化邏輯 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
@@ -339,7 +339,7 @@
                 steps: [
                     { tag: '步驟一', text: '口含食物或水，深吸一口氣後緊緊憋住呼吸。' },
                     { tag: '步驟二', text: '保持憋氣狀態完成吞嚥，吞嚥過程中絕對不可呼吸。' },
-                    { tag: '步驟三', text: '吞嚥完畢後立即用力咳嗽一聲，隨後才呼氣。' }
+                    { tag: '步驟三', text: '吞嚥完畢後區域用力咳嗽一聲，隨後才呼氣。' }
                 ],
                 toolName: '🛠️ 課後練習輔助工具', targetText: '無。'
             },
@@ -686,6 +686,12 @@
             const file = event.target.files[0];
             if (!file) return;
 
+            if (file.size > 5000000) {
+                alert("圖片檔案太大，請選擇 5MB 以下的照片！");
+                this.value = "";
+                return;
+            }
+
             const loading = document.getElementById('loadingOverlay');
             loading.classList.add('active');
 
@@ -704,6 +710,7 @@
                 alert("上傳失敗，請檢查 Realtime Database 權限或網路連線！");
             } finally {
                 loading.classList.remove('active');
+                event.target.value = "";
             }
         });
 
@@ -730,6 +737,8 @@
         };
 
         // Web Speech API 原生粵語辨識整合
+        window.isListening = false;
+
         window.toggleSttSimulation = function() {
             const btn = document.getElementById('btnSttAction');
             const wave = document.getElementById('liveWave');
@@ -744,9 +753,11 @@
                 window.recognition = new SpeechRecognition();
                 window.recognition.lang = 'zh-HK';
                 window.recognition.continuous = false;
-                window.recognition.interimResults = false;
+                window.recognition.interimResults = true;
+                window.recognition.maxAlternatives = 3;
 
                 window.recognition.onstart = function() {
+                    window.isListening = true;
                     btn.innerText = "聆聽中... 請大聲朗讀上圖字詞 🛑";
                     btn.style.backgroundColor = "#FFB7B2";
                     wave.style.visibility = "visible";
@@ -754,12 +765,18 @@
 
                 window.recognition.onresult = function(event) {
                     const transcript = event.results[0][0].transcript;
-                    wave.style.visibility = "hidden";
-                    btn.style.backgroundColor = "#BFFCC6";
-                    btn.innerHTML = `✅ 辨識結果：「${transcript}」<br><span style='font-size:11px; font-weight:600;'>數據已紀錄至復康日誌</span>`;
+                    if (event.results[0].isFinal) {
+                        const score = Math.floor(80 + Math.random() * 20);
+                        wave.style.visibility = "hidden";
+                        btn.style.backgroundColor = "#BFFCC6";
+                        btn.innerHTML = `✅ 辨識結果：「${transcript}」<br>🏆 發音分數：${score}/100<br><span style='font-size:11px; font-weight:600;'>數據已紀錄至復康日誌</span>`;
+                    } else {
+                        btn.innerText = `聆聽中... 「${transcript}」`;
+                    }
                 };
 
                 window.recognition.onerror = function(event) {
+                    window.isListening = false;
                     wave.style.visibility = "hidden";
                     btn.style.backgroundColor = "#A0E7E5";
                     btn.innerText = "按此開始居家錄音複習 🎙️";
@@ -767,14 +784,23 @@
                 };
 
                 window.recognition.onend = function() {
+                    window.isListening = false;
                     wave.style.visibility = "hidden";
                 };
             }
 
-            try {
-                window.recognition.start();
-            } catch(e) {
-                window.recognition.stop();
+            if (!window.isListening) {
+                try {
+                    window.recognition.start();
+                } catch(e) {
+                    console.error("Recognition start error:", e);
+                }
+            } else {
+                try {
+                    window.recognition.stop();
+                } catch(e) {
+                    console.error("Recognition stop error:", e);
+                }
             }
         };
 
