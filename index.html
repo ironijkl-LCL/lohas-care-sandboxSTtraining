@@ -45,12 +45,18 @@
         .action-btn:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0px #1e293b; }
         .end-card-box { background: white; border: 3px solid #1e293b; border-radius: 32px; padding: 22px; box-shadow: 6px 6px 0px #1e293b; margin-top: 30px; }
         
-        .header-title-container { display: flex; justify-content: space-between; align-items: center; padding: 35px 20px 15px 24px; }
-        .header-title { font-size: 20px; font-weight: 900; color: #1a1a1a; flex-shrink: 0; }
+        .header-title-container { display: flex; justify-content: space-between; align-items: center; padding: 35px 20px 10px 24px; }
+        .header-title { font-size: 19px; font-weight: 900; color: #1a1a1a; flex-shrink: 0; }
         .nav-btn-group { display: flex; align-items: center; gap: 8px; }
         .nav-arrow-btn, .next-end-btn, .zoom-btn { background: #ffffff; border: 2px solid #1e293b; border-radius: 50%; width: 42px; height: 42px; font-size: 17px; font-weight: 800; cursor: pointer; box-shadow: 2px 2px 0px #1e293b; display: flex; justify-content: center; align-items: center; color: #1e293b; }
         .zoom-btn { position: absolute; right: 20px; top: 25px; font-size: 20px; z-index: 30; }
         
+        /* 復康進度條 UI */
+        .progress-box { margin: 0 20px 15px 20px; background: #fff; border: 2px solid #1e293b; border-radius: 16px; padding: 10px 14px; box-shadow: 3px 3px 0px #1e293b; }
+        .progress-text { display: flex; justify-content: space-between; font-size: 12px; font-weight: 800; color: #1e293b; margin-bottom: 6px; }
+        .progress-bar-bg { width: 100%; height: 12px; background: #e2e8f0; border-radius: 6px; border: 1.5px solid #1e293b; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: #25D366; width: 0%; transition: width 0.4s ease; }
+
         .recipe-list { padding: 0 20px; }
         .recipe-card { height: auto; min-height: 150px; border-radius: 30px 20px 30px 30px; margin-bottom: 18px; position: relative; cursor: pointer; border: 2px solid #1e293b; box-shadow: 5px 5px 0px #1e293b; padding: 16px 115px 16px 18px; }
         .card-content { color: #1e293b; }
@@ -102,7 +108,7 @@
     <div class="phone-container" id="app-phone-shell">
         <input type="file" id="image-file-picker" accept="image/*" style="display: none;">
         
-        <div class="loading-overlay" id="loadingOverlay">☁️ 正在同步照片至 Firebase...</div>
+        <div class="loading-overlay" id="loadingOverlay">☁️ 正在處理 Firebase 數據...</div>
 
         <!-- 畫面 1：開頭歡迎頁 -->
         <div class="screen active" id="cover-screen">
@@ -140,6 +146,18 @@
                     <button class="next-end-btn" onclick="navigateTo('end-screen')" title="前往結業頁">🎓</button>
                 </div>
             </div>
+
+            <!-- 進度條 -->
+            <div class="progress-box">
+                <div class="progress-text">
+                    <span>🏆 總復康完成度</span>
+                    <span id="progress-val-text">0 / 24 課 (0%)</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progress-bar-fill"></div>
+                </div>
+            </div>
+
             <div class="recipe-list" id="recipe-list-container"></div>
         </div>
 
@@ -195,8 +213,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
-        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
-        import { getDatabase, ref as dbRef, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+        import { getDatabase, ref as dbRef, set, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBG65952X2d1pzpfrtWEBnthzCxDWFePXA",
@@ -220,6 +238,7 @@
         window.currentActiveCourse = null;
         window.currentCategoryId = '1';
         window.dbImageCache = {};
+        window.completedCoursesSet = new Set();
 
         // 24項完整口腦與吞嚥復康訓練資料庫
         window.coursesData = [
@@ -592,54 +611,76 @@
             }
         ];
 
-        // 計算文字重疊匹配分數（文字相似度算法）
+        // 🟡 修正問題 5：精準位置比對算法 (Positional Match Algorithm)
         function calculateScore(target, spoken) {
             if (!target || !spoken) return 0;
-            const targetChars = [...target.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, '')];
-            const spokenChars = [...spoken.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, '')];
             
-            if (targetChars.length === 0) return 100;
+            // 清除空格與標點符號
+            const targetClean = target.replace(/\s+/g, '').replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, '');
+            const spokenClean = spoken.replace(/\s+/g, '').replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, '');
 
-            let match = 0;
-            targetChars.forEach(ch => {
-                if (spokenChars.includes(ch)) {
-                    match++;
+            if (targetClean.length === 0) return 100;
+
+            let matchCount = 0;
+            const limit = Math.min(targetClean.length, spokenClean.length);
+
+            for (let i = 0; i < limit; i++) {
+                if (targetClean[i] === spokenClean[i]) {
+                    matchCount++;
                 }
-            });
+            }
 
-            const rawScore = Math.round((match / targetChars.length) * 100);
-            return Math.min(100, Math.max(0, rawScore));
+            return Math.round((matchCount / targetClean.length) * 100);
         }
 
-        // 實時監聽 Firebase Realtime Database
+        // 更新 UI 完成度進度條
+        function updateProgressBar() {
+            const total = window.coursesData.length;
+            const completedCount = window.completedCoursesSet.size;
+            const percent = Math.round((completedCount / total) * 100);
+
+            document.getElementById('progress-val-text').innerText = `${completedCount} / ${total} 課 (${percent}%)`;
+            document.getElementById('progress-bar-fill').style.width = `${percent}%`;
+        }
+
+        // 實時監聽 Firebase Realtime Database (圖片與復康日誌)
         onValue(dbRef(database, 'lohas_images/'), (snapshot) => {
             const data = snapshot.val() || {};
             window.dbImageCache = data;
 
-            // 1. 同步封面圖片
             if (data.cover) {
                 document.getElementById('cover-img-container').innerHTML = `<img src="${data.cover}">`;
             }
 
-            // 2. 同步各課程圖片快取
             window.coursesData.forEach(c => {
                 if (data[`course_${c.id}`]) {
                     c.imageUrl = data[`course_${c.id}`];
                 }
             });
 
-            // 3. 詳情頁即時連動
             if (window.currentActiveCourse && data[`course_${window.currentActiveCourse.id}`]) {
                 const currentUrl = data[`course_${window.currentActiveCourse.id}`];
                 window.currentActiveCourse.imageUrl = currentUrl;
                 document.getElementById('detail-img-container').innerHTML = `<img src="${currentUrl}">`;
             }
 
-            // 4. 即時修復：若當前正在課程牆（list-screen），自動重新 render 課程卡片以同步圖片
             const listScreen = document.getElementById('list-screen');
             if (listScreen && listScreen.classList.contains('active')) {
                 window.filterAndNavigate(window.currentCategoryId || '1');
             }
+        });
+
+        // 監聽歷史復康日誌以更新進度條
+        onValue(dbRef(database, 'lohas_logs/'), (snapshot) => {
+            const logs = snapshot.val() || {};
+            window.completedCoursesSet.clear();
+
+            Object.values(logs).forEach(log => {
+                if (log.score >= 60 && log.courseId) {
+                    window.completedCoursesSet.add(log.courseId);
+                }
+            });
+            updateProgressBar();
         });
 
         window.navigateTo = function(screenId) {
@@ -664,6 +705,7 @@
 
             const filteredCourses = window.coursesData.filter(c => c.categoryId === catId);
             filteredCourses.forEach(course => {
+                const isCompleted = window.completedCoursesSet.has(course.id);
                 const card = document.createElement('div');
                 card.className = 'recipe-card';
                 card.style.backgroundColor = course.themeColor;
@@ -674,7 +716,7 @@
                 card.innerHTML = `
                     <div class="card-content">
                         <div class="card-title-container">
-                            <span class="card-title-line1">${course.title}</span>
+                            <span class="card-title-line1">${course.title} ${isCompleted ? '✅ 已完成' : ''}</span>
                             <span class="card-title-line2">${course.titleTitle}</span>
                         </div>
                         <div class="card-desc">${course.subtitle} — ${course.description}</div>
@@ -686,6 +728,7 @@
                 listContainer.appendChild(card);
             });
 
+            updateProgressBar();
             navigateTo('list-screen');
         };
 
@@ -708,7 +751,7 @@
             document.getElementById('image-file-picker').click();
         };
 
-        // 上傳至 Storage 並將圖片 URL 儲存至 Database
+        // 🟡 修正問題 7：刪除舊 Storage 圖檔，避免空間無窮膨脹
         document.getElementById('image-file-picker').addEventListener('change', async function(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -723,18 +766,29 @@
             loading.classList.add('active');
 
             try {
+                let dbKey = window.uploadTargetMode === "cover" ? 'cover' : `course_${window.currentActiveCourse.id}`;
+                let oldUrl = window.dbImageCache[dbKey];
+
+                // 刪除舊的 Storage 圖檔
+                if (oldUrl && oldUrl.includes("firebasestorage.googleapis.com")) {
+                    try {
+                        const oldStorageRef = storageRef(storage, oldUrl);
+                        await deleteObject(oldStorageRef);
+                        console.log("舊圖檔已清理:", oldUrl);
+                    } catch (e) {
+                        console.warn("清理舊圖檔失敗（可能已被刪除）:", e);
+                    }
+                }
+
+                // 上傳新圖片
                 const storageReference = storageRef(storage, `lohas_photos/${Date.now()}_${file.name}`);
                 const snapshot = await uploadBytes(storageReference, file);
                 const downloadURL = await getDownloadURL(snapshot.ref);
 
-                if (window.uploadTargetMode === "cover") {
-                    await set(dbRef(database, 'lohas_images/cover'), downloadURL);
-                } else if (window.uploadTargetMode === "detail" && window.currentActiveCourse) {
-                    await set(dbRef(database, `lohas_images/course_${window.currentActiveCourse.id}`), downloadURL);
-                }
+                await set(dbRef(database, `lohas_images/${dbKey}`), downloadURL);
             } catch (err) {
                 console.error("Firebase Storage/Database 出錯:", err);
-                alert("上傳失敗，請檢查 Realtime Database 權限或網路連線！");
+                alert("處理失敗，請檢查網路連線或 Firebase 權限！");
             } finally {
                 loading.classList.remove('active');
                 event.target.value = "";
@@ -759,12 +813,18 @@
         };
 
         window.closeDetail = function() {
+            // 離開詳情頁時強制停止語音
+            if (window.recognition) {
+                window.recognition.abort();
+                window.isListening = false;
+            }
             window.currentActiveCourse = null;
             navigateTo('list-screen');
         };
 
-        // Web Speech API 原生粵語辨識整合與真實匹配度計算
+        // 🟡 修正問題 6：SpeechRecognition 狀態重置與獨立建立機制 + 日誌自動紀錄
         window.isListening = false;
+        window.recognition = null;
 
         window.toggleSttSimulation = function() {
             const btn = document.getElementById('btnSttAction');
@@ -772,51 +832,70 @@
             
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
-                alert("目前的瀏覽器暫不支援語音辨識，請使用 Chrome 瀏覽器試試！");
+                alert("目前的瀏覽器暫不支援語音辨識，請使用 Chrome 瀏覽器！");
                 return;
             }
 
-            if (!window.recognition) {
-                window.recognition = new SpeechRecognition();
-                window.recognition.lang = 'zh-HK';
-                window.recognition.continuous = false;
-                window.recognition.interimResults = true;
-                window.recognition.maxAlternatives = 3;
-
-                window.recognition.onstart = function() {
-                    window.isListening = true;
-                    btn.innerText = "聆聽中... 請大聲朗讀上圖字詞 🛑";
-                    btn.style.backgroundColor = "#FFB7B2";
-                    wave.style.visibility = "visible";
-                };
-
-                window.recognition.onresult = function(event) {
-                    const transcript = event.results[0][0].transcript;
-                    if (event.results[0].isFinal) {
-                        const targetText = (window.currentActiveCourse && window.currentActiveCourse.targetText) ? window.currentActiveCourse.targetText : "";
-                        const score = calculateScore(targetText, transcript);
-
-                        wave.style.visibility = "hidden";
-                        btn.style.backgroundColor = score >= 60 ? "#BFFCC6" : "#FFF275";
-                        btn.innerHTML = `✅ 辨識結果：「${transcript}」<br>🏆 語音匹配度：${score}/100<br><span style='font-size:11px; font-weight:600;'>數據已紀錄至復康日誌</span>`;
-                    } else {
-                        btn.innerText = `聆聽中... 「${transcript}」`;
-                    }
-                };
-
-                window.recognition.onerror = function(event) {
-                    window.isListening = false;
-                    wave.style.visibility = "hidden";
-                    btn.style.backgroundColor = "#A0E7E5";
-                    btn.innerText = "按此開始居家錄音複習 🎙️";
-                    alert("未有接收到清晰聲音，請再試一次！");
-                };
-
-                window.recognition.onend = function() {
-                    window.isListening = false;
-                    wave.style.visibility = "hidden";
-                };
+            // 若已有實例，先 abort 中止並重新建立，避免狀態殘留
+            if (window.recognition) {
+                try {
+                    window.recognition.abort();
+                } catch(e) {}
+                window.recognition = null;
             }
+
+            window.recognition = new SpeechRecognition();
+            window.recognition.lang = 'zh-HK';
+            window.recognition.continuous = false;
+            window.recognition.interimResults = true;
+            window.recognition.maxAlternatives = 1;
+
+            window.recognition.onstart = function() {
+                window.isListening = true;
+                btn.innerText = "聆聽中... 請大聲朗讀上圖字詞 🛑";
+                btn.style.backgroundColor = "#FFB7B2";
+                wave.style.visibility = "visible";
+            };
+
+            window.recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                if (event.results[0].isFinal) {
+                    const targetText = (window.currentActiveCourse && window.currentActiveCourse.targetText) ? window.currentActiveCourse.targetText : "";
+                    const score = calculateScore(targetText, transcript);
+
+                    wave.style.visibility = "hidden";
+                    btn.style.backgroundColor = score >= 60 ? "#BFFCC6" : "#FFF275";
+                    btn.innerHTML = `✅ 辨識結果：「${transcript}」<br>🏆 語音匹配度：${score}/100<br><span style='font-size:11px; font-weight:600;'>數據已實時寫入復康日誌 ☁️</span>`;
+
+                    // 寫入復康日誌至 Firebase Realtime Database (`lohas_logs/`)
+                    if (window.currentActiveCourse) {
+                        const logRef = push(dbRef(database, 'lohas_logs/'));
+                        set(logRef, {
+                            courseId: window.currentActiveCourse.id,
+                            courseTitle: window.currentActiveCourse.titleTitle,
+                            targetText: targetText,
+                            transcript: transcript,
+                            score: score,
+                            timestamp: Date.now()
+                        });
+                    }
+                } else {
+                    btn.innerText = `聆聽中... 「${transcript}」`;
+                }
+            };
+
+            window.recognition.onerror = function(event) {
+                window.isListening = false;
+                wave.style.visibility = "hidden";
+                btn.style.backgroundColor = "#A0E7E5";
+                btn.innerText = "按此開始居家錄音複習 🎙️";
+                alert("未有接收到清晰聲音，請再試一次！");
+            };
+
+            window.recognition.onend = function() {
+                window.isListening = false;
+                wave.style.visibility = "hidden";
+            };
 
             if (!window.isListening) {
                 try {
