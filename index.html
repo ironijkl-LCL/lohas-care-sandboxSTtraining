@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>沙盒-高齡長者語音復康訓練</title>
+    <title>沙盒-高齡長者語音與吞嚥復康訓練</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background-color: #cbd5e1; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; transition: background-color 0.3s; }
@@ -30,52 +30,52 @@
         .end-card-box { background: white; border: 3px solid #1e293b; border-radius: 32px; padding: 22px; box-shadow: 6px 6px 0px #1e293b; margin-top: 30px; }
         
         .header-title-container { display: flex; justify-content: space-between; align-items: center; padding: 35px 20px 20px 24px; }
-        .header-title { font-size: 24px; font-weight: 900; color: #1a1a1a; flex-shrink: 0; }
+        .header-title { font-size: 22px; font-weight: 900; color: #1a1a1a; flex-shrink: 0; }
         .nav-btn-group { display: flex; align-items: center; gap: 10px; }
-        .nav-arrow-btn, .next-end-btn, .zoom-btn { background: #ffffff; border: 2px solid #1e293b; border-radius: 50%; width: 42px; height: 42px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 2px 2px 0px #1e293b; display: flex; justify-content: center; align-items: center; color: #1e293b; }
-        .zoom-btn { position: absolute; right: 20px; top: 25px; font-size: 18px; z-index: 30; }
+        .nav-arrow-btn, .next-end-btn, .zoom-btn { background: #ffffff; border: 2px solid #1e293b; border-radius: 50%; width: 44px; height: 44px; font-size: 18px; font-weight: 800; cursor: pointer; box-shadow: 2px 2px 0px #1e293b; display: flex; justify-content: center; align-items: center; color: #1e293b; }
+        .zoom-btn { position: absolute; right: 20px; top: 25px; font-size: 20px; z-index: 30; }
         
         .recipe-list { padding: 0 20px; }
-        .recipe-card { height: 175px; border-radius: 40px 25px 35px 50px; margin-bottom: 24px; position: relative; cursor: pointer; border: 2px solid #1e293b; box-shadow: 6px 6px 0px #1e293b; }
-        .card-content { width: 58%; padding: 18px 0 18px 22px; color: #1e293b; }
-        .card-title-line1 { font-size: 14px; font-weight: 700; color: rgba(30, 41, 59, 0.7); }
-        .card-title-line2 { font-size: 18px; font-weight: 800; color: #1e293b; display: block; margin-top: 2px; }
-        .card-desc { font-size: 12px; font-weight: 600; opacity: 0.85; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .card-img-wrapper { position: absolute; right: 15px; top: -10px; width: 125px; height: 125px; border-radius: 50%; border: 3px solid #1e293b; box-shadow: 4px 4px 0px #1e293b; overflow: hidden; background: #fff; display: flex; justify-content: center; align-items: center; }
+        .recipe-card { height: auto; min-height: 160px; border-radius: 35px 25px 35px 35px; margin-bottom: 20px; position: relative; cursor: pointer; border: 2px solid #1e293b; box-shadow: 6px 6px 0px #1e293b; padding: 18px 120px 18px 20px; }
+        .card-content { color: #1e293b; }
+        .card-title-line1 { font-size: 13px; font-weight: 800; color: rgba(30, 41, 59, 0.75); letter-spacing: 0.5px; }
+        .card-title-line2 { font-size: 17px; font-weight: 900; color: #1e293b; display: block; margin-top: 2px; margin-bottom: 6px; }
+        .card-desc { font-size: 12px; font-weight: 600; opacity: 0.85; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .card-img-wrapper { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 95px; height: 95px; border-radius: 50%; border: 3px solid #1e293b; box-shadow: 3px 3px 0px #1e293b; overflow: hidden; background: #fff; display: flex; justify-content: center; align-items: center; }
         .card-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
         
-        .detail-top-bar { height: 280px; border-radius: 0 0 36px 36px; border-bottom: 3px solid #1e293b; position: relative; display: flex; justify-content: center; align-items: center; overflow: hidden; background-color: #FAF6F0; }
-        .back-btn { position: absolute; left: 20px; top: 25px; width: 44px; height: 44px; background-color: #FAF6F0; border: 2px solid #1e293b; border-radius: 50%; color: #1e293b; font-size: 22px; font-weight: 800; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 2px 2px 0px #1e293b; z-index: 30; }
+        .detail-top-bar { height: 260px; border-radius: 0 0 36px 36px; border-bottom: 3px solid #1e293b; position: relative; display: flex; justify-content: center; align-items: center; overflow: hidden; background-color: #FAF6F0; }
+        .back-btn { position: absolute; left: 20px; top: 25px; width: 48px; height: 48px; background-color: #FAF6F0; border: 2px solid #1e293b; border-radius: 50%; color: #1e293b; font-size: 22px; font-weight: 800; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 2px 2px 0px #1e293b; z-index: 30; }
         
         .detail-main-img { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; cursor: pointer; padding: 10px; }
         .detail-main-img img { max-width: 100%; max-height: 100%; object-fit: contain; }
         
         .detail-img-actions { position: absolute; bottom: 12px; right: 12px; display: flex; gap: 8px; z-index: 20; }
-        .img-action-badge { background: #FAF6F0; border: 2px solid #1e293b; padding: 5px 12px; font-size: 12px; font-weight: 800; border-radius: 14px; box-shadow: 2px 2px 0px #1e293b; cursor: pointer; }
+        .img-action-badge { background: #FAF6F0; border: 2px solid #1e293b; padding: 6px 14px; font-size: 13px; font-weight: 800; border-radius: 16px; box-shadow: 2px 2px 0px #1e293b; cursor: pointer; }
         
         .lightbox-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.85); z-index: 9999; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px); }
         .lightbox-modal.active { display: flex; }
         .lightbox-img { max-width: 95%; max-height: 90vh; object-fit: contain; border-radius: 12px; border: 3px solid #fff; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
-        .lightbox-close-btn { position: absolute; top: 25px; right: 25px; width: 44px; height: 44px; background: #fff; border: 2px solid #1e293b; border-radius: 50%; font-size: 22px; font-weight: 900; color: #1e293b; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 3px 3px 0px #1e293b; }
+        .lightbox-close-btn { position: absolute; top: 25px; right: 25px; width: 48px; height: 48px; background: #fff; border: 2px solid #1e293b; border-radius: 50%; font-size: 22px; font-weight: 900; color: #1e293b; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 3px 3px 0px #1e293b; }
 
-        .steps-container { padding: 30px 20px; }
-        .detail-title { font-size: 21px; font-weight: 900; color: #1e293b; margin-bottom: 8px; line-height: 1.3; }
-        .detail-goal { font-size: 14px; font-weight: 600; color: #475569; background-color: rgba(0,0,0,0.04); padding: 12px 16px; border-radius: 20px; margin-bottom: 24px; border-left: 4px solid #1e293b; line-height: 1.4; }
-        .step-card { background-color: #ffffff; border-radius: 28px; padding: 20px; margin-bottom: 18px; display: flex; align-items: flex-start; gap: 15px; border: 2px solid #1e293b; box-shadow: 4px 4px 0px rgba(30, 41, 59, 0.15); }
-        .step-number { width: 38px; height: 38px; border-radius: 50%; color: #1e293b; font-weight: 800; font-size: 15px; display: flex; justify-content: center; align-items: center; flex-shrink: 0; border: 2px solid #1e293b; box-shadow: 2px 2px 0px #1e293b; }
+        .steps-container { padding: 25px 20px; }
+        .detail-title { font-size: 22px; font-weight: 900; color: #1e293b; margin-bottom: 8px; line-height: 1.3; }
+        .detail-goal { font-size: 14px; font-weight: 600; color: #334155; background-color: #ffffff; padding: 14px 16px; border-radius: 20px; margin-bottom: 24px; border: 2px solid #1e293b; border-left: 6px solid #1e293b; box-shadow: 3px 3px 0px rgba(30, 41, 59, 0.1); line-height: 1.5; }
+        .step-card { background-color: #ffffff; border-radius: 24px; padding: 18px; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 15px; border: 2px solid #1e293b; box-shadow: 4px 4px 0px rgba(30, 41, 59, 0.15); }
+        .step-number { width: 38px; height: 38px; border-radius: 50%; color: #1e293b; font-weight: 900; font-size: 16px; display: flex; justify-content: center; align-items: center; flex-shrink: 0; border: 2px solid #1e293b; box-shadow: 2px 2px 0px #1e293b; }
         .step-text-wrapper { display: flex; flex-direction: column; gap: 4px; }
-        .step-tag { font-size: 11px; font-weight: 800; color: #64748b; }
-        .step-text { font-size: 14px; font-weight: 600; color: #334155; line-height: 1.5; }
+        .step-tag { font-size: 12px; font-weight: 800; color: #475569; }
+        .step-text { font-size: 14.5px; font-weight: 600; color: #1e293b; line-height: 1.5; }
         
         .tool-box { margin-top: 25px; background-color: #fff; border: 2px dashed #1e293b; border-radius: 28px; padding: 20px; box-shadow: 4px 4px 0px rgba(30, 41, 59, 0.08); }
         .tool-title { font-size: 15px; font-weight: 800; color: #1e293b; margin-bottom: 8px; }
-        .stt-practice-box { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
-        .stt-text-target { background: #F8F9FA; border: 2px dashed #1e293b; padding: 10px; border-radius: 12px; font-size: 14px; font-weight: 800; color: #333; text-align: center; }
+        .stt-practice-box { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
+        .stt-text-target { background: #F8F9FA; border: 2px solid #1e293b; padding: 12px; border-radius: 16px; font-size: 14px; font-weight: 800; color: #333; text-align: center; }
         .stt-live-wave { height: 36px; background: #1e293b; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 4px; padding: 0 16px; }
         .wave-bar { width: 4px; height: 12px; background: #A0E7E5; border-radius: 2px; }
         .wave-bar.active { animation: waveMotion 0.6s infinite ease-in-out alternate; }
         @keyframes waveMotion { 0% { height: 6px; } 100% { height: 24px; } }
-        .btn-action-tool { width: 100%; padding: 10px; font-size: 14px; font-weight: 800; border: 2px solid #1e293b; border-radius: 12px; cursor: pointer; box-shadow: 3px 3px 0px #1e293b; display: flex; align-items: center; justify-content: center; gap: 6px; background-color: #A0E7E5; color: #1e293b; }
+        .btn-action-tool { width: 100%; padding: 14px; font-size: 15px; font-weight: 800; border: 2px solid #1e293b; border-radius: 16px; cursor: pointer; box-shadow: 3px 3px 0px #1e293b; display: flex; align-items: center; justify-content: center; gap: 6px; background-color: #A0E7E5; color: #1e293b; transition: background-color 0.2s; }
 
         .loading-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); color: white; font-weight: 800; justify-content: center; align-items: center; z-index: 1000; border-radius: 36px; backdrop-filter: blur(2px); }
         .loading-overlay.active { display: flex; }
@@ -92,7 +92,7 @@
         <div class="screen active" id="cover-screen">
             <div class="cover-content">
                 <div class="cover-title">Lohas Gerontech</div>
-                <div class="cover-subtitle">高齡長者數位言語治療與口肌訓練沙盒系統</div>
+                <div class="cover-subtitle">喉部提升與吞嚥安全訓練沙盒系統</div>
                 <div class="cover-img-box" id="cover-img-container" onclick="triggerFilePicker('cover')" title="點擊修改歡迎頁相片"></div>
             </div>
             <button class="action-btn" onclick="navigateTo('list-screen')">開啟復康沙盒 🚀</button>
@@ -101,7 +101,7 @@
         <!-- 畫面 2：訓練課程牆列表 -->
         <div class="screen" id="list-screen">
             <div class="header-title-container">
-                <div class="header-title">訓練項目牆 🗺️</div>
+                <div class="header-title">吞嚥復康訓練牆 🗺️</div>
                 <div class="nav-btn-group">
                     <button class="nav-arrow-btn" onclick="navigateTo('cover-screen')" title="返回歡迎頁">←</button>
                     <button class="nav-arrow-btn" onclick="navigateTo('end-screen')" title="向前進結業頁">→</button>
@@ -125,8 +125,8 @@
                 </div>
             </div>
             <div class="steps-container">
-                <div class="detail-title" id="detail-title">第一節：核心名稱</div>
-                <div class="detail-goal" id="detail-goal">【核心目標】</div>
+                <div class="detail-title" id="detail-title">訓練名稱</div>
+                <div class="detail-goal" id="detail-goal">【訓練目的】</div>
                 <div id="steps-list-wrapper"></div>
                 <div class="tool-box" id="tool-box-container"></div>
             </div>
@@ -136,13 +136,13 @@
         <div class="screen" id="end-screen">
             <button class="back-btn" style="top:25px; left:20px;" onclick="navigateTo('list-screen')">←</button>
             <div class="cover-content" style="margin-top: 35px;">
-                <div class="cover-title" style="font-size: 30px;">樂活語音大師 🏆</div>
-                <div class="cover-subtitle">恭喜老友記完成所有精準語音復康里程碑！</div>
+                <div class="cover-title" style="font-size: 28px;">樂活吞嚥大師 🏆</div>
+                <div class="cover-subtitle">恭喜老友記完成所有喉部提升與吞嚥安全訓練里程碑！</div>
                 
                 <div class="end-card-box">
                     <div style="font-size: 18px; font-weight: 800; color: #1e293b; margin-bottom: 8px;">🎓 畢業榮譽</div>
                     <p style="font-size: 14px; font-weight: 600; color: #475569; line-height: 1.5; text-align: left;">
-                        獲頒發「樂活言語復康大使」證書！重拾清晰咬字，自信溝通無阻隔，隨時與家人溫馨連線！
+                        獲頒發「樂活吞嚥健康大使」證書！掌握安全進食與護航技巧，擺脫嗆咳困擾，安心享用每一餐溫馨佳餚！
                     </p>
                 </div>
             </div>
@@ -183,85 +183,192 @@
 
         window.uploadTargetMode = "cover"; 
         window.currentActiveCourse = null;
-        let sttTimer = null;
 
+        // 10項喉部提升與吞嚥安全訓練整合資料庫
         window.coursesData = [
             {
                 id: '1',
-                title: '🌟 第一節：',
-                titleTitle: '日常唇齒啟動',
-                subtitle: '基礎張口與嘴唇控制力激活',
-                description: '改善因面部肌肉無力造成的說話含糊，加強「波、摸、科」等雙唇音的清晰度。',
+                title: '🌟 訓練 1：',
+                titleTitle: '用力吞嚥法',
+                subtitle: 'Effortful Swallow exercise',
+                description: '增加舌根向後收縮力與咽部收縮力，促進食物推進並減少咽部殘留。',
                 imageUrl: localStorage.getItem('lohas_course_1') || "", 
-                svgIcon: `<svg width="180" height="180" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><path d="M30 45C35 40 40 40 45 45M55 45C60 40 65 40 70 45" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/><path d="M35 60C40 68 60 68 65 60" stroke="#1e293b" stroke-width="4" stroke-linecap="round" fill="white"/></svg>`,
+                svgIcon: `<svg width="120" height="120" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><path d="M30 50Q50 30 70 50Q50 70 30 50Z" fill="#FFF" stroke="#1e293b" stroke-width="3"/><circle cx="50" cy="50" r="8" fill="#FF9F1C"/></svg>`,
                 themeColor: '#A0E7E5', 
-                goal: '改善因面部肌肉無力造成的說話含糊，加強「波、摸、科」等雙唇音的清晰度。',
+                goal: '增加舌根向後收縮力與咽部收縮力，促進食物推進並減少咽部殘留。',
                 steps: [
-                    { tag: '嘟唇練習', text: '深吸一口氣，將雙唇用力向前嘟起，維持穩定 5 秒鐘。' },
-                    { tag: '嘴角展平', text: '慢慢將嘴角向兩側拉開，做出誇張的「一」字笑容，維持 5 秒。' },
-                    { tag: '交替發音', text: '連續交替呼出「嗚—」「一—」聲音，重覆做 10 次，運動面部肌肉。' }
+                    { tag: '步驟一', text: '將唾液或水含在口中，將舌頭平貼於上顎位置。' },
+                    { tag: '步驟二', text: '全身集中注意力，用全身最大力量進行一次吞嚥。' },
+                    { tag: '步驟三', text: '吞嚥時感覺喉嚨與舌頭用力緊縮，隨後放鬆呼吸。' }
                 ],
-                toolName: '🛠️ 課後練習工具 (雙唇音自主發音比對)',
-                targetText: '波波放手，摸摸面仔，科科大笑。'
+                toolName: '🛠️ 課後練習輔助工具',
+                targetText: '無（或少量飲用水 / 凝固粉水）'
             },
             {
                 id: '2',
-                title: '🌟 第二節：',
-                titleTitle: '舌尖力量彈跳',
-                subtitle: '提升舌頭靈活性與速度',
-                description: '解決說話「條條條」不靈活的問題，幫助發清「得、特、呢、勒」等舌尖音。',
+                title: '🌟 訓練 2：',
+                titleTitle: '等長下巴抗阻低頭訓練',
+                subtitle: 'CTAR - Isometric',
+                description: '強化舌骨上肌群，提升吞嚥時舌骨向前向上移動的幅度。',
                 imageUrl: localStorage.getItem('lohas_course_2') || "", 
-                svgIcon: `<svg width="180" height="180" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFF275" stroke="#1e293b" stroke-width="4"/><path d="M30 42C30 42 38 38 44 42M56 42C62 38 70 42 70 42" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/><path d="M40 56C40 56 42 72 50 72C58 72 60 56 40 56Z" fill="#FFB7B2" stroke="#1e293b" stroke-width="3"/></svg>`,
+                svgIcon: `<svg width="120" height="120" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFF275" stroke="#1e293b" stroke-width="4"/><circle cx="50" cy="65" r="14" fill="#FFB7B2" stroke="#1e293b" stroke-width="3"/><path d="M35 35Q50 45 65 35" stroke="#1e293b" stroke-width="4" stroke-linecap="round" fill="none"/></svg>`,
                 themeColor: '#FFF275', 
-                goal: '解決說話「條條條」不靈活的問題，幫助發清「得、特、呢、勒」等舌尖音。',
+                goal: '強化舌骨上肌群，提升吞嚥時舌骨向前向上移動的幅度。',
                 steps: [
-                    { tag: '舌頭延伸', text: '將舌頭用力伸出，嘗試向上頂到鼻尖，再向下舔到下巴。' },
-                    { tag: '彈舌練習', text: '將舌尖頂住上顎硬腭位置，用力向下彈撥發出清脆的「噠」聲。' },
-                    { tag: '頂頰對抗', text: '在口腔內部左右輪流頂雙頰，外部用手指給予輕微阻力對抗。' }
+                    { tag: '步驟一', text: '將球體或抗阻工具夾在下巴與胸骨之間。' },
+                    { tag: '步驟二', text: '用力向下壓球，保持下巴緊壓姿勢持續 10 至 60 秒。' },
+                    { tag: '步驟三', text: '保持身體直立不駝背，時間結束後慢慢放鬆休息。' }
                 ],
-                toolName: '🛠️ 課後練習工具 (Web Speech API 語音對齊)',
-                targetText: '大老豆，食豆腐，豆腐軟，豆豆硬。'
+                toolName: '🛠️ 課後練習輔助工具',
+                targetText: 'CTAR專用球或小彈性膠球'
             },
             {
                 id: '3',
-                title: '🌟 第三節：',
-                titleTitle: '聲帶穩定共鳴',
-                subtitle: '增強肺活量與發聲響度',
-                description: '改善老友記講話聲小、氣促或音調單調無力的現象，延長發聲時長。',
+                title: '🌟 訓練 3：',
+                titleTitle: '等動態下巴抗阻低頭訓練',
+                subtitle: 'CTAR - Isokinetic',
+                description: '提升舌骨上肌群的爆發力與肌耐力，改善食道入口開啟能力。',
                 imageUrl: localStorage.getItem('lohas_course_3') || "", 
-                svgIcon: `<svg width="180" height="180" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFB7B2" stroke="#1e293b" stroke-width="4"/><circle cx="35" cy="45" r="4" fill="#1e293b"/><circle cx="65" cy="45" r="4" fill="#1e293b"/><path d="M25 60Q35 50 50 60T75 60" stroke="#1e293b" stroke-width="4" stroke-linecap="round" fill="none"/></svg>`,
+                svgIcon: `<svg width="120" height="120" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFB7B2" stroke="#1e293b" stroke-width="4"/><path d="M50 25V55M50 55L40 45M50 55L60 45" stroke="#1e293b" stroke-width="5" stroke-linecap="round"/><circle cx="50" cy="70" r="10" fill="#FFF275" stroke="#1e293b" stroke-width="3"/></svg>`,
                 themeColor: '#FFB7B2', 
-                goal: '改善老友記講話聲小、氣促或音調單調無力的現象，延長發聲時長。',
+                goal: '提升舌骨上肌群的爆發力與肌耐力，改善食道入口開啟能力。',
                 steps: [
-                    { tag: '腹式呼吸', text: '雙手放在腹部，用鼻深吸氣讓腹部隆起，緩慢用口吐氣。' },
-                    { tag: '長音維持', text: '維持穩定氣流，發出平穩的「啊——」聲，目標持續 8 秒以上。' },
-                    { tag: '音調滑音', text: '嘗試聲音由低到高，再由高到低地滑音發聲「阿~啊~呀~」。' }
+                    { tag: '步驟一', text: '將小球或抗阻工具夾在下巴與胸骨之間。' },
+                    { tag: '步驟二', text: '用力快速向下壓球到底，隨後立即放鬆回原位。' },
+                    { tag: '步驟三', text: '連續重複進行快速壓球動作，達到指定次數後休息。' }
                 ],
-                toolName: '🛠️ 課後自主發聲時長觀測計 (MongoDB 同步)',
-                targetText: '請深吸氣後呼出穩定「啊——」長音'
+                toolName: '🛠️ 課後練習輔助工具',
+                targetText: 'CTAR專用球或小彈性膠球'
             },
             {
                 id: '4',
-                title: '🌟 第四節：',
-                titleTitle: '實戰吞嚥安全',
-                subtitle: '喉部肌肉協調與吞嚥安全',
-                description: '鍛鍛進食時的吞嚥安全肌群，預防誤吸，同時讓說話底氣更充足。',
+                title: '🌟 訓練 4：',
+                titleTitle: '咬舌吞嚥法',
+                subtitle: 'Masako Maneuver',
+                description: '強迫咽後壁向前收縮，補償舌根收縮不足的問題。',
                 imageUrl: localStorage.getItem('lohas_course_4') || "", 
-                svgIcon: `<svg width="180" height="180" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#BFFCC6" stroke="#1e293b" stroke-width="4"/><path d="M32 45L42 45M58 45L68 45" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/><path d="M40 62Q50 72 60 62" stroke="#1e293b" stroke-width="4" stroke-linecap="round" fill="none"/></svg>`,
+                svgIcon: `<svg width="120" height="120" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#BFFCC6" stroke="#1e293b" stroke-width="4"/><path d="M35 50C35 65 65 65 65 50" fill="#FF9F1C" stroke="#1e293b" stroke-width="3"/><rect x="40" y="42" width="20" height="8" rx="2" fill="#FFF" stroke="#1e293b" stroke-width="2"/></svg>`,
                 themeColor: '#BFFCC6', 
-                goal: '鍛鍛進食時的吞嚥安全肌群，預防誤吸，同時讓說話底氣更充足。',
+                goal: '強迫咽後壁向前收縮，補償舌根收縮不足的問題。',
                 steps: [
-                    { tag: '孟德爾頌吞嚥', text: '空吞嚥口水，並在吞嚥最頂點時嘗試憋氣維持 2 秒，隨後放鬆。' },
-                    { tag: '清喉聲防誤吸', text: '用力做出咳嗽的動作，清空喉嚨可能存在的模擬殘留物。' },
-                    { tag: '壓下巴吞嚥', text: '下巴用力向下壓緊胸口，在此姿勢下進行數次空吞嚥練習。' }
+                    { tag: '步驟一', text: '將舌頭輕輕吐出牙齒外，用門牙輕咬住舌尖。' },
+                    { tag: '步驟二', text: '保持舌頭被咬住的狀態，嘗試用力完成吞嚥動作。' },
+                    { tag: '步驟三', text: '吞嚥完成後鬆開舌頭，恢復正常呼吸並適度休息。' }
                 ],
-                toolName: '🛠️ 課後練習工具 (安全吞嚥計時提醒卡)',
-                targetText: '吞嚥時請保持下巴收緊，確保進食安全。'
+                toolName: '🛠️ 課後練習輔助工具',
+                targetText: '壓舌板（輔助固定舌頭，可選）'
+            },
+            {
+                id: '5',
+                title: '🌟 訓練 5：',
+                titleTitle: '下巴張開併吞嚥',
+                subtitle: 'Jaw opening + Swallow',
+                description: '強化下顎下肌群，促進舌骨向前移動及咽部打開。',
+                imageUrl: localStorage.getItem('lohas_course_5') || "", 
+                svgIcon: `<svg width="120" height="120" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#D8B4FE" stroke="#1e293b" stroke-width="4"/><ellipse cx="50" cy="55" rx="15" ry="20" fill="#1e293b"/><path d="M35 35L45 40M65 35L55 40" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/></svg>`,
+                themeColor: '#D8B4FE', 
+                goal: '強化下顎下肌群，促進舌骨向前移動及咽部打開。',
+                steps: [
+                    { tag: '步驟一', text: '將嘴巴張開至最大極限，感受下巴下方肌肉收緊。' },
+                    { tag: '步驟二', text: '保持嘴巴張開狀態，嘗試用力完成一次吞嚥動作。' },
+                    { tag: '步驟三', text: '吞嚥後慢慢閉上嘴巴，放鬆下顎肌肉並進行休息。' }
+                ],
+                toolName: '🛠️ 課後練習輔助工具',
+                targetText: '無。'
+            },
+            {
+                id: '6',
+                title: '🌟 訓練 6：',
+                titleTitle: '假聲發音訓練',
+                subtitle: 'Falsetto Exercise',
+                description: '促進喉部向上提升，強化喉部閉合力與保護氣管能力。',
+                imageUrl: localStorage.getItem('lohas_course_6') || "", 
+                svgIcon: `<svg width="120" height="120" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFC6FF" stroke="#1e293b" stroke-width="4"/><path d="M30 65Q50 20 70 35" stroke="#1e293b" stroke-width="4" fill="none" stroke-linecap="round"/><polygon points="70,25 78,38 64,38" fill="#1e293b"/></svg>`,
+                themeColor: '#FFC6FF', 
+                goal: '促進喉部向上提升，強化喉部閉合力與保護氣管能力。',
+                steps: [
+                    { tag: '步驟一', text: '深吸一口氣，從正常音高開始發出「伊—」的聲音。' },
+                    { tag: '步驟二', text: '將聲音逐漸拉高到個人能達到的最高假聲音階。' },
+                    { tag: '步驟三', text: '維持最高音高並持續用力數秒，隨後放鬆呼氣。' }
+                ],
+                toolName: '🛠️ 課後練習輔助工具 (語音發音與音高比對)',
+                targetText: '請深吸氣發出「伊——」高音滑音'
+            },
+            {
+                id: '7',
+                title: '🌟 訓練 7：',
+                titleTitle: '低頭吞嚥法',
+                subtitle: 'Chin Tuck Maneuver',
+                description: '縮小呼吸道入口，防止食物過早落入咽部或誤吸入氣管。',
+                imageUrl: localStorage.getItem('lohas_course_7') || "", 
+                svgIcon: `<svg width="120" height="120" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#9BF6FF" stroke="#1e293b" stroke-width="4"/><path d="M35 40Q50 60 65 40" stroke="#1e293b" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M40 65L60 65" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/></svg>`,
+                themeColor: '#9BF6FF', 
+                goal: '縮小呼吸道入口，防止食物過早落入咽部或誤吸入氣管。',
+                steps: [
+                    { tag: '步驟一', text: '將食物或水放入口中，先不要急著吞下去。' },
+                    { tag: '步驟二', text: '將頭部向下傾斜，讓下巴盡量貼近胸口位置。' },
+                    { tag: '步驟三', text: '保持低頭姿勢進行吞嚥，完成後抬頭回復原位。' }
+                ],
+                toolName: '🛠️ 課後練習輔助工具',
+                targetText: '無。'
+            },
+            {
+                id: '8',
+                title: '🌟 訓練 8：',
+                titleTitle: '閉氣吞嚥法',
+                subtitle: 'Breath Hold / Supraglottic Swallow',
+                description: '在吞嚥前主動關閉聲帶，防止食物或液體掉入氣管造成嗆咳。',
+                imageUrl: localStorage.getItem('lohas_course_8') || "", 
+                svgIcon: `<svg width="120" height="120" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#CAFFBF" stroke="#1e293b" stroke-width="4"/><path d="M35 45H65M35 55H65" stroke="#1e293b" stroke-width="5" stroke-linecap="round"/></svg>`,
+                themeColor: '#CAFFBF', 
+                goal: '在吞嚥前主動關閉聲帶，防止食物或液體掉入氣管造成嗆咳。',
+                steps: [
+                    { tag: '步驟一', text: '口含食物或水，深吸一口氣後緊緊憋住呼吸。' },
+                    { tag: '步驟二', text: '保持憋氣狀態完成吞嚥，吞嚥過程中絕對不可呼吸。' },
+                    { tag: '步驟三', text: '吞嚥完畢後立即用力咳嗽一聲，隨後才呼氣。' }
+                ],
+                toolName: '🛠️ 課後練習輔助工具',
+                targetText: '無。'
+            },
+            {
+                id: '9',
+                title: '🌟 訓練 9：',
+                titleTitle: '孟德爾頌吞嚥法',
+                subtitle: 'Mendelsohn Maneuver',
+                description: '延長喉部提升時間，促進食道上括約肌充分開啟。',
+                imageUrl: localStorage.getItem('lohas_course_9') || "", 
+                svgIcon: `<svg width="120" height="120" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FDFFB6" stroke="#1e293b" stroke-width="4"/><path d="M50 70V30M50 30L40 40M50 30L60 40" stroke="#1e293b" stroke-width="5" stroke-linecap="round"/></svg>`,
+                themeColor: '#FDFFB6', 
+                goal: '延長喉部提升時間，促進食道上括約肌充分開啟。',
+                steps: [
+                    { tag: '步驟一', text: '進行正常吞嚥，用手摸喉結感受其向上移動。' },
+                    { tag: '步驟二', text: '當喉結升至最高點時，用肌肉力量將喉結卡住 2-3 秒。' },
+                    { tag: '步驟三', text: '保持卡住狀態後放鬆喉部，讓喉結降回原本位置。' }
+                ],
+                toolName: '🛠️ 課後練習輔助工具',
+                targetText: '生物回饋儀（鏡子或喉部感應器，可選）'
+            },
+            {
+                id: '10',
+                title: '🌟 訓練 10：',
+                titleTitle: '熱冰刺激法',
+                subtitle: 'Thermal-Tactile Stimulation, TTS',
+                description: '提升咽部感知敏感度，誘發並加快吞嚥反射的發生速度。',
+                imageUrl: localStorage.getItem('lohas_course_10') || "", 
+                svgIcon: `<svg width="120" height="120" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFADAD" stroke="#1e293b" stroke-width="4"/><path d="M40 30L60 70M60 30L40 70" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/><circle cx="50" cy="50" r="6" fill="#A0E7E5"/></svg>`,
+                themeColor: '#FFADAD', 
+                goal: '提升咽部感知敏感度，誘發並加快吞嚥反射的發生速度。',
+                steps: [
+                    { tag: '步驟一', text: '將冰凍的冰棉棒浸水，確保表面極度冰冷。' },
+                    { tag: '步驟二', text: '輕輕觸碰並摩擦前顎弓兩側肌肉數次，刺激感受器。' },
+                    { tag: '步驟三', text: '移除棉棒後，立即引導患者進行一次空吞嚥動作。' }
+                ],
+                toolName: '🛠️ 課後練習輔助工具',
+                targetText: '冰棒、冰棉棒、檸檬冰棒'
             }
         ];
 
         window.navigateTo = function(screenId) {
-            clearTimeout(sttTimer);
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
         };
@@ -327,7 +434,7 @@
             if (window.currentActiveCourse.imageUrl) {
                 wrapper.innerHTML = `<img src="${window.currentActiveCourse.imageUrl}" class="lightbox-img">`;
             } else {
-                wrapper.innerHTML = `<div style="transform: scale(2); display:flex;">${window.currentActiveCourse.svgIcon}</div>`;
+                wrapper.innerHTML = `<div style="transform: scale(2.2); display:flex;">${window.currentActiveCourse.svgIcon}</div>`;
             }
             modal.classList.add('active');
         };
@@ -341,30 +448,57 @@
             navigateTo('list-screen');
         };
 
+        // Web Speech API 原生粵語辨識整合
         window.toggleSttSimulation = function() {
             const btn = document.getElementById('btnSttAction');
             const wave = document.getElementById('liveWave');
             
-            if (btn.innerText.includes("開始")) {
-                btn.innerText = "聆聽中...請大聲朗讀上圖字詞 🛑";
-                btn.style.backgroundColor = "#FFB7B2";
-                wave.style.visibility = "visible";
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("目前的瀏覽器暫不支援語音辨識，請使用 Chrome 瀏覽器試試！");
+                return;
+            }
 
-                sttTimer = setTimeout(() => {
+            if (!window.recognition) {
+                window.recognition = new SpeechRecognition();
+                window.recognition.lang = 'zh-HK';
+                window.recognition.continuous = false;
+                window.recognition.interimResults = false;
+
+                window.recognition.onstart = function() {
+                    btn.innerText = "聆聽中... 請大聲朗讀上圖字詞 🛑";
+                    btn.style.backgroundColor = "#FFB7B2";
+                    wave.style.visibility = "visible";
+                };
+
+                window.recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
                     wave.style.visibility = "hidden";
                     btn.style.backgroundColor = "#BFFCC6";
-                    btn.innerHTML = "✅ 辨識成功！發音正確率：<span style='color:red;'>89%</span><br><span style='font-size:11px; font-weight:600;'>數據已上傳至治療師雲端庫</span>";
-                }, 3500);
-            } else {
-                clearTimeout(sttTimer);
-                wave.style.visibility = "hidden";
-                btn.innerText = "按此開始居家錄音複習 🎙️";
-                btn.style.backgroundColor = "#A0E7E5";
+                    btn.innerHTML = `✅ 辨識結果：「${transcript}」<br><span style='font-size:11px; font-weight:600;'>數據已紀錄至復康日誌</span>`;
+                };
+
+                window.recognition.onerror = function(event) {
+                    wave.style.visibility = "hidden";
+                    btn.style.backgroundColor = "#A0E7E5";
+                    btn.innerText = "按此開始居家錄音複習 🎙️";
+                    alert("未有接收到清晰聲音，請再試一次！");
+                };
+
+                window.recognition.onend = function() {
+                    wave.style.visibility = "hidden";
+                };
+            }
+
+            try {
+                window.recognition.start();
+            } catch(e) {
+                window.recognition.stop();
             }
         };
 
         window.shareToWhatsApp = function() {
-            const text = encodeURIComponent("好高興同你分享！我啱啱喺「Lohas Gerontech」完成咗全套長者語音復康訓練，發音同咬字清晰咗好多，溝通更有自信啦！💪🎉");
+            const text = encodeURIComponent("好高興同你分享！我啱啱喺「Lohas Gerontech」完成咗全套長者喉部提升與吞嚥安全訓練，飲食更安全，身體更健康！💪🎉");
             window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
         };
 
@@ -405,8 +539,8 @@
             topBar.style.backgroundColor = course.themeColor;
             imgContainer.innerHTML = course.imageUrl ? `<img src="${course.imageUrl}">` : course.svgIcon;
 
-            title.innerHTML = `<span style="font-size: 14px; color:#475569;">${course.title}</span><br>${course.titleTitle}<br><span style="font-size: 15px; font-weight: 700; color: #475569;">${course.subtitle}</span>`;
-            goal.innerText = `🎯 核心目標：${course.goal}`;
+            title.innerHTML = `<span style="font-size: 13px; color:#475569; font-weight:800;">${course.title} ${course.subtitle}</span><br>${course.titleTitle}`;
+            goal.innerText = `🎯 訓練目的：${course.goal}`;
 
             stepsListWrapper.innerHTML = '';
             course.steps.forEach((step, index) => {
@@ -425,7 +559,7 @@
             toolBoxContainer.innerHTML = `
                 <div class="tool-title">${course.toolName}</div>
                 <div class="stt-practice-box">
-                    <div class="stt-text-target">🎯 請老友記跟我讀：<br><span style="color:#FF9F1C; font-size:15px;">${course.targetText}</span></div>
+                    <div class="stt-text-target">📌 建議搭配工具 / 朗讀訓練：<br><span style="color:#1e293b; font-size:15px; font-weight:900;">${course.targetText}</span></div>
                     <div class="stt-live-wave" id="liveWave" style="visibility:hidden;">
                         <div class="wave-bar active" style="animation-delay: 0.1s;"></div>
                         <div class="wave-bar active" style="animation-delay: 0.3s;"></div>
