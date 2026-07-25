@@ -25,7 +25,6 @@
         .cover-img-box { width: 130px; height: 130px; border-radius: 50%; border: 4px solid #1e293b; box-shadow: 5px 5px 0px #1e293b; margin: 15px auto; display: flex; justify-content: center; align-items: center; background: #fff; overflow: hidden; cursor: pointer; }
         .cover-img-box img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* 首頁四個模組按鈕容器 */
         .cover-btn-group { display: flex; flex-direction: column; gap: 8px; width: 100%; z-index: 50; }
         .module-btn { display: block; width: 100%; padding: 10px 12px; color: #1e293b; font-size: 13px; font-weight: 800; border: 3px solid #1e293b; border-radius: 18px; cursor: pointer; box-shadow: 3.5px 3.5px 0px #1e293b; text-align: left; line-height: 1.3; transition: transform 0.1s; }
         .module-btn:active { transform: translate(2px, 2px); box-shadow: 1.5px 1.5px 0px #1e293b; }
@@ -96,7 +95,7 @@
     <div class="phone-container" id="app-phone-shell">
         <input type="file" id="image-file-picker" accept="image/*" style="display: none;">
         
-        <div class="loading-overlay" id="loadingOverlay">☁️ 正在同步照片至 Firebase Storage...</div>
+        <div class="loading-overlay" id="loadingOverlay">☁️ 正在同步照片至 Firebase...</div>
 
         <!-- 畫面 1：開頭歡迎頁 -->
         <div class="screen active" id="cover-screen">
@@ -106,7 +105,6 @@
                 <div class="cover-img-box" id="cover-img-container" onclick="triggerFilePicker('cover')" title="點擊修改歡迎頁相片"></div>
             </div>
             
-            <!-- 模組選單按鈕區 -->
             <div class="cover-btn-group">
                 <button class="module-btn btn-m1" onclick="filterAndNavigate('1')">
                     一、 喉部提升與吞嚥安全訓練<br><span style="font-size: 10.5px; opacity: 0.85;">(Laryngeal Elevation & Airway Protection)</span>
@@ -187,7 +185,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+        import { getDatabase, ref as dbRef, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBG65952X2d1pzpfrtWEBnthzCxDWFePXA",
@@ -196,18 +195,21 @@
             storageBucket: "lohas-smart-housekeeper.firebasestorage.app",
             messagingSenderId: "300914408780",
             appId: "1:300914408780:web:b6641a1b86cdcce86423e9",
-            measurementId: "G-KGKCQE69YH"
+            measurementId: "G-KGKCQE69YH",
+            // 指定新加坡 Realtime Database URL
+            databaseURL: "https://lohas-smart-housekeeper-default-rtdb.asia-southeast1.firebasedatabase.app"
         };
 
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         const storage = getStorage(app);
+        const database = getDatabase(app);
 
-        let coverImageUrl = localStorage.getItem('lohas_cover_image') || ""; 
         const coverDefaultSvg = `<svg width="100" height="100" viewBox="0 0 100 100" fill="none"><path d="M20 50C20 45 25 35 50 35C75 35 80 45 80 50C80 55 75 65 50 65C25 65 20 55 20 50Z" fill="#1e293b"/><path d="M30 50C30 48 35 42 50 42C65 42 70 48 70 50C70 52 65 58 50 58C35 58 30 52 30 50Z" fill="#FFB7B2"/><circle cx="50" cy="50" r="4" fill="#1e293b"/><path d="M10 50H15M85 50H90M50 15V23M50 77V85" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/></svg>`;
 
         window.uploadTargetMode = "cover"; 
         window.currentActiveCourse = null;
+        window.dbImageCache = {};
 
         // 24項完整口腦與吞嚥復康訓練資料庫
         window.coursesData = [
@@ -216,7 +218,7 @@
                 id: '1', categoryId: '1',
                 title: '🌟 訓練 1：', titleTitle: '用力吞嚥法', subtitle: 'Effortful Swallow exercise',
                 description: '增加舌根向後收縮力與咽部收縮力，促進食物推進並減少咽部殘留。',
-                imageUrl: localStorage.getItem('lohas_course_1') || "",
+                imageUrl: "",
                 svgIcon: `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><path d="M30 50Q50 30 70 50Q50 70 30 50Z" fill="#FFF" stroke="#1e293b" stroke-width="3"/><circle cx="50" cy="50" r="8" fill="#FF9F1C"/></svg>`,
                 themeColor: '#A0E7E5',
                 goal: '增加舌根向後收縮力與咽部收縮力，促進食物推進並減少咽部殘留。',
@@ -231,7 +233,7 @@
                 id: '2', categoryId: '1',
                 title: '🌟 訓練 2：', titleTitle: '等長下巴抗阻低頭訓練', subtitle: 'CTAR - Isometric',
                 description: '強化舌骨上肌群，提升吞嚥時舌骨向前向上移動的幅度。',
-                imageUrl: localStorage.getItem('lohas_course_2') || "",
+                imageUrl: "",
                 svgIcon: `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><circle cx="50" cy="65" r="14" fill="#FFB7B2" stroke="#1e293b" stroke-width="3"/><path d="M35 35Q50 45 65 35" stroke="#1e293b" stroke-width="4" stroke-linecap="round" fill="none"/></svg>`,
                 themeColor: '#A0E7E5',
                 goal: '強化舌骨上肌群，提升吞嚥時舌骨向前向上移動的幅度。',
@@ -246,7 +248,7 @@
                 id: '3', categoryId: '1',
                 title: '🌟 訓練 3：', titleTitle: '等動態下巴抗阻低頭訓練', subtitle: 'CTAR - Isokinetic',
                 description: '提升舌骨上肌群的爆發力與肌耐力，改善食道入口開啟能力。',
-                imageUrl: localStorage.getItem('lohas_course_3') || "",
+                imageUrl: "",
                 svgIcon: `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><path d="M50 25V55M50 55L40 45M50 55L60 45" stroke="#1e293b" stroke-width="5" stroke-linecap="round"/><circle cx="50" cy="70" r="10" fill="#FFF275" stroke="#1e293b" stroke-width="3"/></svg>`,
                 themeColor: '#A0E7E5',
                 goal: '提升舌骨上肌群的爆發力與肌耐力，改善食道入口開啟能力。',
@@ -261,7 +263,7 @@
                 id: '4', categoryId: '1',
                 title: '🌟 訓練 4：', titleTitle: '咬舌吞嚥法', subtitle: 'Masako Maneuver',
                 description: '強迫咽後壁向前收縮，補償舌根收縮不足的問題。',
-                imageUrl: localStorage.getItem('lohas_course_4') || "",
+                imageUrl: "",
                 svgIcon: `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><path d="M35 50C35 65 65 65 65 50" fill="#FF9F1C" stroke="#1e293b" stroke-width="3"/><rect x="40" y="42" width="20" height="8" rx="2" fill="#FFF" stroke="#1e293b" stroke-width="2"/></svg>`,
                 themeColor: '#A0E7E5',
                 goal: '強迫咽後壁向前收縮，補償舌根收縮不足的問題。',
@@ -276,7 +278,7 @@
                 id: '5', categoryId: '1',
                 title: '🌟 訓練 5：', titleTitle: '下巴張開併吞嚥', subtitle: 'Jaw opening + Swallow',
                 description: '強化下顎下肌群，促進舌骨向前移動及咽部打開。',
-                imageUrl: localStorage.getItem('lohas_course_5') || "",
+                imageUrl: "",
                 svgIcon: `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><ellipse cx="50" cy="55" rx="15" ry="20" fill="#1e293b"/><path d="M35 35L45 40M65 35L55 40" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/></svg>`,
                 themeColor: '#A0E7E5',
                 goal: '強化下顎下肌群，促進舌骨向前移動及咽部打開。',
@@ -291,7 +293,7 @@
                 id: '6', categoryId: '1',
                 title: '🌟 訓練 6：', titleTitle: '假聲發音訓練', subtitle: 'Falsetto Exercise',
                 description: '促進喉部向上提升，強化喉部閉合力與保護氣管能力。',
-                imageUrl: localStorage.getItem('lohas_course_6') || "",
+                imageUrl: "",
                 svgIcon: `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><path d="M30 65Q50 20 70 35" stroke="#1e293b" stroke-width="4" fill="none" stroke-linecap="round"/><polygon points="70,25 78,38 64,38" fill="#1e293b"/></svg>`,
                 themeColor: '#A0E7E5',
                 goal: '促進喉部向上提升，強化喉部閉合力與保護氣管能力。',
@@ -306,7 +308,7 @@
                 id: '7', categoryId: '1',
                 title: '🌟 訓練 7：', titleTitle: '低頭吞嚥法', subtitle: 'Chin Tuck Maneuver',
                 description: '縮小呼吸道入口，防止食物過早落入咽部或誤吸入氣管。',
-                imageUrl: localStorage.getItem('lohas_course_7') || "",
+                imageUrl: "",
                 svgIcon: `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><path d="M35 40Q50 60 65 40" stroke="#1e293b" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M40 65L60 65" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/></svg>`,
                 themeColor: '#A0E7E5',
                 goal: '縮小呼吸道入口，防止食物過早落入咽部或誤吸入氣管。',
@@ -321,7 +323,7 @@
                 id: '8', categoryId: '1',
                 title: '🌟 訓練 8：', titleTitle: '閉氣吞嚥法', subtitle: 'Breath Hold / Supraglottic Swallow',
                 description: '在吞嚥前主動關閉聲帶，防止食物或液體掉入氣管造成嗆咳。',
-                imageUrl: localStorage.getItem('lohas_course_8') || "",
+                imageUrl: "",
                 svgIcon: `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><path d="M35 45H65M35 55H65" stroke="#1e293b" stroke-width="5" stroke-linecap="round"/></svg>`,
                 themeColor: '#A0E7E5',
                 goal: '在吞嚥前主動關閉聲帶，防止食物或液體掉入氣管造成嗆咳。',
@@ -336,7 +338,7 @@
                 id: '9', categoryId: '1',
                 title: '🌟 訓練 9：', titleTitle: '孟德爾頌吞嚥法', subtitle: 'Mendelsohn Maneuver',
                 description: '延長喉部提升時間，促進食道上括約肌充分開啟。',
-                imageUrl: localStorage.getItem('lohas_course_9') || "",
+                imageUrl: "",
                 svgIcon: `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><path d="M50 70V30M50 30L40 40M50 30L60 40" stroke="#1e293b" stroke-width="5" stroke-linecap="round"/></svg>`,
                 themeColor: '#A0E7E5',
                 goal: '延長喉部提升時間，促進食道上括約肌充分開啟。',
@@ -351,7 +353,7 @@
                 id: '10', categoryId: '1',
                 title: '🌟 訓練 10：', titleTitle: '熱冰刺激法', subtitle: 'Thermal-Tactile Stimulation, TTS',
                 description: '提升咽部感知敏感度，誘發並加快吞嚥反射的發生速度。',
-                imageUrl: localStorage.getItem('lohas_course_10') || "",
+                imageUrl: "",
                 svgIcon: `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><path d="M40 30L60 70M60 30L40 70" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/><circle cx="50" cy="50" r="6" fill="#FFF275"/></svg>`,
                 themeColor: '#A0E7E5',
                 goal: '提升咽部感知敏感度，誘發並加快吞嚥反射的發生速度。',
@@ -368,7 +370,7 @@
                 id: '11', categoryId: '2',
                 title: '🌟 訓練 11：', titleTitle: '舌頭前伸', subtitle: 'Tongue Protrusion',
                 description: '增加舌頭向前移動的範圍與控制力，協助口腔清掃。',
-                imageUrl: localStorage.getItem('lohas_course_11') || "",
+                imageUrl: "",
                 svgIcon: `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFF275" stroke="#1e293b" stroke-width="4"/><path d="M50 40V75" stroke="#1e293b" stroke-width="8" stroke-linecap="round"/></svg>`,
                 themeColor: '#FFF275',
                 goal: '增加舌頭向前移動的範圍與控制力，協助口腔清掃。',
@@ -383,7 +385,7 @@
                 id: '12', categoryId: '2',
                 title: '🌟 訓練 12：', titleTitle: '舌頭側移', subtitle: 'Tongue Lateralisation',
                 description: '提升舌頭左右移動能力，協助將食物移至牙齒進行咀嚼。',
-                imageUrl: localStorage.getItem('lohas_course_12') || "",
+                imageUrl: "",
                 svgIcon: `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFF275" stroke="#1e293b" stroke-width="4"/><path d="M25 50H75" stroke="#1e293b" stroke-width="6" stroke-linecap="round"/></svg>`,
                 themeColor: '#FFF275',
                 goal: '提升舌頭左右移動能力，協助將食物移至牙齒進行咀嚼。',
@@ -398,7 +400,7 @@
                 id: '13', categoryId: '2',
                 title: '🌟 訓練 13：', titleTitle: '舌尖上舉', subtitle: 'Tongue Front Elevation',
                 description: '強化舌尖與舌前部力量，促進食物團的形成與推進。',
-                imageUrl: localStorage.getItem('lohas_course_13') || "",
+                imageUrl: "",
                 svgIcon: `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFF275" stroke="#1e293b" stroke-width="4"/><path d="M50 70V30" stroke="#1e293b" stroke-width="6" stroke-linecap="round"/></svg>`,
                 themeColor: '#FFF275',
                 goal: '強化舌尖與舌前部力量，促進食物團的形成與推進。',
@@ -413,7 +415,7 @@
                 id: '14', categoryId: '2',
                 title: '🌟 訓練 14：', titleTitle: '舌根上舉', subtitle: 'Tongue Back Elevation',
                 description: '強化舌根部肌肉力量，協助推動食團進入咽部。',
-                imageUrl: localStorage.getItem('lohas_course_14') || "",
+                imageUrl: "",
                 svgIcon: `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFF275" stroke="#1e293b" stroke-width="4"/><path d="M30 65Q50 35 70 65" stroke="#1e293b" stroke-width="6" fill="none" stroke-linecap="round"/></svg>`,
                 themeColor: '#FFF275',
                 goal: '強化舌根部肌肉力量，協助推動食團進入咽部。',
@@ -428,7 +430,7 @@
                 id: '15', categoryId: '2',
                 title: '🌟 訓練 15：', titleTitle: '舌頭環繞運動', subtitle: 'Tongue Circulation',
                 description: '提升舌頭靈活性與關節活動度，促進口腔清理能力。',
-                imageUrl: localStorage.getItem('lohas_course_15') || "",
+                imageUrl: "",
                 svgIcon: `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFF275" stroke="#1e293b" stroke-width="4"/><circle cx="50" cy="50" r="20" stroke="#1e293b" stroke-width="4" fill="none" stroke-dasharray="6 4"/></svg>`,
                 themeColor: '#FFF275',
                 goal: '提升舌頭靈活性與關節活動度，促進口腔清理能力。',
@@ -445,7 +447,7 @@
                 id: '16', categoryId: '3',
                 title: '🌟 訓練 16：', titleTitle: '吸管發聲法', subtitle: 'Straw Phonation',
                 description: '降低聲帶負擔，增加聲帶閉合度並強化呼吸吞嚥協調能力。',
-                imageUrl: localStorage.getItem('lohas_course_16') || "",
+                imageUrl: "",
                 svgIcon: `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFB7B2" stroke="#1e293b" stroke-width="4"/><rect x="46" y="25" width="8" height="50" rx="3" fill="#1e293b"/></svg>`,
                 themeColor: '#FFB7B2',
                 goal: '降低聲帶負擔，增加聲帶閉合度並強化呼吸吞嚥協調能力。',
@@ -460,7 +462,7 @@
                 id: '17', categoryId: '3',
                 title: '🌟 訓練 17：', titleTitle: '派對吹龍訓練', subtitle: 'Party Horn',
                 description: '增加唇部閉合力、軟顎提升度與呼氣氣流控制能力。',
-                imageUrl: localStorage.getItem('lohas_course_17') || "",
+                imageUrl: "",
                 svgIcon: `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFB7B2" stroke="#1e293b" stroke-width="4"/><path d="M30 60Q60 40 80 50" stroke="#1e293b" stroke-width="5" fill="none"/></svg>`,
                 themeColor: '#FFB7B2',
                 goal: '增加唇部閉合力、軟顎提升度與呼氣氣流控制能力。',
@@ -475,7 +477,7 @@
                 id: '18', categoryId: '3',
                 title: '🌟 訓練 18：', titleTitle: 'TalkTools 語音吹笛訓練', subtitle: 'TalkTools Horn',
                 description: '進行階梯式氣流與唇部控制訓練，促進軟顎閉合能力。',
-                imageUrl: localStorage.getItem('lohas_course_18') || "",
+                imageUrl: "",
                 svgIcon: `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFB7B2" stroke="#1e293b" stroke-width="4"/><polygon points="30,40 70,25 70,75 30,60" fill="#1e293b"/></svg>`,
                 themeColor: '#FFB7B2',
                 goal: '進行階梯式氣流與唇部控制訓練，促進軟顎閉合能力。',
@@ -490,7 +492,7 @@
                 id: '19', categoryId: '3',
                 title: '🌟 訓練 19：', titleTitle: '雙唇緊閉訓練', subtitle: 'Lip Seal',
                 description: '強化嘴唇閉合肌力，防止食物或液體從口中流出。',
-                imageUrl: localStorage.getItem('lohas_course_19') || "",
+                imageUrl: "",
                 svgIcon: `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFB7B2" stroke="#1e293b" stroke-width="4"/><ellipse cx="50" cy="50" rx="20" ry="6" fill="#1e293b"/></svg>`,
                 themeColor: '#FFB7B2',
                 goal: '強化嘴唇閉合肌力，防止食物或液體從口中流出。',
@@ -505,7 +507,7 @@
                 id: '20', categoryId: '3',
                 title: '🌟 訓練 20：', titleTitle: '鼓頰訓練', subtitle: 'Puff Cheek',
                 description: '增強頰肌力量與唇部密封度，防止食物積聚在口腔兩側。',
-                imageUrl: localStorage.getItem('lohas_course_20') || "",
+                imageUrl: "",
                 svgIcon: `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFB7B2" stroke="#1e293b" stroke-width="4"/><circle cx="50" cy="50" r="22" fill="#FFF" stroke="#1e293b" stroke-width="3"/></svg>`,
                 themeColor: '#FFB7B2',
                 goal: '增強頰肌力量與唇部密封度，防止食物積聚在口腔兩側。',
@@ -520,7 +522,7 @@
                 id: '21', categoryId: '3',
                 title: '🌟 訓練 21：', titleTitle: '嘖嘖作響/發嘖聲', subtitle: 'Lip Smacking',
                 description: '促進唇部肌肉靈活度與感覺回饋，改善雙唇運動控制。',
-                imageUrl: localStorage.getItem('lohas_course_21') || "",
+                imageUrl: "",
                 svgIcon: `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFB7B2" stroke="#1e293b" stroke-width="4"/><path d="M35 50C40 42 60 42 65 50C60 58 40 58 35 50Z" fill="#1e293b"/></svg>`,
                 themeColor: '#FFB7B2',
                 goal: '促進唇部肌肉靈活度與感覺回饋，改善雙唇運動控制。',
@@ -535,7 +537,7 @@
                 id: '22', categoryId: '3',
                 title: '🌟 訓練 22：', titleTitle: '面部與嘴唇關節活動度訓練', subtitle: 'Lip Face ROM',
                 description: '增加面部表情肌與唇部的活動範圍，改善言語與吞嚥功能。',
-                imageUrl: localStorage.getItem('lohas_course_22') || "",
+                imageUrl: "",
                 svgIcon: `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFB7B2" stroke="#1e293b" stroke-width="4"/><path d="M30 45Q50 65 70 45" stroke="#1e293b" stroke-width="4" fill="none"/></svg>`,
                 themeColor: '#FFB7B2',
                 goal: '增加面部表情肌與唇部的活動範圍，改善言語與吞嚥功能。',
@@ -552,7 +554,7 @@
                 id: '23', categoryId: '4',
                 title: '🌟 訓練 23：', titleTitle: '下顎運動', subtitle: 'Jaw Exercise',
                 description: '增加下顎關節活動度與咀嚼肌肌力，改善咀嚼功能。',
-                imageUrl: localStorage.getItem('lohas_course_23') || "",
+                imageUrl: "",
                 svgIcon: `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#BFFCC6" stroke="#1e293b" stroke-width="4"/><path d="M35 40L65 40M35 60L65 60" stroke="#1e293b" stroke-width="6" stroke-linecap="round"/></svg>`,
                 themeColor: '#BFFCC6',
                 goal: '增加下顎關節活動度與咀嚼肌肌力，改善咀嚼功能。',
@@ -567,7 +569,7 @@
                 id: '24', categoryId: '4',
                 title: '🌟 訓練 24：', titleTitle: '凝固粉/增稠劑之使用', subtitle: 'Use of Thickeners',
                 description: '增加液體黏稠度以減緩流速，降低液體誤吸入氣管的風險。',
-                imageUrl: localStorage.getItem('lohas_course_24') || "",
+                imageUrl: "",
                 svgIcon: `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#BFFCC6" stroke="#1e293b" stroke-width="4"/><path d="M40 30H60V70H40Z" fill="#FFF" stroke="#1e293b" stroke-width="3"/><path d="M40 50H60" stroke="#1e293b" stroke-width="3"/></svg>`,
                 themeColor: '#BFFCC6',
                 goal: '增加液體黏稠度以減緩流速，降低液體誤吸入氣管的風險。',
@@ -580,12 +582,36 @@
             }
         ];
 
+        // 實時監聽 Firebase Realtime Database
+        onValue(dbRef(database, 'lohas_images/'), (snapshot) => {
+            const data = snapshot.val() || {};
+            window.dbImageCache = data;
+
+            // 同步封面圖片
+            if (data.cover) {
+                document.getElementById('cover-img-container').innerHTML = `<img src="${data.cover}">`;
+            }
+
+            // 同步各課程圖片
+            window.coursesData.forEach(c => {
+                if (data[`course_${c.id}`]) {
+                    c.imageUrl = data[`course_${c.id}`];
+                }
+            });
+
+            // 詳情頁即時連動
+            if (window.currentActiveCourse && data[`course_${window.currentActiveCourse.id}`]) {
+                const currentUrl = data[`course_${window.currentActiveCourse.id}`];
+                window.currentActiveCourse.imageUrl = currentUrl;
+                document.getElementById('detail-img-container').innerHTML = `<img src="${currentUrl}">`;
+            }
+        });
+
         window.navigateTo = function(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
         };
 
-        // 按四大模組篩選訓練項目
         window.filterAndNavigate = function(catId) {
             const listContainer = document.getElementById('recipe-list-container');
             const headerTitle = document.getElementById('list-header-title');
@@ -607,6 +633,8 @@
                 card.style.backgroundColor = course.themeColor;
                 card.onclick = () => openDetail(course);
 
+                const currentImg = course.imageUrl || (window.dbImageCache[`course_${course.id}`] || "");
+
                 card.innerHTML = `
                     <div class="card-content">
                         <div class="card-title-container">
@@ -616,7 +644,7 @@
                         <div class="card-desc">${course.subtitle} — ${course.description}</div>
                     </div>
                     <div class="card-img-wrapper" id="card-img-wrapper-${course.id}">
-                        ${course.imageUrl ? `<img src="${course.imageUrl}">` : course.svgIcon}
+                        ${currentImg ? `<img src="${currentImg}">` : course.svgIcon}
                     </div>
                 `;
                 listContainer.appendChild(card);
@@ -644,6 +672,7 @@
             document.getElementById('image-file-picker').click();
         };
 
+        // 上傳至 Storage 並將圖片 URL 儲存至 Database
         document.getElementById('image-file-picker').addEventListener('change', async function(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -652,27 +681,18 @@
             loading.classList.add('active');
 
             try {
-                const storageRef = ref(storage, `lohas_photos/${Date.now()}_${file.name}`);
-                const snapshot = await uploadBytes(storageRef, file);
+                const storageReference = storageRef(storage, `lohas_photos/${Date.now()}_${file.name}`);
+                const snapshot = await uploadBytes(storageReference, file);
                 const downloadURL = await getDownloadURL(snapshot.ref);
 
                 if (window.uploadTargetMode === "cover") {
-                    coverImageUrl = downloadURL;
-                    localStorage.setItem('lohas_cover_image', downloadURL);
-                    document.getElementById('cover-img-container').innerHTML = `<img src="${downloadURL}">`;
+                    await set(dbRef(database, 'lohas_images/cover'), downloadURL);
                 } else if (window.uploadTargetMode === "detail" && window.currentActiveCourse) {
-                    window.currentActiveCourse.imageUrl = downloadURL;
-                    localStorage.setItem(`lohas_course_${window.currentActiveCourse.id}`, downloadURL);
-                    
-                    document.getElementById('detail-img-container').innerHTML = `<img src="${downloadURL}">`;
-                    const targetCardImgWrapper = document.getElementById(`card-img-wrapper-${window.currentActiveCourse.id}`);
-                    if (targetCardImgWrapper) {
-                        targetCardImgWrapper.innerHTML = `<img src="${downloadURL}">`;
-                    }
+                    await set(dbRef(database, `lohas_images/course_${window.currentActiveCourse.id}`), downloadURL);
                 }
             } catch (err) {
-                console.error("Firebase Storage 上傳出錯:", err);
-                alert("上傳失敗，請檢查 Firebase 網路連線或 Storage 規則！");
+                console.error("Firebase Storage/Database 出錯:", err);
+                alert("上傳失敗，請檢查 Realtime Database 權限或網路連線！");
             } finally {
                 loading.classList.remove('active');
             }
@@ -754,7 +774,7 @@
             window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
         };
 
-        document.getElementById('cover-img-container').innerHTML = coverImageUrl ? `<img src="${coverImageUrl}">` : coverDefaultSvg;
+        document.getElementById('cover-img-container').innerHTML = coverDefaultSvg;
 
         function openDetail(course) {
             window.currentActiveCourse = course;
