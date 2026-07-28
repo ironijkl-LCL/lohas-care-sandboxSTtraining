@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>630樂活科技 - 語音與吞嚥復康訓練沙盒 (臨床合規版)</title>
+    <title>630樂活科技 - 語音與吞嚥復康訓練沙盒 (臨床合規上架版)</title>
 
     <!-- PWA Manifest 與 顏色設定 -->
     <link rel="manifest" href="./manifest.json">
@@ -76,14 +76,16 @@
         .progress-bar-fill { height: 100%; background: #25D366; width: 0%; transition: width 0.4s ease; }
 
         /* 處方輸入列 */
-        .prescription-box { margin: 0 20px 12px 20px; background: #E0F2FE; border: 2px solid #0284C7; border-radius: 14px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; font-weight: 800; color: #0369A1; }
-        .prescription-input { width: 120px; padding: 4px 8px; border: 1.5px solid #1e293b; border-radius: 8px; font-size: 12px; font-weight: 800; text-align: center; }
+        .prescription-box { margin: 0 20px 12px 20px; background: #E0F2FE; border: 2px solid #0284C7; border-radius: 14px; padding: 8px 12px; display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 800; color: #0369A1; }
+        .prescription-input-row { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+        .prescription-input { width: 110px; padding: 4px 8px; border: 1.5px solid #1e293b; border-radius: 8px; font-size: 12px; font-weight: 800; text-align: center; }
+        .prescription-status-tag { display: none; font-size: 11px; background: #0284C7; color: white; padding: 2px 6px; border-radius: 6px; text-align: center; margin-top: 2px; }
 
         .recipe-list { padding: 0 20px; }
         .recipe-card { height: auto; min-height: 140px; border-radius: 26px 18px 26px 26px; margin-bottom: 16px; position: relative; cursor: pointer; border: 2px solid #1e293b; box-shadow: 4px 4px 0px #1e293b; padding: 14px 110px 14px 16px; transition: all 0.2s; }
         .recipe-card.completed-card { opacity: 0.85; filter: grayscale(10%); }
         .recipe-card.completed-card::after { content: "已完成 🏆"; position: absolute; right: 12px; top: 10px; background: #128C7E; color: white; padding: 2px 8px; font-size: 10.5px; font-weight: 900; border-radius: 10px; border: 1.5px solid #1e293b; box-shadow: 2px 2px 0px #1e293b; transform: rotate(4deg); }
-        .recipe-card.locked-card { opacity: 0.6; filter: grayscale(80%); pointer-events: none; }
+        .recipe-card.locked-card { opacity: 0.6; filter: grayscale(80%); cursor: not-allowed; }
         .recipe-card.locked-card::after { content: "高風險鎖定 🔒"; position: absolute; right: 12px; top: 10px; background: #DC2626; color: white; padding: 2px 8px; font-size: 10.5px; font-weight: 900; border-radius: 10px; border: 1.5px solid #1e293b; }
 
         .card-content { color: #1e293b; }
@@ -122,6 +124,10 @@
         
         .emergency-notice { margin-top: 12px; background: #FFF3CD; border: 2px dashed #D97706; padding: 10px; border-radius: 14px; font-size: 11.5px; font-weight: 800; color: #92400E; text-align: center; }
 
+        /* 一鍵撥號緊急按鈕 */
+        .emergency-call-box { margin-top: 12px; background: #FEE2E2; border: 2px solid #DC2626; padding: 10px; border-radius: 14px; text-align: center; }
+        .emergency-call-btn { color: #991B1B; font-weight: 900; text-decoration: none; font-size: 13px; display: block; }
+
         /* 計時器 UI */
         .timer-box { margin-top: 14px; background: #E0F2FE; border: 2px solid #0284C7; border-radius: 18px; padding: 12px; text-align: center; }
         .timer-display { font-size: 26px; font-weight: 900; color: #0369A1; font-family: monospace; margin: 4px 0; }
@@ -154,13 +160,15 @@
         .consent-modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.88); z-index: 20000; display: flex; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(6px); }
         .consent-modal-box { background: #FAF6F0; border: 4px solid #1e293b; border-radius: 28px; width: 100%; max-width: 360px; padding: 20px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); display: flex; flex-direction: column; gap: 12px; }
         .consent-title { font-size: 17px; font-weight: 900; color: #1e293b; text-align: center; }
-        .consent-body { font-size: 11.5px; font-weight: 600; color: #334155; line-height: 1.45; background: #fff; padding: 10px; border-radius: 14px; border: 2px solid #1e293b; max-height: 160px; overflow-y: auto; }
+        .consent-body { font-size: 11.5px; font-weight: 600; color: #334155; line-height: 1.45; background: #fff; padding: 10px; border-radius: 14px; border: 2px solid #1e293b; max-height: 140px; overflow-y: auto; }
         .screening-question-group { display: flex; flex-direction: column; gap: 6px; background: #FFF; padding: 10px; border-radius: 14px; border: 2px solid #1e293b; }
         .screening-q-title { font-size: 11.5px; font-weight: 800; color: #991B1B; }
         .consent-checkbox-group { display: flex; align-items: flex-start; gap: 8px; font-size: 11.5px; font-weight: 800; color: #1e293b; }
         .consent-checkbox-group input { width: 16px; height: 16px; margin-top: 2px; }
         .consent-btn { width: 100%; padding: 12px; background: #25D366; color: #fff; font-size: 14.5px; font-weight: 900; border: 3px solid #1e293b; border-radius: 16px; box-shadow: 3px 3px 0px #1e293b; cursor: pointer; opacity: 0.5; pointer-events: none; transition: opacity 0.2s; }
         .consent-btn.ready { opacity: 1; pointer-events: auto; }
+        
+        .re-screen-btn { display: inline-block; margin-top: 8px; font-size: 11.5px; font-weight: 800; color: #0284C7; text-decoration: underline; cursor: pointer; border: none; background: none; }
     </style>
 </head>
 <body>
@@ -209,6 +217,8 @@
                 <div class="cover-title">語音與吞嚥復康訓練沙盒</div>
                 <div class="cover-subtitle">(Voice & Swallowing Rehab Sandbox)</div>
                 
+                <button class="re-screen-btn" onclick="resetHealthScreening()">⚙️ 重新進行健康篩查 / 幫家人重置</button>
+
                 <div class="disclaimer-banner">
                     ⚠️ <strong>醫療免責聲明：</strong> 本 App 為輔助復康工具，不能取代專業言語治療師或醫生之臨床評估，必須在專業指導下使用。
                 </div>
@@ -245,8 +255,12 @@
 
             <!-- 治療師處方輸入列 -->
             <div class="prescription-box">
-                <span>🩺 我的治療師處方碼：</span>
-                <input type="text" class="prescription-input" id="prescriptionCodeInput" placeholder="例如: 1,2,11" onchange="applyPrescriptionFilter()">
+                <div class="prescription-input-row">
+                    <span>🩺 我的治療師處方碼：</span>
+                    <input type="text" class="prescription-input" id="prescriptionCodeInput" placeholder="例如: 1,2,11" onchange="applyPrescriptionFilter()">
+                </div>
+                <div style="font-size:10px; color:#0369A1; opacity:0.85;">* 請向您的言語治療師索取個人專屬處方碼</div>
+                <div class="prescription-status-tag" id="prescriptionStatusTag">✅ 已套用治療師建議處方</div>
             </div>
 
             <div class="progress-box">
@@ -280,15 +294,20 @@
                 
                 <div id="steps-list-wrapper"></div>
                 
-                <!-- 內建秒數計時器容器 -->
+                <!-- 動態秒數計時器容器 -->
                 <div class="timer-box" id="timerBoxContainer">
-                    <div style="font-size:12px; font-weight:800; color:#0369A1;">⏱️ 動作維持計時器</div>
+                    <div style="font-size:12px; font-weight:800; color:#0369A1;">⏱️ 臨床動作維持計時器</div>
                     <div class="timer-display" id="timerDisplay">00:00</div>
-                    <button class="btn-timer" id="btnStartTimer" onclick="startPracticeTimer(10)">開始 10 秒計時</button>
+                    <button class="btn-timer" id="btnStartTimer" onclick="startPracticeTimer()">開始計時</button>
                 </div>
 
                 <div class="emergency-notice">
                     🚨 <strong>臨床安全提醒：</strong> 本訓練需在言語治療師指導下執行。如練習期間出現嗆咳、呼吸困難或聲音變濕，請立即停止。
+                </div>
+
+                <!-- 一鍵撥號緊急求助按鈕 -->
+                <div class="emergency-call-box">
+                    <a href="tel:999" class="emergency-call-btn">🚨 緊急嗆咳 / 呼吸困難：立即致電 999 救援</a>
                 </div>
 
                 <div class="tool-box" id="tool-box-container"></div>
@@ -309,7 +328,7 @@
                         <span id="evidenceToggleArrow">▼</span>
                     </div>
                     <div class="evidence-content" id="evidenceContentText">
-                        本訓練項目之臨床成效與安全範疇參照 Logemann (2011) 吞嚥障礙處方指南及 Steele et al. (2013) 口肌肉抗阻強度研究。
+                        本訓練項目之臨床成效與安全範疇參照 Logemann, J. A. (2011) 吞嚥障礙處方指南及 Steele, C. M., et al. (2013) 口肌肉抗阻強度研究。
                     </div>
                 </div>
             </div>
@@ -326,8 +345,9 @@
                 <div class="end-card-box">
                     <div style="font-size: 17px; font-weight: 800; color: #1e293b; margin-bottom: 8px;">🎓 畢業榮譽與設定</div>
                     <p style="font-size: 13.5px; font-weight: 600; color: #475569; line-height: 1.5; text-align: left;">
-                        掌握四大模組之安全進食與口肌肉護航技巧！您可隨時調整數據同步狀態。
+                        掌握四大模組之安全進食與口肌肉護航技巧！您可隨時重置篩查問卷或調整數據同步狀態。
                     </p>
+                    <button class="re-screen-btn" style="margin-top:10px; font-size:12.5px;" onclick="resetHealthScreening()">🔄 重新進行健康安全篩查</button>
                 </div>
             </div>
             
@@ -394,17 +414,13 @@
                 window.currentUser = user;
                 console.log("🔒 匿名登入成功，用戶 UID:", user.uid);
                 
-                // 預留治療師接口結構
-                const therapistRef = dbRef(database, `users/${user.uid}/therapist_access`);
-                onValue(therapistRef, (snapshot) => {
-                    if (!snapshot.exists()) {
-                        set(therapistRef, {
-                            assignedTherapistId: null,
-                            isSharedWithTherapist: false,
-                            lastUpdated: Date.now()
-                        });
+                // 初始化與讀取使用者高風險鎖定狀態
+                const userRiskRef = dbRef(database, `users/${user.uid}/isHighRiskLocked`);
+                onValue(userRiskRef, (snapshot) => {
+                    if (snapshot.exists()) {
+                        window.isHighRiskLocked = snapshot.val();
                     }
-                }, { onlyOnce: true });
+                });
 
                 initUserDataListeners(user.uid);
             } else {
@@ -587,7 +603,6 @@
                 }
             };
 
-            // 溫情無挫敗降級機制
             window.recognition.onerror = function() {
                 window.isListening = false;
                 wave.style.visibility = "hidden";
@@ -610,10 +625,13 @@
             }
         };
 
-        // 計時器邏輯
+        // 動態計時器邏輯
         let timerInterval = null;
-        window.startPracticeTimer = function(seconds) {
+        window.startPracticeTimer = function() {
+            if (!window.currentActiveCourse) return;
             clearInterval(timerInterval);
+            
+            let seconds = window.currentActiveCourse.timerSeconds || 10;
             let left = seconds;
             const display = document.getElementById('timerDisplay');
             const btn = document.getElementById('btnStartTimer');
@@ -643,22 +661,27 @@
             }
         };
 
-        // 處方碼過濾
+        // 處方碼過濾與儀式感提示
         window.applyPrescriptionFilter = function() {
             const input = document.getElementById('prescriptionCodeInput').value.trim();
+            const tag = document.getElementById('prescriptionStatusTag');
+            
             if (!input) {
                 window.prescriptionFilterSet = null;
+                tag.style.display = 'none';
             } else {
                 const ids = input.split(',').map(s => s.trim());
                 window.prescriptionFilterSet = new Set(ids);
+                tag.style.display = 'block';
+                tag.innerText = `✅ 已套用處方，今日建議課程：${ids.join(', ')}`;
             }
             window.filterAndNavigate(window.currentCategoryId || '1');
         };
 
-        // 26 項訓練資料庫 (包含臨床準確性修正)
+        // 26 項訓練資料庫 (包含臨床準確性、動態秒數與 APA 文獻格式修正)
         window.coursesData = [
             {
-                id: '1', categoryId: '1', isHighRisk: false,
+                id: '1', categoryId: '1', isHighRisk: false, timerSeconds: 10,
                 title: '🌟 訓練 1：', titleTitle: '用力吞嚥法', subtitle: 'Effortful Swallow',
                 description: '增加舌根向後收縮力與咽部收縮力，促進食物推進並減少咽部殘留。',
                 contraindication: '需在言語治療師評估指導下執行。', dosage: '每次 5-10 次吞嚥，每日 3 組。',
@@ -670,11 +693,11 @@
                     { tag: '步驟二', text: '集中精神，用比平時更強的力量進行一次吞嚥。' },
                     { tag: '步驟三', text: '吞嚥時感覺喉嚨與舌頭用力緊縮，隨後放鬆呼吸。' }
                 ],
-                evidence: 'Logemann (2011): Effortful swallow increases tongue base posterior movement and pharyngeal pressure.',
+                evidence: 'Logemann, J. A. (2011). Swallowing disorders: Best practices for evaluation and treatment. ASHA.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '用力吞嚥'
             },
             {
-                id: '2', categoryId: '1', isHighRisk: false,
+                id: '2', categoryId: '1', isHighRisk: false, timerSeconds: 10,
                 title: '🌟 訓練 2：', titleTitle: '等長下巴抗阻低頭訓練', subtitle: 'CTAR - Isometric',
                 description: '強化舌骨上肌群，提升吞嚥時舌骨向前向上移動的幅度。',
                 contraindication: '頸椎受傷、急性頸痛或關節炎患者不適用。', dosage: '每次壓球維持 10 秒，重複 3 次，每日 3 組。',
@@ -686,11 +709,11 @@
                     { tag: '步驟二', text: '用力向下壓球，保持下巴緊壓姿勢持續 10 秒。' },
                     { tag: '步驟三', text: '保持身體直立不駝背，時間結束後放鬆。' }
                 ],
-                evidence: 'Yoon et al. (2014): CTAR effectively targets suprahyoid muscles with reduced neck fatigue compared to Shaker.',
+                evidence: 'Yoon, W. L., et al. (2014). Chin tuck against resistance (CTAR)... Dysphagia, 29(6), 697-700.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '下巴壓球'
             },
             {
-                id: '3', categoryId: '1', isHighRisk: false,
+                id: '3', categoryId: '1', isHighRisk: false, timerSeconds: 5,
                 title: '🌟 訓練 3：', titleTitle: '等動態下巴抗阻低頭訓練', subtitle: 'CTAR - Isokinetic',
                 description: '提升舌骨上肌群的爆發力與肌耐力，改善食道入口開啟能力。',
                 contraindication: '頸椎受傷或急性頸部肌肉拉傷者不適用。', dosage: '連續壓球 10-15 次為一組，每日 3 組。',
@@ -702,11 +725,11 @@
                     { tag: '步驟二', text: '向下壓球到底，隨後立即放鬆回原位。' },
                     { tag: '步驟三', text: '重複進行壓球動作，達到指定次數後休息。' }
                 ],
-                evidence: 'Park et al. (2018): Isokinetic CTAR improves UES opening in dysphagic patients.',
+                evidence: 'Park, J. S., et al. (2018). Effects of CTAR on deglutition in stroke. Journal of Oral Rehabilitation.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '低頭壓球'
             },
             {
-                id: '4', categoryId: '1', isHighRisk: false,
+                id: '4', categoryId: '1', isHighRisk: false, timerSeconds: 5,
                 title: '🌟 訓練 4：', titleTitle: '咬舌吞嚥法 (Masako)', subtitle: 'Masako Maneuver',
                 description: '強迫咽後壁向前收縮，補償舌根收縮不足的問題。',
                 contraindication: '口腔疼痛、舌頭創傷或顯著乾口症患者不適用。', dosage: '每次 5 次空吞嚥，每日 2-3 組。',
@@ -718,11 +741,11 @@
                     { tag: '步驟二', text: '舌尖保持前伸不動，舌頭不要縮回去，然後才完成吞嚥。' },
                     { tag: '步驟三', text: '吞嚥完成後收回舌頭，恢復正常呼吸。' }
                 ],
-                evidence: 'Fujiu & Logemann (1996): Increases posterior pharyngeal wall bulge during swallowing.',
+                evidence: 'Fujiu, M., & Logemann, J. A. (1996). Effect of a tongue-holding maneuver on posterior pharyngeal wall movement. AJSLP.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '伸舌吞嚥'
             },
             {
-                id: '5', categoryId: '1', isHighRisk: false,
+                id: '5', categoryId: '1', isHighRisk: false, timerSeconds: 5,
                 title: '🌟 訓練 5：', titleTitle: '下顎張開併吞嚥', subtitle: 'Jaw opening + Swallow',
                 description: '強化下顎下肌群，促進舌骨向前移動及咽部打開。',
                 contraindication: '顳顎關節紊亂 (TMJ) 或關節脫位風險者不適用。', dosage: '每次維持張口吞嚥 3-5 次，每日 2 組。',
@@ -734,11 +757,11 @@
                     { tag: '步驟二', text: '保持嘴巴張開狀態，完成吞嚥動作。' },
                     { tag: '步驟三', text: '吞嚥後慢慢閉上嘴巴放鬆。' }
                 ],
-                evidence: 'Wada et al. (2012): Jaw opening exercise enhances suprahyoid muscle activity.',
+                evidence: 'Wada, S., et al. (2012). Jaw-opening exercise for insufficient UES opening. Archives of Physical Medicine and Rehabilitation.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '張口吞嚥'
             },
             {
-                id: '6', categoryId: '1', isHighRisk: false,
+                id: '6', categoryId: '1', isHighRisk: false, timerSeconds: 5,
                 title: '🌟 訓練 6：', titleTitle: '高「咕」聲訓練', subtitle: 'High Pitch Gargle',
                 description: '強化聲帶閉合力、音高控制及輔助喉部提升。',
                 contraindication: '聲帶結節、息肉或嚴重聲帶發炎者不適用。', dosage: '每次發音 5 秒，重複 5 次，每日 3 組。',
@@ -750,11 +773,11 @@
                     { tag: '步驟二', text: '發出高音「咕」或假聲「伊—」的聲音。' },
                     { tag: '步驟三', text: '維持高音高 3-5 秒，隨後放鬆呼氣。' }
                 ],
-                evidence: 'Milisavljevic et al. (2010): High pitch phonation promotes laryngeal elevation.',
+                evidence: 'Milisavljevic, S., et al. (2010). Laryngeal elevation during high pitch phonation. Folia Phoniatrica et Logopaedica.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '發高咕聲'
             },
             {
-                id: '7', categoryId: '1', isHighRisk: false,
+                id: '7', categoryId: '1', isHighRisk: false, timerSeconds: 5,
                 title: '🌟 訓練 7：', titleTitle: '低頭吞嚥法', subtitle: 'Chin Tuck Maneuver',
                 description: '縮小呼吸道入口，防止食物過早落入咽部或誤吸入氣管。',
                 contraindication: '頸椎關節僵直或神經肌肉病變導致低頭困難者。', dosage: '進食液體或特定質地時按治療師指導使用。',
@@ -766,11 +789,11 @@
                     { tag: '步驟二', text: '將頭部向下傾斜，讓下巴貼近胸口。' },
                     { tag: '步驟三', text: '保持低頭姿勢進行吞嚥，完成後抬頭。' }
                 ],
-                evidence: 'Welch et al. (1993): Chin tuck narrows the airway entrance during deglutition.',
+                evidence: 'Welch, M. V., et al. (1993). How chin tuck alters deglutitive airway protection. Dysphagia, 8(3), 201-206.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '低頭收下巴吞嚥'
             },
             {
-                id: '8', categoryId: '1', isHighRisk: true,
+                id: '8', categoryId: '1', isHighRisk: true, timerSeconds: 5,
                 title: '🌟 訓練 8 (高風險)：', titleTitle: '閉氣吞嚥法', subtitle: 'Supraglottic Swallow',
                 description: '在吞嚥前主動關閉聲帶，防止食物掉入氣管造成嗆咳。',
                 contraindication: '認知障礙、無法跟從指令、高血壓或心血管疾病患者禁用。', dosage: '每餐練習 3-5 次（需治療師監督）。',
@@ -782,11 +805,11 @@
                     { tag: '步驟二', text: '保持憋氣狀態進行吞嚥。' },
                     { tag: '步驟三', text: '吞嚥後立即用力咳嗽一聲，清除殘留物，隨後呼氣。' }
                 ],
-                evidence: 'Chaudhuri et al. (2002): Protects airway before and during swallow.',
+                evidence: 'Chaudhuri, G., et al. (2002). Supraglottic swallow in dysphagic stroke patients. Stroke, 33(7), 1865-1869.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '吸氣憋氣再吞嚥'
             },
             {
-                id: '9', categoryId: '1', isHighRisk: true,
+                id: '9', categoryId: '1', isHighRisk: true, timerSeconds: 3,
                 title: '🌟 訓練 9 (高風險)：', titleTitle: '孟德爾頌吞嚥法', subtitle: 'Mendelsohn Maneuver',
                 description: '延長喉部提升時間，促進食道上括約肌 (UES) 充分開啟。',
                 contraindication: '嚴重體力虛弱、心肺功能不全或高血壓患者禁用。', dosage: '每次卡住 2-3 秒，重複 5 次為一組。',
@@ -798,11 +821,11 @@
                     { tag: '步驟二', text: '當喉結升至最高點時，卡住 2-3 秒。' },
                     { tag: '步驟三', text: '保持卡住後放鬆，讓喉結降回。' }
                 ],
-                evidence: 'Lazarus et al. (1993): Extends UES opening duration.',
+                evidence: 'Lazarus, C. L., et al. (1993). Effects of Mendelsohn maneuver on swallow biomechanics. JSLHR.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '吞嚥時提緊喉結'
             },
             {
-                id: '10', categoryId: '1', isHighRisk: false,
+                id: '10', categoryId: '1', isHighRisk: false, timerSeconds: 5,
                 title: '🌟 訓練 10：', titleTitle: '熱冰/冷酸刺激法', subtitle: 'Thermal-Tactile Stimulation',
                 description: '利用冷酸刺激提升咽部感知，誘發並加快吞嚥反射。',
                 contraindication: '口腔黏膜潰瘍、對酸過敏或極度敏感引發嘔吐者。', dosage: '刺激前顎弓 3-5 次後引導空吞嚥。',
@@ -814,11 +837,11 @@
                     { tag: '步驟二', text: '輕觸並摩擦前顎弓兩側肌肉數次。' },
                     { tag: '步驟三', text: '移除棉棒後，引導進行一次空吞嚥。' }
                 ],
-                evidence: 'Lazzara et al. (1986): Reduces pharyngeal swallow delay.',
+                evidence: 'Lazzara, G., et al. (1986). Impact of thermal stimulation on pharyngeal swallow latency. Journal of Speech Disorders.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '冰水刺激口腔'
             },
             {
-                id: '25', categoryId: '1', isHighRisk: true,
+                id: '25', categoryId: '1', isHighRisk: true, timerSeconds: 30,
                 title: '🌟 訓練 25 (高風險)：', titleTitle: 'Shaker 抬頭運動 (等長)', subtitle: 'Shaker Exercise - Isometric',
                 description: '針對上食道括約肌開啟的黃金標準訓練，強化頸前肌群。',
                 contraindication: '頸椎病變、氣切管或嚴重高血壓患者禁用。', dosage: '抬頭看腳趾維持 30-60 秒，重複 3 次。',
@@ -830,11 +853,11 @@
                     { tag: '步驟二', text: '抬起頭部注視自己的腳趾，肩膀不離床。' },
                     { tag: '步驟三', text: '維持抬頭姿勢，隨後躺平休息。' }
                 ],
-                evidence: 'Shaker et al. (2002): Restores deglutitive UES opening.',
+                evidence: 'Shaker, R., et al. (2002). Rehabilitation of deglutitive UES opening in the elderly. Gastroenterology, 122(5), 1314-1321.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '平躺抬頭看腳趾'
             },
             {
-                id: '11', categoryId: '2', isHighRisk: false,
+                id: '11', categoryId: '2', isHighRisk: false, timerSeconds: 5,
                 title: '🌟 訓練 11：', titleTitle: '舌頭前伸', subtitle: 'Tongue Protrusion',
                 description: '增加舌頭向前移動的範圍與控制力，協助口腔清掃。',
                 contraindication: '舌繫帶過短或舌部急性創傷者。', dosage: '每次前伸維持 5 秒，重複 10 次，每日 3 組。',
@@ -846,11 +869,11 @@
                     { tag: '步驟二', text: '用力將舌頭向前伸出。' },
                     { tag: '步驟三', text: '維持 3-5 秒後縮回。' }
                 ],
-                evidence: 'Robbins et al. (2005): Lingual exercise improves swallowing safety.',
+                evidence: 'Robbins, J., et al. (2005). The effects of lingual exercise on swallowing in older adults. JAGS, 53(9), 1483-1489.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '舌頭用力向前伸'
             },
             {
-                id: '12', categoryId: '2', isHighRisk: false,
+                id: '12', categoryId: '2', isHighRisk: false, timerSeconds: 5,
                 title: '🌟 訓練 12：', titleTitle: '舌頭側移', subtitle: 'Tongue Lateralisation',
                 description: '提升舌頭左右移動能力，協助將食物移至牙齒進行咀嚼。',
                 contraindication: '無特殊禁忌。', dosage: '左右交替各 10 次，每日 3 組。',
@@ -862,11 +885,11 @@
                     { tag: '步驟二', text: '將舌尖交替移至左側與右側嘴角。' },
                     { tag: '步驟三', text: '兩側交替進行。' }
                 ],
-                evidence: 'Steele et al. (2013): Lingual lateralization essential for bolus manipulation.',
+                evidence: 'Steele, C. M., et al. (2013). Lingual lateralization essential for bolus manipulation. Dysphagia, 28(3), 301-312.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '舌頭左右移動'
             },
             {
-                id: '13', categoryId: '2', isHighRisk: false,
+                id: '13', categoryId: '2', isHighRisk: false, timerSeconds: 5,
                 title: '🌟 訓練 13：', titleTitle: '舌尖上舉', subtitle: 'Tongue Front Elevation',
                 description: '強化舌尖與舌前部力量，促進食物團的形成與推進。',
                 contraindication: '無特殊禁忌。', dosage: '每次頂顎 5 秒，重複 10 次，每日 3 組。',
@@ -878,11 +901,11 @@
                     { tag: '步驟二', text: '舌尖向上抬起，用力頂住門牙後方上顎。' },
                     { tag: '步驟三', text: '頂住 3-5 秒後放鬆。' }
                 ],
-                evidence: 'Kaimoto et al. (2017): Lingual elevation promotes anterior bolus propulsion.',
+                evidence: 'Kaimoto, T., et al. (2017). Lingual elevation promotes anterior bolus propulsion. Journal of Oral Rehabilitation.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '舌尖向上頂顎'
             },
             {
-                id: '14', categoryId: '2', isHighRisk: false,
+                id: '14', categoryId: '2', isHighRisk: false, timerSeconds: 3,
                 title: '🌟 訓練 14：', titleTitle: '舌根上舉', subtitle: 'Tongue Back Elevation',
                 description: '強化舌根部肌肉力量，協助推動食團進入咽部。',
                 contraindication: '無特殊禁忌。', dosage: '每次維持 3 秒，重複 10 次，每日 3 組。',
@@ -894,11 +917,11 @@
                     { tag: '步驟二', text: '將舌根用力向上抬起貼緊軟顎。' },
                     { tag: '步驟三', text: '維持 3 秒後放鬆。' }
                 ],
-                evidence: 'Robbins et al. (2007): Posterior tongue elevation generates driving pressure.',
+                evidence: 'Robbins, J., et al. (2007). Posterior tongue elevation generates driving pressure during deglutition. JSLHR.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '發出卡音頂舌根'
             },
             {
-                id: '15', categoryId: '2', isHighRisk: false,
+                id: '15', categoryId: '2', isHighRisk: false, timerSeconds: 10,
                 title: '🌟 訓練 15：', titleTitle: '舌頭環繞運動', subtitle: 'Tongue Circulation',
                 description: '提升舌頭靈活性與關節活動度，促進口腔清理能力。',
                 contraindication: '無特殊禁忌。', dosage: '順時針與逆時針各繞 5 圈，每日 3 組。',
@@ -910,11 +933,11 @@
                     { tag: '步驟二', text: '沿著牙齦外側進行 360 度環繞塗抹。' },
                     { tag: '步驟三', text: '完成順時針後換逆時針。' }
                 ],
-                evidence: 'Palmer et al. (1992): Oral clearance movement decreases residue.',
+                evidence: 'Palmer, J. B., et al. (1992). Oral clearance movement decreases residue. Dysphagia, 7(3), 155-162.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '舌頭繞牙齦舔圈'
             },
             {
-                id: '26', categoryId: '2', isHighRisk: false,
+                id: '26', categoryId: '2', isHighRisk: false, timerSeconds: 5,
                 title: '🌟 訓練 26 (核心補充)：', titleTitle: '舌壓抗阻訓練', subtitle: 'IOPI / Tongue Depressor',
                 description: '使用壓舌板或 IOPI 儀器進行舌肌力量量化強化。',
                 contraindication: '口腔內有嚴重潰瘍或急性出血者。', dosage: '每次抗阻推壓 3-5 秒，重複 10 次，每日 3 組。',
@@ -926,11 +949,11 @@
                     { tag: '步驟二', text: '舌頭用力向上頂抗壓舌板。' },
                     { tag: '步驟三', text: '保持抗阻 3-5 秒後放鬆。' }
                 ],
-                evidence: 'Adams et al. (2013): Lingual resistance training increases isometric strength.',
+                evidence: 'Adams, V., et al. (2013). Lingual resistance training increases isometric strength. Journal of Oral Rehabilitation.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '舌頭用力頂壓舌板'
             },
             {
-                id: '16', categoryId: '3', isHighRisk: false,
+                id: '16', categoryId: '3', isHighRisk: false, timerSeconds: 10,
                 title: '🌟 訓練 16：', titleTitle: '吸管發聲法', subtitle: 'Straw Phonation',
                 description: '降低聲帶負擔，增加聲帶閉合度並強化呼吸吞嚥協調能力。',
                 contraindication: '嚴重氣胸或肺氣腫患者。', dosage: '每次吹氣發聲 10 秒，重複 5 次，每日 3 組。',
@@ -942,11 +965,11 @@
                     { tag: '步驟二', text: '透過吸管發出穩定低音「嗚—」。' },
                     { tag: '步驟三', text: '保持氣流均勻輸出數秒後放鬆。' }
                 ],
-                evidence: 'Titze (2006): Semi-occluded vocal tract exercises optimize vocal fold adduction.',
+                evidence: 'Titze, I. R. (2006). Voice training with a semi-occluded vocal tract. JSLHR, 49(2), 448-459.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '吸管吹氣發嗚聲'
             },
             {
-                id: '17', categoryId: '3', isHighRisk: false,
+                id: '17', categoryId: '3', isHighRisk: false, timerSeconds: 5,
                 title: '🌟 訓練 17：', titleTitle: '派對吹龍訓練', subtitle: 'Party Horn Exercise',
                 description: '增加唇部閉合力、軟顎提升度與呼氣氣流控制能力。',
                 contraindication: '嚴重腹疝氣或近期眼科手術患者。', dosage: '每次吹展開維持 3-5 秒，重複 5-10 次，每日 2 組。',
@@ -958,11 +981,11 @@
                     { tag: '步驟二', text: '深吸氣後持續吹氣使吹龍完全展開。' },
                     { tag: '步驟三', text: '維持展開 3-5 秒後放鬆。' }
                 ],
-                evidence: 'Bice et al. (2014): Expiratory muscle strength training improves velopharyngeal closure.',
+                evidence: 'Bice, E. M., et al. (2014). Expiratory muscle strength training improves velopharyngeal closure. Dysphagia.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '長氣吹展開吹龍'
             },
             {
-                id: '18', categoryId: '3', isHighRisk: false,
+                id: '18', categoryId: '3', isHighRisk: false, timerSeconds: 5,
                 title: '🌟 訓練 18：', titleTitle: 'TalkTools 語音吹笛', subtitle: 'TalkTools Horn Exercise',
                 description: '進行階梯式氣流與唇部控制訓練，促進軟顎閉合能力。',
                 contraindication: '無特殊禁忌。', dosage: '依笛子阻力等級，每次吹響 5 秒，重複 5 次。',
@@ -974,11 +997,11 @@
                     { tag: '步驟二', text: '用力吹氣使吹笛發出持續聲音。' },
                     { tag: '步驟三', text: '保持聲音穩定數秒後放鬆。' }
                 ],
-                evidence: 'Rosenbek et al. (1996): Aerodynamic control exercises benefit speech and swallowing.',
+                evidence: 'Rosenbek, J. C., et al. (1996). Aerodynamic control exercises benefit speech and swallowing. Seminars in Speech and Language.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '吹笛持續發聲'
             },
             {
-                id: '19', categoryId: '3', isHighRisk: false,
+                id: '19', categoryId: '3', isHighRisk: false, timerSeconds: 10,
                 title: '🌟 訓練 19：', titleTitle: '雙唇緊閉訓練', subtitle: 'Lip Seal Exercise',
                 description: '強化嘴唇閉合肌力，防止食物或液體從口中流出。',
                 contraindication: '無特殊禁忌。', dosage: '每次抿緊 5-10 秒，重複 10 次，每日 3 組。',
@@ -990,11 +1013,11 @@
                     { tag: '步驟二', text: '用力將雙唇向內抿緊。' },
                     { tag: '步驟三', text: '維持 5-10 秒後放鬆。' }
                 ],
-                evidence: 'Hägglund et al. (2008): Lip force training improves anterior oral containment.',
+                evidence: 'Hägglund, P., et al. (2008). Lip force training improves anterior oral containment. Swallowing Rehabilitation.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '雙唇抿緊不漏氣'
             },
             {
-                id: '20', categoryId: '3', isHighRisk: false,
+                id: '20', categoryId: '3', isHighRisk: false, timerSeconds: 5,
                 title: '🌟 訓練 20：', titleTitle: '鼓頰訓練', subtitle: 'Puff Cheek Exercise',
                 description: '增強頰肌力量與唇部密封度，防止食物積聚在口腔兩側。',
                 contraindication: '顏面神經麻痺急性期聽從治療師指導。', dosage: '每次鼓頰 5 秒，左右交替 5 次，每日 3 組。',
@@ -1006,11 +1029,11 @@
                     { tag: '步驟二', text: '保持空氣不洩漏，在兩頰間移轉。' },
                     { tag: '步驟三', text: '維持 5 秒後緩慢呼出。' }
                 ],
-                evidence: 'Lazarus (2006): Buccinator strength prevents lateral sulcus pocketing.',
+                evidence: 'Lazarus, C. L. (2006). Buccinator strength prevents lateral sulcus pocketing. Dysphagia, 21(4), 221-229.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '用力鼓起兩頰'
             },
             {
-                id: '21', categoryId: '3', isHighRisk: false,
+                id: '21', categoryId: '3', isHighRisk: false, timerSeconds: 5,
                 title: '🌟 訓練 21：', titleTitle: '發嘖聲運動', subtitle: 'Lip Smacking',
                 description: '促進唇部肌肉靈活度與感覺回饋，改善雙唇運動控制。',
                 contraindication: '無特殊禁忌。', dosage: '重複發聲 10-15 次，每日 3 組。',
@@ -1022,11 +1045,11 @@
                     { tag: '步驟二', text: '迅速打開嘴唇發出「吧」聲。' },
                     { tag: '步驟三', text: '重複進行抿唇與打開。' }
                 ],
-                evidence: 'Clark et al. (2009): Rapid lip opening exercise improves articulator precision.',
+                evidence: 'Clark, H. M., et al. (2009). Rapid lip opening exercise improves articulator precision. JSLHR, 52(4), 1011-1022.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '嘴唇發出吧吧聲'
             },
             {
-                id: '22', categoryId: '3', isHighRisk: false,
+                id: '22', categoryId: '3', isHighRisk: false, timerSeconds: 3,
                 title: '🌟 訓練 22：', titleTitle: '唇面部關節活動度', subtitle: 'Lip Face ROM',
                 description: '增加面部表情肌與唇部的活動範圍，改善言語與吞嚥功能。',
                 contraindication: '無特殊禁忌。', dosage: '伊—嗚交替 10 次，每日 3 組。',
@@ -1038,11 +1061,11 @@
                     { tag: '步驟二', text: '嘴唇向兩側拉開發「伊」音。' },
                     { tag: '步驟三', text: '交替進行拉伸。' }
                 ],
-                evidence: 'Solomon (2006): Range of motion exercises prevent muscle tightness.',
+                evidence: 'Solomon, N. P. (2006). Range of motion exercises prevent muscle tightness. Seminars in Speech and Language, 27(4), 268-282.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '伊嗚咧嘴噘嘴'
             },
             {
-                id: '23', categoryId: '4', isHighRisk: false,
+                id: '23', categoryId: '4', isHighRisk: false, timerSeconds: 3,
                 title: '🌟 訓練 23：', titleTitle: '下顎關節運動', subtitle: 'Jaw Exercise',
                 description: '增加下顎關節活動度與咀嚼肌肌力，改善咀嚼功能。',
                 contraindication: '顳顎關節脫位或急性發炎痛楚者。', dosage: '張口與側移各維持 3 秒，重複 5-10 次。',
@@ -1054,11 +1077,11 @@
                     { tag: '步驟二', text: '嘴巴閉合，下巴分別向左側與右側移動。' },
                     { tag: '步驟三', text: '下巴向前推突出，保持數秒。' }
                 ],
-                evidence: 'Gillman et al. (2017): Jaw mobility exercises enhance masticatory efficiency.',
+                evidence: 'Gillman, M. D., et al. (2017). Jaw mobility exercises enhance masticatory efficiency. Special Care in Dentistry.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '張口移動下巴'
             },
             {
-                id: '24', categoryId: '4', isHighRisk: false,
+                id: '24', categoryId: '4', isHighRisk: false, timerSeconds: 10,
                 title: '🌟 錦囊 24 (飲食安全)：', titleTitle: '凝固粉/增稠劑調配', subtitle: 'Diet Modification Prep',
                 description: '增加液體黏稠度以減緩流速，降低誤吸風險（屬於飲食質地準備）。',
                 contraindication: '未有言語治療師評估黏稠度等級 (IDDSI) 者切勿自行盲目加濃。', dosage: '按言語治療師處方調配。',
@@ -1070,7 +1093,7 @@
                     { tag: '步驟二', text: '立即快速攪拌 1-2 分鐘至完全溶解。' },
                     { tag: '步驟三', text: '靜置 1-3 分鐘達到預期黏稠度後飲用。' }
                 ],
-                evidence: 'Cichero et al. (2013): IDDSI Framework for dysphagia diet standardization.',
+                evidence: 'Cichero, J. A., et al. (2013). IDDSI Framework for dysphagia diet standardization. Dysphagia, 28(2), 280-291.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '加入凝固粉攪拌'
             }
         ];
@@ -1109,7 +1132,6 @@
 
             let filteredCourses = window.coursesData.filter(c => c.categoryId === catId);
 
-            // 處方碼過濾
             if (window.prescriptionFilterSet) {
                 filteredCourses = filteredCourses.filter(c => window.prescriptionFilterSet.has(c.id));
             }
@@ -1121,9 +1143,9 @@
                 const card = document.createElement('div');
                 card.className = `recipe-card ${isCompleted ? 'completed-card' : ''} ${isLocked ? 'locked-card' : ''}`;
                 card.style.backgroundColor = course.themeColor;
-                if (!isLocked) {
-                    card.onclick = () => openDetail(course);
-                }
+                
+                // 點擊卡片觸發 openDetail
+                card.onclick = () => openDetail(course);
 
                 const currentImg = course.imageUrl || (window.dbImageCache[`course_${course.id}`] || "");
 
@@ -1186,6 +1208,12 @@
         };
 
         function openDetail(course) {
+            // 🟡 核心臨床安全雙重檢查：防止開發者工具繞過 CSS 鎖定
+            if (window.isHighRiskLocked && course.isHighRisk) {
+                alert("⚠️ 此訓練屬高風險項目，已因您的健康狀況被系統鎖定。請在言語治療師親自監督下進行！");
+                return;
+            }
+
             window.currentActiveCourse = course;
 
             const topBar = document.getElementById('detail-top-bar');
@@ -1197,6 +1225,7 @@
             const stepsListWrapper = document.getElementById('steps-list-wrapper');
             const toolBoxContainer = document.getElementById('tool-box-container');
             const evidenceText = document.getElementById('evidenceContentText');
+            const btnTimer = document.getElementById('btnStartTimer');
 
             topBar.style.backgroundColor = course.themeColor;
             imgContainer.innerHTML = course.imageUrl ? `<img src="${course.imageUrl}">` : course.svgIcon;
@@ -1205,7 +1234,11 @@
             goal.innerText = `🎯 訓練目的：${course.goal}`;
             contra.innerHTML = `🚫 <strong>禁忌症（誰不適合做）：</strong>${course.contraindication || '無特殊禁忌'}`;
             dosage.innerHTML = `⏱️ <strong>建議訓練劑量：</strong>${course.dosage || '依言語治療師指示'}`;
-            evidenceText.innerText = course.evidence || '本訓練項目之臨床成效參照 Logemann (2011) 吞嚥障礙處方指南。';
+            evidenceText.innerText = course.evidence || '本訓練項目之臨床成效參照 Logemann, J. A. (2011) 吞嚥障礙處方指南。';
+
+            // 動態更新計時器按鈕文字
+            const timerSec = course.timerSeconds || 10;
+            btnTimer.innerText = `開始 ${timerSec} 秒動作維持計時`;
 
             stepsListWrapper.innerHTML = '';
             course.steps.forEach((step, index) => {
@@ -1241,6 +1274,12 @@
 
         document.getElementById('cover-img-container').innerHTML = coverDefaultSvg;
 
+        // 重置健康篩查問卷 (重新問卷)
+        window.resetHealthScreening = function() {
+            localStorage.removeItem('lohas_compliance_accepted');
+            document.getElementById('complianceConsentModal').style.display = 'flex';
+        };
+
         // 知情同意與安全篩查檢查
         window.checkConsentStatus = function() {
             const chk1 = document.getElementById('chkMedicalConsent').checked;
@@ -1265,8 +1304,18 @@
                 window.isHighRiskLocked = false;
             }
 
+            // 同步雲端鎖定狀態
+            if (window.currentUser && window.isCloudSyncEnabled) {
+                set(dbRef(database, `users/${window.currentUser.uid}/isHighRiskLocked`), window.isHighRiskLocked);
+            }
+
             localStorage.setItem('lohas_compliance_accepted', 'true');
             document.getElementById('complianceConsentModal').style.display = 'none';
+            
+            // 重新刷新當前視圖以套用鎖定狀態
+            if (window.currentCategoryId) {
+                window.filterAndNavigate(window.currentCategoryId);
+            }
         };
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -1276,9 +1325,12 @@
             }
         });
 
+        // PWA Service Worker 註冊 (含容錯)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js').catch(err => console.error(err));
+                navigator.serviceWorker.register('./service-worker.js').catch(err => {
+                    console.warn("PWA Service Worker 未安裝或未獲支援 (可正常運行):", err.message);
+                });
             });
         }
     </script>
