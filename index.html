@@ -9,15 +9,13 @@
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#1e293b">
 
-    <!-- iOS / iPad 專用 PWA 標籤 -->
+    <!-- iOS / iPad 專用 PWA 及原生應用標籤 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="樂活吞嚥沙盒">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3063/3063822.png">
 
-    <!-- AdMob / Google AdSense 應用程式識別碼設定 -->
-    <meta name="google-adsense-account" content="ca-pub-5403745127757660">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5403745127757660" crossorigin="anonymous"></script>
+    <!-- 【廣告清理】已移除所有 Google AdSense 網頁廣告腳本，避免 App Store 包殼審核退件 -->
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -49,7 +47,8 @@
         .cover-title { font-size: 23px; font-weight: 900; color: #1e293b; line-height: 1.25; margin-bottom: 4px; }
         .cover-subtitle { font-size: 12.5px; font-weight: 700; color: rgba(30, 41, 59, 0.85); line-height: 1.35; padding: 0 5px; }
         
-        .disclaimer-banner { background-color: #FFF3CD; border: 2px solid #FFEBAA; border-left: 5px solid #FF9F1C; padding: 8px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; color: #856404; margin: 8px 0; text-align: left; line-height: 1.4; }
+        /* 【醫療避險】醒目醫療免責聲明 */
+        .disclaimer-banner { background-color: #FFF3CD; border: 2px solid #FFEBAA; border-left: 5px solid #FF9F1C; padding: 10px 12px; border-radius: 12px; font-size: 11.5px; font-weight: 700; color: #856404; margin: 10px 0; text-align: left; line-height: 1.45; }
         
         .cover-img-box { width: 90px; height: 90px; border-radius: 50%; border: 3px solid #1e293b; box-shadow: 4px 4px 0px #1e293b; margin: 8px auto 12px; display: flex; justify-content: center; align-items: center; background: #fff; overflow: hidden; cursor: pointer; flex-shrink: 0; }
         .cover-img-box img { width: 100%; height: 100%; object-fit: cover; }
@@ -73,8 +72,8 @@
         .nav-arrow-btn, .next-end-btn, .font-toggle-btn { background: #ffffff; border: 2px solid #1e293b; border-radius: 50%; width: 38px; height: 38px; font-size: 15px; font-weight: 800; cursor: pointer; box-shadow: 2px 2px 0px #1e293b; display: flex; justify-content: center; align-items: center; color: #1e293b; }
         
         /* 全螢幕底部固定懸浮列 */
-        .bottom-bar { position: absolute; bottom: 0; left: 0; width: 100%; height: 50px; background: #FFF; border-top: 3px solid #1e293b; display: flex; justify-content: space-around; align-items: center; z-index: 100; padding: 0 10px; }
-        .bottom-bar-btn { font-size: 13px; font-weight: 800; color: #1e293b; background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+        .bottom-bar { position: absolute; bottom: 0; left: 0; width: 100%; height: 50px; background: #FFF; border-top: 3px solid #1e293b; display: flex; justify-content: space-around; align-items: center; z-index: 100; padding: 0 5px; }
+        .bottom-bar-btn { font-size: 12px; font-weight: 800; color: #1e293b; background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 3px; }
 
         /* 進度條 UI */
         .progress-box { margin: 0 20px 15px 20px; background: #fff; border: 2px solid #1e293b; border-radius: 16px; padding: 10px 14px; box-shadow: 3px 3px 0px #1e293b; }
@@ -155,9 +154,9 @@
                 <div class="cover-title">語音與吞嚥復康訓練沙盒</div>
                 <div class="cover-subtitle">(Voice & Swallowing Rehab Sandbox)</div>
                 
-                <!-- 醒目醫療聲明 -->
+                <!-- 【醫療避險】醒目免責聲明 -->
                 <div class="disclaimer-banner">
-                    ⚠️ <strong>醫療免責聲明：</strong> 本工具僅供輔助參考。訓練前必須先經註冊言語治療師或醫生評估，確認適合您的個別身體狀況。
+                    ⚠️ <strong>醫療免責聲明：</strong> 本工具僅供居家輔助練習，必須在註冊言語治療師或醫生評估與指導下使用，確認適合您的個別狀況。
                 </div>
 
                 <div class="cover-img-box" id="cover-img-container" onclick="triggerFilePicker('cover')" title="點擊修改歡迎頁相片"></div>
@@ -222,8 +221,9 @@
                 
                 <div id="steps-list-wrapper"></div>
                 
+                <!-- 【醫療避險】詳情頁緊急提示 -->
                 <div class="emergency-notice">
-                    🚨 <strong>緊急提醒：</strong> 如訓練期間出現嗆咳、呼吸困難、聲音變濕（wet voice），請立即停止並尋求醫療協助。
+                    🚨 <strong>臨床安全提醒：</strong> 本訓練需在言語治療師指導下執行。如練習期間出現嗆咳、呼吸困難或聲音變濕，請立即停止。
                 </div>
 
                 <div class="tool-box" id="tool-box-container"></div>
@@ -250,9 +250,10 @@
             </button>
         </div>
 
-        <!-- 底部固定導航欄 (全螢幕切換/長者模式) -->
+        <!-- 【原生增強】底部固定導航欄（加入「提醒練習」本地通知功能） -->
         <div class="bottom-bar">
             <button class="bottom-bar-btn" onclick="toggleSeniorFont()">👓 大字模式</button>
+            <button class="bottom-bar-btn" onclick="scheduleLocalReminder()">⏰ 提醒練習</button>
             <button class="bottom-bar-btn" onclick="toggleFullscreen()" id="zoom-toggle-btn">⤢ 全螢幕</button>
             <button class="bottom-bar-btn" onclick="navigateTo('cover-screen')">🏠 首頁</button>
         </div>
@@ -302,7 +303,7 @@
                 id: '1', categoryId: '1',
                 title: '🌟 訓練 1：', titleTitle: '用力吞嚥法', subtitle: 'Effortful Swallow',
                 description: '增加舌根向後收縮力與咽部收縮力，促進食物推進並減少咽部殘留。',
-                contraindication: '未有言語治療師評估咽部力量者慎用。',
+                contraindication: '需在言語治療師評估指導下執行。',
                 dosage: '每次 5-10 次吞嚥，每日 3 組。',
                 imageUrl: "",
                 svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><path d="M30 50Q50 30 70 50Q50 70 30 50Z" fill="#FFF" stroke="#1e293b" stroke-width="3"/><circle cx="50" cy="50" r="8" fill="#FF9F1C"/></svg>`,
@@ -469,7 +470,7 @@
                 toolName: '🛠️ 課後練習輔助工具', targetText: '冰棒刺激口腔'
             },
 
-            // 補充黃金標準訓練：Shaker Exercise
+            // 核心補充訓練：Shaker Exercise
             {
                 id: '25', categoryId: '1',
                 title: '🌟 訓練 25 (核心補充)：', titleTitle: 'Shaker 抬頭運動', subtitle: 'Shaker Exercise',
@@ -752,12 +753,38 @@
             }
         ];
 
+        // 【原生增強】本地定時練習提醒功能
+        window.scheduleLocalReminder = function() {
+            if (!("Notification" in window)) {
+                alert("⏰ 提醒設定：建議每日固定時間（如晨起或餐後）進行 15 分鐘吞嚥復康練習！");
+                return;
+            }
+
+            if (Notification.permission === "granted") {
+                new Notification("630樂活吞嚥沙盒", {
+                    body: "老友記！又是時候進行每日吞嚥與口肌健康練習囉 🏆",
+                    icon: "https://cdn-icons-png.flaticon.com/512/3063/3063822.png"
+                });
+                alert("✅ 已啟動每日練習提醒！");
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        new Notification("630樂活吞嚥沙盒", {
+                            body: "提醒功能已順利開啟！每日健康同行 🏆"
+                        });
+                    }
+                });
+            } else {
+                alert("⏰ 提醒設定：請在手機設定中允許通知，以接收每日訓練提醒！");
+            }
+        };
+
         // 切換長者大字模式
         window.toggleSeniorFont = function() {
             const shell = document.getElementById('app-phone-shell');
             shell.classList.toggle('senior-font-mode');
             const isLarge = shell.classList.contains('senior-font-mode');
-            alert(isLarge ? "已開啟「長者大字模式」眼鏡圖標 👓" : "已恢復標準字體模式");
+            alert(isLarge ? "已開啟「長者大字模式」👓" : "已恢復標準字體模式");
         };
 
         // 更新完成度進度條
@@ -797,7 +824,7 @@
             }
         });
 
-        // 監聽復康日誌（練習即紀錄完成）
+        // 監聽復康日誌
         onValue(dbRef(database, 'lohas_logs/'), (snapshot) => {
             const logs = snapshot.val() || {};
             window.completedCoursesSet.clear();
@@ -944,7 +971,7 @@
             navigateTo('list-screen');
         };
 
-        // 正向鼓勵性語音互動機制 (非扣分打擊制)
+        // 【技術修復】原生與 Web Speech API 自動相容升級邏輯
         window.isListening = false;
         window.recognition = null;
 
@@ -952,9 +979,19 @@
             const btn = document.getElementById('btnSttAction');
             const wave = document.getElementById('liveWave');
             
+            // 檢測是否處於原生 iOS / Android App 容器（如 Capacitor/Cordova 或 Custom Bridge）
+            if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nativeSTT) {
+                btn.innerText = "正使用原生語音模組發送... 🎙️";
+                window.webkit.messageHandlers.nativeSTT.postMessage({
+                    action: "startListening",
+                    targetText: window.currentActiveCourse ? window.currentActiveCourse.targetText : ""
+                });
+                return;
+            }
+
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
-                alert("目前的瀏覽器暫不支援語音辨識，請使用 Chrome 瀏覽器！");
+                alert("目前的瀏覽器暫不支援語音辨識，請使用 iOS App 原生版本或 Chrome 瀏覽器！");
                 return;
             }
 
@@ -984,7 +1021,6 @@
                     wave.style.visibility = "hidden";
                     btn.style.backgroundColor = "#BFFCC6";
                     
-                    // 正向鼓勵反饋
                     btn.innerHTML = `👏 聽到您練習了：「${transcript}」<br>🌟 棒極了！聲音非常清晰，繼續保持！<br><span style='font-size:11px; font-weight:600;'>已為您記錄本次練習 ☁️</span>`;
 
                     if (window.currentActiveCourse) {
