@@ -15,7 +15,7 @@
     <meta name="apple-mobile-web-app-title" content="樂活吞嚥沙盒">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3063/3063822.png">
 
-    <!-- 【廣告清理】已移除所有 Google AdSense 網頁廣告腳本，避免 App Store 包殼審核退件 -->
+    <!-- 【廣告清理】已移除所有 Google AdSense 腳本，避免 App Store 包殼審核退件 -->
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -32,7 +32,7 @@
         .screen { width: 100%; height: 100%; overflow-y: auto; position: absolute; top: 0; left: 0; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding-bottom: 60px; opacity: 0; pointer-events: none; }
         .screen::-webkit-scrollbar { display: none; }
         
-        /* 首頁畫面優化：改為頂部對齊並開啟垂直滾動，底部留 75px 避免被導航列遮擋 */
+        /* 首頁畫面優化：頂部對齊並開啟垂直滾動，底部留 75px 避免遮擋 */
         #cover-screen { z-index: 10; background-color: #A0E7E5; display: flex; flex-direction: column; justify-content: flex-start; padding: 20px 20px 75px; overflow-y: auto; }
         #list-screen { z-index: 1; background-color: #FAF6F0; }
         #detail-screen { z-index: 5; background-color: #F8F9FA; }
@@ -64,7 +64,7 @@
 
         .action-btn { display: block; width: 100%; padding: 18px; background-color: #FF9F1C; color: #1e293b; font-size: 18px; font-weight: 800; border: 3px solid #1e293b; border-radius: 25px; cursor: pointer; box-shadow: 5px 5px 0px #1e293b; text-align: center; position: relative; z-index: 50; }
         .action-btn:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0px #1e293b; }
-        .end-card-box { background: white; border: 3px solid #1e293b; border-radius: 32px; padding: 22px; box-shadow: 6px 6px 0px #1e293b; margin-top: 30px; }
+        .end-card-box { background: white; border: 3px solid #1e293b; border-radius: 32px; padding: 22px; box-shadow: 6px 6px 0px #1e293b; margin-top: 20px; }
         
         .header-title-container { display: flex; justify-content: space-between; align-items: center; padding: 30px 20px 10px 20px; }
         .header-title { font-size: 18px; font-weight: 900; color: #1a1a1a; flex-shrink: 0; }
@@ -83,7 +83,6 @@
 
         .recipe-list { padding: 0 20px; }
         .recipe-card { height: auto; min-height: 150px; border-radius: 30px 20px 30px 30px; margin-bottom: 18px; position: relative; cursor: pointer; border: 2px solid #1e293b; box-shadow: 5px 5px 0px #1e293b; padding: 16px 115px 16px 18px; transition: all 0.2s; }
-        /* 完成蓋章視覺效果 */
         .recipe-card.completed-card { opacity: 0.85; filter: grayscale(10%); }
         .recipe-card.completed-card::after { content: "已完成 🏆"; position: absolute; right: 15px; top: 12px; background: #128C7E; color: white; padding: 3px 10px; font-size: 11px; font-weight: 900; border-radius: 12px; border: 1.5px solid #1e293b; box-shadow: 2px 2px 0px #1e293b; transform: rotate(4deg); }
         
@@ -112,7 +111,6 @@
         .detail-title { font-size: 21px; font-weight: 900; color: #1e293b; margin-bottom: 8px; line-height: 1.3; }
         .detail-goal { font-size: 13.5px; font-weight: 600; color: #334155; background-color: #ffffff; padding: 12px 14px; border-radius: 18px; margin-bottom: 12px; border: 2px solid #1e293b; border-left: 6px solid #1e293b; box-shadow: 3px 3px 0px rgba(30, 41, 59, 0.1); line-height: 1.5; }
         
-        /* 臨床提示區塊 */
         .warning-box { font-size: 12.5px; font-weight: 700; color: #721c24; background-color: #f8d7da; padding: 10px 14px; border-radius: 16px; margin-bottom: 12px; border: 2px solid #1e293b; border-left: 6px solid #dc3545; line-height: 1.45; }
         .dosage-box { font-size: 12.5px; font-weight: 700; color: #0c5460; background-color: #d1ecf1; padding: 10px 14px; border-radius: 16px; margin-bottom: 16px; border: 2px solid #1e293b; border-left: 6px solid #17a2b8; line-height: 1.45; }
         
@@ -122,7 +120,6 @@
         .step-tag { font-size: 11.5px; font-weight: 800; color: #475569; }
         .step-text { font-size: 14px; font-weight: 600; color: #1e293b; line-height: 1.45; }
         
-        /* 緊急停止提示 */
         .emergency-notice { margin-top: 15px; background: #FFF3CD; border: 2px dashed #D97706; padding: 12px; border-radius: 16px; font-size: 12px; font-weight: 800; color: #92400E; text-align: center; }
 
         .tool-box { margin-top: 18px; background-color: #fff; border: 2px dashed #1e293b; border-radius: 24px; padding: 18px; box-shadow: 3.5px 3.5px 0px rgba(30, 41, 59, 0.08); }
@@ -245,12 +242,16 @@
                     </p>
                 </div>
             </div>
-            <button class="action-btn" style="background-color: #25D366; color: white; border-color: #128C7E; box-shadow: 5px 5px 0px #128C7E; margin-top:20px;" onclick="shareToWhatsApp()">
+            <button class="action-btn" style="background-color: #25D366; color: white; border-color: #128C7E; box-shadow: 5px 5px 0px #128C7E; margin-top:15px;" onclick="shareToWhatsApp()">
                 發送喜訊給家人 💬
+            </button>
+            <!-- 【隱私合規】清理雲端數據按鈕 (符合 App Store 帳號/資料刪除審核規章) -->
+            <button class="action-btn" style="background-color: #f8d7da; color: #721c24; border-color: #dc3545; box-shadow: 3px 3px 0px #dc3545; margin-top:10px; font-size:14px; padding:10px;" onclick="clearUserCloudLogs()">
+                🗑️ 清空我的雲端練習紀錄
             </button>
         </div>
 
-        <!-- 【原生增強】底部固定導航欄（加入「提醒練習」本地通知功能） -->
+        <!-- 【原生增強】底部固定導航欄 -->
         <div class="bottom-bar">
             <button class="bottom-bar-btn" onclick="toggleSeniorFont()">👓 大字模式</button>
             <button class="bottom-bar-btn" onclick="scheduleLocalReminder()">⏰ 提醒練習</button>
@@ -270,7 +271,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
         import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
-        import { getDatabase, ref as dbRef, set, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref as dbRef, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBG65952X2d1pzpfrtWEBnthzCxDWFePXA",
@@ -456,7 +457,7 @@
                 id: '10', categoryId: '1',
                 title: '🌟 訓練 10：', titleTitle: '熱冰刺激法', subtitle: 'Thermal-Tactile Stimulation, TTS',
                 description: '利用冷+酸雙重刺激提升咽部感知，誘發並加快吞嚥反射。',
-                contraindication: '口腔黏膜潰瘍、對酸過敏或極度敏感引發嘔吐反射者。',
+                contraindication: '口腔黏膜潰湧、對酸過敏或極度敏感引發嘔吐反射者。',
                 dosage: '每側前顎弓刺激 3-5 次後引導空吞嚥。',
                 imageUrl: "",
                 svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><path d="M40 30L60 70M60 30L40 70" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/><circle cx="50" cy="50" r="6" fill="#FFF275"/></svg>`,
@@ -776,6 +777,21 @@
                 });
             } else {
                 alert("⏰ 提醒設定：請在手機設定中允許通知，以接收每日訓練提醒！");
+            }
+        };
+
+        // 【隱私合規】清空使用者雲端日誌
+        window.clearUserCloudLogs = async function() {
+            if (confirm("確定要清空所有雲端復康日誌與進度紀錄嗎？（此操作無法復原）")) {
+                try {
+                    await remove(dbRef(database, 'lohas_logs/'));
+                    window.completedCoursesSet.clear();
+                    updateProgressBar();
+                    alert("已成功清空您的所有雲端練習紀錄！");
+                } catch (e) {
+                    console.error("清空失敗:", e);
+                    alert("處理失敗，請檢查網絡連線！");
+                }
             }
         };
 
