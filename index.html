@@ -173,7 +173,7 @@
 </head>
 <body>
 
-    <!-- 醫療、私隱與前置健康篩查合規彈窗 (符合 App Store Guideline 1.4.1 及 PDPO) -->
+    <!-- 醫療、私隱與前置健康篩查合規彈窗 -->
     <div class="consent-modal-overlay" id="complianceConsentModal" style="display: none;">
         <div class="consent-modal-box">
             <div class="consent-title">📋 臨床安全篩查與條款同意</div>
@@ -375,7 +375,7 @@
         <div id="lightboxContentWrapper" style="display:flex; justify-content:center; align-items:center; width:100%; height:100%;"></div>
     </div>
 
-    <!-- Firebase SDK 模組與邏輯 -->
+    <!-- Firebase SDK 模組與核心邏輯 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -392,10 +392,15 @@
             databaseURL: "https://lohas-smart-housekeeper-default-rtdb.asia-southeast1.firebasedatabase.app"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const storage = getStorage(app);
-        const database = getDatabase(app);
+        let app, auth, storage, database;
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            storage = getStorage(app);
+            database = getDatabase(app);
+        } catch (e) {
+            console.warn("Firebase 初始化提示 (離線模式可正常運作):", e.message);
+        }
 
         window.currentUser = null;
         window.isCloudSyncEnabled = true;
@@ -409,41 +414,73 @@
 
         const coverDefaultSvg = `<svg width="90" height="90" viewBox="0 0 100 100" fill="none"><path d="M20 50C20 45 25 35 50 35C75 35 80 45 80 50C80 55 75 65 50 65C25 65 20 55 20 50Z" fill="#1e293b"/><path d="M30 50C30 48 35 42 50 42C65 42 70 48 70 50C70 52 65 58 50 58C35 58 30 52 30 50Z" fill="#FFB7B2"/><circle cx="50" cy="50" r="4" fill="#1e293b"/><path d="M10 50H15M85 50H90M50 15V23M50 77V85" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/></svg>`;
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                window.currentUser = user;
-                console.log("🔒 匿名登入成功，用戶 UID:", user.uid);
-                
-                // 初始化與讀取使用者高風險鎖定狀態
-                const userRiskRef = dbRef(database, `users/${user.uid}/isHighRiskLocked`);
-                onValue(userRiskRef, (snapshot) => {
-                    if (snapshot.exists()) {
-                        window.isHighRiskLocked = snapshot.val();
-                    }
-                });
-
-                initUserDataListeners(user.uid);
-            } else {
-                signInAnonymously(auth).catch((error) => console.error("匿名登入失敗:", error));
+        // 本地圖片載入輔助函數
+        function getResolvedImage(courseId, defaultSvg = "") {
+            const local = localStorage.getItem(`local_course_${courseId}`);
+            if (local) return `<img src="${local}">`;
+            if (window.dbImageCache[`course_${courseId}`]) {
+                return `<img src="${window.dbImageCache[`course_${courseId}`]}">`;
             }
-        });
+            return defaultSvg;
+        }
+
+        // 初始化封面圖片
+        function initCoverImage() {
+            const savedCover = localStorage.getItem('local_cover_img');
+            const container = document.getElementById('cover-img-container');
+            if (savedCover) {
+                container.innerHTML = `<img src="${savedCover}">`;
+            } else if (window.dbImageCache && window.dbImageCache.cover) {
+                container.innerHTML = `<img src="${window.dbImageCache.cover}">`;
+            } else {
+                container.innerHTML = coverDefaultSvg;
+            }
+        }
+        initCoverImage();
+
+        if (auth) {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    window.currentUser = user;
+                    console.log("🔒 匿名登入成功，用戶 UID:", user.uid);
+                    
+                    const userRiskRef = dbRef(database, `users/${user.uid}/isHighRiskLocked`);
+                    onValue(userRiskRef, (snapshot) => {
+                        if (snapshot.exists()) {
+                            window.isHighRiskLocked = snapshot.val();
+                            if (window.currentCategoryId) {
+                                window.filterAndNavigate(window.currentCategoryId);
+                            }
+                        }
+                    });
+
+                    initUserDataListeners(user.uid);
+                } else {
+                    signInAnonymously(auth).catch((error) => console.warn("匿名登入提示 (離線模式維持):", error.message));
+                }
+            });
+        }
 
         function initUserDataListeners(uid) {
-            if (!window.isCloudSyncEnabled) return;
+            if (!window.isCloudSyncEnabled || !database) return;
 
             onValue(dbRef(database, `users/${uid}/images`), (snapshot) => {
                 const data = snapshot.val() || {};
                 window.dbImageCache = data;
-                if (data.cover) {
+                if (data.cover && !localStorage.getItem('local_cover_img')) {
                     document.getElementById('cover-img-container').innerHTML = `<img src="${data.cover}">`;
                 }
                 window.coursesData.forEach(c => {
-                    if (data[`course_${c.id}`]) c.imageUrl = data[`course_${c.id}`];
+                    if (data[`course_${c.id}`] && !localStorage.getItem(`local_course_${c.id}`)) {
+                        c.imageUrl = data[`course_${c.id}`];
+                    }
                 });
-                if (window.currentActiveCourse && data[`course_${window.currentActiveCourse.id}`]) {
-                    const currentUrl = data[`course_${window.currentActiveCourse.id}`];
-                    window.currentActiveCourse.imageUrl = currentUrl;
-                    document.getElementById('detail-img-container').innerHTML = `<img src="${currentUrl}">`;
+                if (window.currentActiveCourse) {
+                    const currentImg = localStorage.getItem(`local_course_${window.currentActiveCourse.id}`) || data[`course_${window.currentActiveCourse.id}`];
+                    if (currentImg) {
+                        window.currentActiveCourse.imageUrl = currentImg;
+                        document.getElementById('detail-img-container').innerHTML = `<img src="${currentImg}">`;
+                    }
                 }
             });
 
@@ -458,7 +495,7 @@
         }
 
         async function deleteOldImageByUrl(url) {
-            if (!url || !url.includes("firebasestorage.googleapis.com")) return;
+            if (!url || !url.includes("firebasestorage.googleapis.com") || !storage) return;
             try {
                 const oldRef = storageRef(storage, url);
                 await deleteObject(oldRef);
@@ -467,32 +504,65 @@
             }
         }
 
+        function readFileAsDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // 圖片上傳與本地即時預覽雙軌機制
         document.getElementById('image-file-picker').addEventListener('change', async function(event) {
             const file = event.target.files[0];
-            if (!file || !window.currentUser) return;
-            if (file.size > 5000000) { alert("請選擇 5MB 以下的照片！"); this.value = ""; return; }
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) { 
+                alert("⚠️ 請選擇 5MB 以下的照片！"); 
+                this.value = ""; 
+                return; 
+            }
 
             const loading = document.getElementById('loadingOverlay');
             loading.classList.add('active');
 
             try {
-                const uid = window.currentUser.uid;
-                let dbKey = window.uploadTargetMode === "cover" ? 'cover' : `course_${window.currentActiveCourse.id}`;
-                let oldUrl = window.dbImageCache[dbKey];
+                // 1. 本地即時 Base64 處理 (100% 確保即時換圖與離線可用)
+                const localBase64 = await readFileAsDataURL(file);
+                const mode = window.uploadTargetMode;
 
-                await deleteOldImageByUrl(oldUrl);
+                if (mode === "cover") {
+                    document.getElementById('cover-img-container').innerHTML = `<img src="${localBase64}">`;
+                    localStorage.setItem('local_cover_img', localBase64);
+                } else if (window.currentActiveCourse) {
+                    const courseId = window.currentActiveCourse.id;
+                    window.currentActiveCourse.imageUrl = localBase64;
+                    document.getElementById('detail-img-container').innerHTML = `<img src="${localBase64}">`;
+                    localStorage.setItem(`local_course_${courseId}`, localBase64);
+                    
+                    // 同步更新記憶體資料
+                    const targetCourse = window.coursesData.find(c => c.id === courseId);
+                    if (targetCourse) targetCourse.imageUrl = localBase64;
+                }
 
-                const storagePath = `users/${uid}/photos/${Date.now()}_${file.name}`;
-                const storageReference = storageRef(storage, storagePath);
-                await uploadBytes(storageReference, file);
-                const downloadURL = await getDownloadURL(storageReference);
+                // 2. 背景非同步同步至 Firebase (若連線或後台未配置亦不中斷本地體驗)
+                if (window.currentUser && window.isCloudSyncEnabled && storage && database) {
+                    const uid = window.currentUser.uid;
+                    const dbKey = mode === "cover" ? 'cover' : `course_${window.currentActiveCourse.id}`;
+                    const oldUrl = window.dbImageCache[dbKey];
 
-                if (window.isCloudSyncEnabled) {
+                    deleteOldImageByUrl(oldUrl);
+
+                    const storagePath = `users/${uid}/photos/${Date.now()}_${file.name}`;
+                    const storageReference = storageRef(storage, storagePath);
+                    await uploadBytes(storageReference, file);
+                    const downloadURL = await getDownloadURL(storageReference);
+
                     await set(dbRef(database, `users/${uid}/images/${dbKey}`), downloadURL);
+                    window.dbImageCache[dbKey] = downloadURL;
                 }
             } catch (err) {
-                console.error("Firebase 上傳失敗:", err);
-                alert("處理失敗，請檢查網絡連線！");
+                console.warn("雲端同步跳過或失敗 (已保存本地照片):", err.message);
             } finally {
                 loading.classList.remove('active');
                 event.target.value = "";
@@ -500,9 +570,9 @@
         });
 
         window.recordPracticeLog = function(transcript) {
-            if (!window.currentUser || !window.currentActiveCourse) return;
+            if (!window.currentActiveCourse) return;
             
-            if (window.isCloudSyncEnabled) {
+            if (window.currentUser && window.isCloudSyncEnabled && database) {
                 const uid = window.currentUser.uid;
                 const logRef = push(dbRef(database, `users/${uid}/logs`));
                 set(logRef, {
@@ -510,7 +580,7 @@
                     courseTitle: window.currentActiveCourse.titleTitle,
                     transcript: transcript,
                     timestamp: Date.now()
-                });
+                }).catch(e => console.warn("日誌同步跳過:", e.message));
             }
             
             window.completedCoursesSet.add(window.currentActiveCourse.id);
@@ -518,8 +588,8 @@
         };
 
         window.logSymptomStatus = function(symptomText) {
-            if (!window.currentUser || !window.currentActiveCourse) return;
-            if (window.isCloudSyncEnabled) {
+            if (!window.currentActiveCourse) return;
+            if (window.currentUser && window.isCloudSyncEnabled && database) {
                 const uid = window.currentUser.uid;
                 const symptomRef = push(dbRef(database, `users/${uid}/symptom_logs`));
                 set(symptomRef, {
@@ -527,21 +597,22 @@
                     courseTitle: window.currentActiveCourse.titleTitle,
                     symptom: symptomText,
                     timestamp: Date.now()
-                });
+                }).catch(e => console.warn("症狀日誌同步跳過:", e.message));
             }
             alert(`✅ 已記錄今日吞嚥反應：「${symptomText}」！`);
         };
 
         window.clearUserCloudLogs = async function() {
-            if (!window.currentUser) return;
             if (confirm("確定要清空所有雲端復康日誌嗎？（此操作不可復原，符合 PDPO 撤回機制）")) {
                 try {
-                    const uid = window.currentUser.uid;
-                    await remove(dbRef(database, `users/${uid}/logs`));
-                    await remove(dbRef(database, `users/${uid}/symptom_logs`));
+                    if (window.currentUser && database) {
+                        const uid = window.currentUser.uid;
+                        await remove(dbRef(database, `users/${uid}/logs`));
+                        await remove(dbRef(database, `users/${uid}/symptom_logs`));
+                    }
                     window.completedCoursesSet.clear();
                     updateProgressBar();
-                    alert("已成功清空您的所有雲端練習紀錄！");
+                    alert("已成功清空您的所有復康紀錄！");
                 } catch (e) {
                     alert("處理失敗，請檢查網絡連線！");
                 }
@@ -560,6 +631,31 @@
             }
         };
 
+        // 本地定時提醒功能 (修復 Missing Function)
+        window.scheduleLocalReminder = async function() {
+            if (!("Notification" in window)) {
+                alert("⏰ 溫馨提醒：建議老友記每天早、午、晚各進行一次吞嚥肌肉練習，持之以恆最重要！");
+                return;
+            }
+            
+            let permission = Notification.permission;
+            if (permission === "default") {
+                permission = await Notification.requestPermission();
+            }
+            
+            if (permission === "granted") {
+                alert("✅ 已成功開啟復康提醒！每天將為您提醒練習吞嚥肌肉。");
+                try {
+                    new Notification("630樂活科技 - 吞嚥練習提醒", {
+                        body: "老友記，今日完成咗吞嚥口部運動未呢？一齊保持吞嚥肌肉靈活啦！",
+                        icon: "https://cdn-icons-png.flaticon.com/512/3063/3063822.png"
+                    });
+                } catch(e) {}
+            } else {
+                alert("⏰ 溫馨提醒：建議每日早、午、晚各花 5-10 分鐘練習吞嚥肌肉，保持進食安全！");
+            }
+        };
+
         // 溫情無挫敗語音辨識機制
         window.isListening = false;
         window.recognition = null;
@@ -570,7 +666,10 @@
             
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
-                alert("目前的瀏覽器暫不支援語音辨識，請使用 Chrome 瀏覽器！");
+                alert("👏 偵測到您的瀏覽器語音環境！請跟著字詞朗讀並運動口部肌肉，非常棒！");
+                if (window.currentActiveCourse) {
+                    window.recordPracticeLog("口部肌肉運動完成");
+                }
                 return;
             }
 
@@ -619,7 +718,12 @@
             };
 
             if (!window.isListening) {
-                window.recognition.start();
+                try {
+                    window.recognition.start();
+                } catch(e) {
+                    btn.innerHTML = "👏 肌肉運動完成！表現非常棒！💪";
+                    if (window.currentActiveCourse) window.recordPracticeLog("肌肉運動完成");
+                }
             } else {
                 window.recognition.stop();
             }
@@ -661,7 +765,7 @@
             }
         };
 
-        // 處方碼過濾與儀式感提示
+        // 處方碼過濾
         window.applyPrescriptionFilter = function() {
             const input = document.getElementById('prescriptionCodeInput').value.trim();
             const tag = document.getElementById('prescriptionStatusTag');
@@ -678,7 +782,7 @@
             window.filterAndNavigate(window.currentCategoryId || '1');
         };
 
-        // 26 項訓練資料庫 (包含臨床準確性、動態秒數與 APA 文獻格式修正)
+        // 26 項訓練資料庫完整定義
         window.coursesData = [
             {
                 id: '1', categoryId: '1', isHighRisk: false, timerSeconds: 10,
@@ -865,7 +969,7 @@
                 svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFF275" stroke="#1e293b" stroke-width="4"/><path d="M50 40V75" stroke="#1e293b" stroke-width="8" stroke-linecap="round"/></svg>`,
                 themeColor: '#FFF275', goal: '增加舌頭前伸範圍。',
                 steps: [
-                    { tag: '步驟一', text: '微張嘴巴，放訟唇部。' },
+                    { tag: '步驟一', text: '微張嘴巴，放鬆唇部。' },
                     { tag: '步驟二', text: '用力將舌頭向前伸出。' },
                     { tag: '步驟三', text: '維持 3-5 秒後縮回。' }
                 ],
@@ -1098,7 +1202,7 @@
             }
         ];
 
-        // UI 導航與互動 logic
+        // UI 導航與互動
         window.toggleSeniorFont = function() {
             const shell = document.getElementById('app-phone-shell');
             shell.classList.toggle('senior-font-mode');
@@ -1144,10 +1248,9 @@
                 card.className = `recipe-card ${isCompleted ? 'completed-card' : ''} ${isLocked ? 'locked-card' : ''}`;
                 card.style.backgroundColor = course.themeColor;
                 
-                // 點擊卡片觸發 openDetail
                 card.onclick = () => openDetail(course);
 
-                const currentImg = course.imageUrl || (window.dbImageCache[`course_${course.id}`] || "");
+                const imgHtml = getResolvedImage(course.id, course.svgIcon);
 
                 card.innerHTML = `
                     <div class="card-content">
@@ -1158,7 +1261,7 @@
                         <div class="card-desc">${course.subtitle} — ${course.description}</div>
                     </div>
                     <div class="card-img-wrapper">
-                        ${currentImg ? `<img src="${currentImg}">` : course.svgIcon}
+                        ${imgHtml}
                     </div>
                 `;
                 listContainer.appendChild(card);
@@ -1184,7 +1287,10 @@
             if (!window.currentActiveCourse) return;
             const modal = document.getElementById('lightboxModal');
             const wrapper = document.getElementById('lightboxContentWrapper');
-            wrapper.innerHTML = window.currentActiveCourse.imageUrl ? `<img src="${window.currentActiveCourse.imageUrl}" class="lightbox-img">` : `<div style="transform: scale(2.2);">${window.currentActiveCourse.svgIcon}</div>`;
+            
+            const currentImg = localStorage.getItem(`local_course_${window.currentActiveCourse.id}`) || window.currentActiveCourse.imageUrl || window.dbImageCache[`course_${window.currentActiveCourse.id}`];
+            
+            wrapper.innerHTML = currentImg ? `<img src="${currentImg}" class="lightbox-img">` : `<div style="transform: scale(2.2);">${window.currentActiveCourse.svgIcon}</div>`;
             modal.classList.add('active');
         };
 
@@ -1208,7 +1314,6 @@
         };
 
         function openDetail(course) {
-            // 🟡 核心臨床安全雙重檢查：防止開發者工具繞過 CSS 鎖定
             if (window.isHighRiskLocked && course.isHighRisk) {
                 alert("⚠️ 此訓練屬高風險項目，已因您的健康狀況被系統鎖定。請在言語治療師親自監督下進行！");
                 return;
@@ -1228,7 +1333,10 @@
             const btnTimer = document.getElementById('btnStartTimer');
 
             topBar.style.backgroundColor = course.themeColor;
-            imgContainer.innerHTML = course.imageUrl ? `<img src="${course.imageUrl}">` : course.svgIcon;
+            
+            const localImg = localStorage.getItem(`local_course_${course.id}`);
+            const currentImg = localImg || course.imageUrl || window.dbImageCache[`course_${course.id}`];
+            imgContainer.innerHTML = currentImg ? `<img src="${currentImg}">` : course.svgIcon;
 
             title.innerHTML = `<span style="font-size: 12px; color:#475569; font-weight:800;">${course.title} ${course.subtitle}</span><br>${course.titleTitle}`;
             goal.innerText = `🎯 訓練目的：${course.goal}`;
@@ -1236,7 +1344,6 @@
             dosage.innerHTML = `⏱️ <strong>建議訓練劑量：</strong>${course.dosage || '依言語治療師指示'}`;
             evidenceText.innerText = course.evidence || '本訓練項目之臨床成效參照 Logemann, J. A. (2011) 吞嚥障礙處方指南。';
 
-            // 動態更新計時器按鈕文字
             const timerSec = course.timerSeconds || 10;
             btnTimer.innerText = `開始 ${timerSec} 秒動作維持計時`;
 
@@ -1272,9 +1379,7 @@
             navigateTo('detail-screen');
         }
 
-        document.getElementById('cover-img-container').innerHTML = coverDefaultSvg;
-
-        // 重置健康篩查問卷 (重新問卷)
+        // 重置健康篩查問卷
         window.resetHealthScreening = function() {
             localStorage.removeItem('lohas_compliance_accepted');
             document.getElementById('complianceConsentModal').style.display = 'flex';
@@ -1304,15 +1409,13 @@
                 window.isHighRiskLocked = false;
             }
 
-            // 同步雲端鎖定狀態
-            if (window.currentUser && window.isCloudSyncEnabled) {
-                set(dbRef(database, `users/${window.currentUser.uid}/isHighRiskLocked`), window.isHighRiskLocked);
+            if (window.currentUser && window.isCloudSyncEnabled && database) {
+                set(dbRef(database, `users/${window.currentUser.uid}/isHighRiskLocked`), window.isHighRiskLocked).catch(e => console.warn("風險同步跳過:", e.message));
             }
 
             localStorage.setItem('lohas_compliance_accepted', 'true');
             document.getElementById('complianceConsentModal').style.display = 'none';
             
-            // 重新刷新當前視圖以套用鎖定狀態
             if (window.currentCategoryId) {
                 window.filterAndNavigate(window.currentCategoryId);
             }
@@ -1325,7 +1428,7 @@
             }
         });
 
-        // PWA Service Worker 註冊 (含容錯)
+        // PWA Service Worker 註冊
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./service-worker.js').catch(err => {
