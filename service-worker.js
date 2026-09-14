@@ -1,33 +1,29 @@
-const CACHE_NAME = 'lohas-swallow-v2';
+const CACHE_NAME = 'lohas-swallow-v3';
 
-// 需要快取的核心靜態檔案清單
+// 僅快取本機核心 App Shell 資源
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
-  './manifest.json',
-  'https://cdn.tailwindcss.com',
-  'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5403745127757660'
+  './manifest.json'
 ];
 
-// 1. 安裝 Service Worker 並寫入 Cache
+// 1. 安裝並寫入快取
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[Service Worker] 快取 App Shell 核心資源');
       return cache.addAll(ASSETS_TO_CACHE);
     })
   );
   self.skipWaiting();
 });
 
-// 2. 啟動 Service Worker 並清理舊快取
+// 2. 啟動並清理舊版本快取
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keyList) => {
       return Promise.all(
         keyList.map((key) => {
           if (key !== CACHE_NAME) {
-            console.log('[Service Worker] 清除舊版快取:', key);
             return caches.delete(key);
           }
         })
@@ -37,21 +33,27 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// 3. 攔截網路請求：Firebase 實時數據走 Network First，靜態資源走 Cache First
+// 3. 網絡請求攔截
 self.addEventListener('fetch', (event) => {
   const url = event.request.url;
 
-  // Firebase Realtime DB 與 Storage 請求走網絡優先
-  if (url.includes('firebasedatabase.app') || url.includes('googleapis.com')) {
-    event.respondWith(
-      fetch(event.request).catch(() => caches.match(event.request))
-    );
-  } else {
-    // 靜態 UI 資源走快取優先
-    event.respondWith(
-      caches.match(event.request).then((response) => {
-        return response || fetch(event.request);
-      })
-    );
+  // Firebase Realtime DB、Storage 上傳、Auth 與外部 CDN 放行，不予攔截
+  if (
+    url.includes('firebasedatabase.app') || 
+    url.includes('googleapis.com') ||
+    url.includes('firebaseio.com') ||
+    url.includes('pagead2')
+  ) {
+    return;
   }
+
+  // 核心靜態頁面走「快取優先，降級走網絡」
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) => {
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+      return fetch(event.request);
+    })
+  );
 });
