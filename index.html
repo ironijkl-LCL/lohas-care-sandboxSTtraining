@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>630樂活科技 - 語音與吞嚥復康訓練沙盒 (臨床合規升級版)</title>
+    <title>630樂活科技 - 語音與吞嚥復康訓練沙盒 (超清全螢幕合規版)</title>
 
     <!-- PWA Manifest 與 顏色設定 -->
     <link rel="manifest" href="./manifest.json">
@@ -102,7 +102,7 @@
         .detail-img-actions { position: absolute; bottom: 10px; right: 10px; display: flex; gap: 6px; z-index: 20; }
         .img-action-badge { background: #FAF6F0; border: 2px solid #1e293b; padding: 5px 12px; font-size: 11.5px; font-weight: 800; border-radius: 14px; box-shadow: 2px 2px 0px #1e293b; cursor: pointer; }
 
-        /* ─── 燈箱全螢幕高清放大與縮放互動 ─── */
+        /* ─── 旗艦級：超清全螢幕獨立視口燈箱 ─── */
         .lightbox-modal {
             display: none;
             position: fixed;
@@ -110,79 +110,114 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: rgba(15, 23, 42, 0.94);
-            z-index: 99999;
-            padding: 15px;
-            backdrop-filter: blur(8px);
-            overflow: auto;
-        }
-        .lightbox-modal.active {
-            display: flex;
+            background-color: #000000; /* 100% 純黑，徹底隔絕背後手機模型與干擾 */
+            z-index: 999999;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-        }
-
-        #lightboxContentWrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            padding: 10px;
-        }
-
-        .lightbox-img {
-            width: min(94vw, 1000px);
-            max-height: 82vh;
-            object-fit: contain;
-            border-radius: 18px;
-            border: 3px solid #ffffff;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
-            background: #ffffff;
-            cursor: zoom-in;
-            transition: transform 0.25s cubic-bezier(0.2, 0, 0.2, 1);
+            touch-action: none;
             user-select: none;
+            overflow: hidden;
+        }
+        .lightbox-modal.active {
+            display: flex;
         }
 
-        .lightbox-img.zoomed {
-            transform: scale(1.65);
-            cursor: zoom-out;
-            max-height: none;
-            margin: 40px auto;
-        }
-
-        .lightbox-close-btn {
+        /* 頂部懸浮控制列 */
+        .lightbox-top-bar {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 48px;
-            height: 48px;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 65px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 1000001;
+        }
+        .lightbox-title-text {
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+        .lightbox-close-btn {
             background: #ffffff;
-            border: 3px solid #1e293b;
-            border-radius: 50%;
-            font-size: 24px;
+            border: 2.5px solid #1e293b;
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-size: 14px;
             font-weight: 900;
             color: #1e293b;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 3px 3px 0px #1e293b;
-            z-index: 100000;
+            box-shadow: 2px 2px 0px #000;
         }
 
-        .lightbox-hint {
-            margin-top: 12px;
-            background: rgba(255, 255, 255, 0.2);
-            color: #ffffff;
+        /* 畫布舞台：支援拖曳平移與縮放 */
+        .lightbox-stage {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            cursor: grab;
+        }
+        .lightbox-stage:active {
+            cursor: grabbing;
+        }
+
+        /* 圖片預設撐滿視口 95%，不再縮小 */
+        .lightbox-img {
+            width: 95vw;
+            max-width: 1200px;
+            max-height: 80vh;
+            object-fit: contain;
+            border-radius: 14px;
+            box-shadow: 0 10px 40px rgba(255, 255, 255, 0.1);
+            transform-origin: center center;
+            transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1);
+            pointer-events: auto;
+        }
+
+        /* 底部功能工具條（長者友善大按鈕） */
+        .lightbox-bottom-toolbar {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 41, 59, 0.92);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 30px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000001;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+        }
+        .lb-tool-btn {
+            background: #ffffff;
+            color: #1e293b;
+            border: 1.5px solid #1e293b;
+            border-radius: 18px;
+            padding: 7px 14px;
             font-size: 13px;
-            font-weight: 800;
-            padding: 6px 16px;
-            border-radius: 20px;
-            letter-spacing: 0.5px;
-            pointer-events: none;
+            font-weight: 900;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+            box-shadow: 1.5px 1.5px 0px #000;
+        }
+        .lb-tool-btn:active {
+            transform: scale(0.95);
         }
 
         .steps-container { padding: 18px; }
@@ -243,7 +278,7 @@
 </head>
 <body>
 
-    <!-- 醫療、私隱與前置健康篩查合規彈窗 (符合 App Store Guideline 1.4.1 及 PDPO) -->
+    <!-- 臨床安全篩查與條款同意彈窗 -->
     <div class="consent-modal-overlay" id="complianceConsentModal" style="display: none;">
         <div class="consent-modal-box">
             <div class="consent-title">📋 臨床安全篩查與條款同意</div>
@@ -425,11 +460,23 @@
         </div>
     </div>
 
-    <!-- 升級版全螢幕高清燈箱 -->
-    <div class="lightbox-modal" id="lightboxModal" onclick="closeLightbox()">
-        <button class="lightbox-close-btn" onclick="event.stopPropagation(); closeLightbox();" title="關閉放大">✕</button>
-        <div id="lightboxContentWrapper"></div>
-        <div class="lightbox-hint">🔍 點擊圖片可再放大 1.6 倍／還原</div>
+    <!-- 旗艦級：超清全螢幕獨立視口燈箱 -->
+    <div class="lightbox-modal" id="lightboxModal">
+        <div class="lightbox-top-bar">
+            <div class="lightbox-title-text" id="lightboxTitleText">🔍 分解動作超清檢視</div>
+            <button class="lightbox-close-btn" onclick="closeLightbox()">✕ 關閉</button>
+        </div>
+        
+        <div class="lightbox-stage" id="lightboxStage">
+            <div id="lightboxContentWrapper" style="display:flex; justify-content:center; align-items:center;"></div>
+        </div>
+
+        <div class="lightbox-bottom-toolbar">
+            <button class="lb-tool-btn" onclick="zoomInImage()">🔍➕ 放大</button>
+            <button class="lb-tool-btn" onclick="zoomOutImage()">🔍➖ 縮小</button>
+            <button class="lb-tool-btn" onclick="rotateImage()">🔄 旋轉90°</button>
+            <button class="lb-tool-btn" onclick="resetImageTransform()">↺ 還原</button>
+        </div>
     </div>
 
     <!-- Firebase SDK 模組與整合邏輯 -->
@@ -460,7 +507,6 @@
 
         window.currentUser = null;
         window.isCloudSyncEnabled = true;
-        // 從 localStorage 持久化讀取高風險鎖定狀態
         window.isHighRiskLocked = localStorage.getItem('lohas_risk_locked') === 'true';
         window.uploadTargetMode = "cover"; 
         window.currentActiveCourse = null;
@@ -471,7 +517,7 @@
 
         const coverDefaultSvg = `<svg width="90" height="90" viewBox="0 0 100 100" fill="none"><path d="M20 50C20 45 25 35 50 35C75 35 80 45 80 50C80 55 75 65 50 65C25 65 20 55 20 50Z" fill="#1e293b"/><path d="M30 50C30 48 35 42 50 42C65 42 70 48 70 50C70 52 65 58 50 58C35 58 30 52 30 50Z" fill="#FFB7B2"/><circle cx="50" cy="50" r="4" fill="#1e293b"/><path d="M10 50H15M85 50H90M50 15V23M50 77V85" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/></svg>`;
 
-        // 26 項訓練資料庫（100% 完整綁定真實臨床分解圖與秒數）
+        // 26 項訓練資料庫（100% 完整綁定真實臨床分解圖與維持秒數）
         window.coursesData = [
             // ─── 模組一：喉部提升與吞嚥安全訓練 ───
             {
@@ -1276,36 +1322,104 @@
             document.getElementById('image-file-picker').click();
         };
 
-        // 點擊圖片切換 1.65x 超大縮放
-        window.toggleImageZoom = function(imgElement) {
-            imgElement.classList.toggle('zoomed');
-            const hint = document.querySelector('.lightbox-hint');
-            if (hint) {
-                hint.innerText = imgElement.classList.contains('zoomed') ? 
-                    "🔍 再次點擊圖片即可還原大小" : 
-                    "🔍 點擊圖片可再放大 1.6 倍／還原";
-            }
+        // ─── 超清全螢幕檢視器互動核心 ───
+        let lbScale = 1;
+        let lbRotation = 0;
+        let lbPosX = 0;
+        let lbPosY = 0;
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
+
+        function applyLbTransform() {
+            const img = document.getElementById('activeLbImage');
+            if (!img) return;
+            img.style.transform = `translate(${lbPosX}px, ${lbPosY}px) rotate(${lbRotation}deg) scale(${lbScale})`;
+        }
+
+        window.zoomInImage = function() {
+            lbScale = Math.min(lbScale + 0.35, 3.5);
+            applyLbTransform();
+        };
+
+        window.zoomOutImage = function() {
+            lbScale = Math.max(lbScale - 0.35, 0.8);
+            if (lbScale <= 1) { lbPosX = 0; lbPosY = 0; }
+            applyLbTransform();
+        };
+
+        window.rotateImage = function() {
+            lbRotation = (lbRotation + 90) % 360;
+            applyLbTransform();
+        };
+
+        window.resetImageTransform = function() {
+            lbScale = 1;
+            lbRotation = 0;
+            lbPosX = 0;
+            lbPosY = 0;
+            applyLbTransform();
         };
 
         window.openLightbox = function() {
             if (!window.currentActiveCourse) return;
             const modal = document.getElementById('lightboxModal');
             const wrapper = document.getElementById('lightboxContentWrapper');
+            const title = document.getElementById('lightboxTitleText');
+            
+            title.innerText = `🔍 ${window.currentActiveCourse.titleTitle} (分解動作超清大圖)`;
             const currentImg = (window.dbImageCache && window.dbImageCache[`course_${window.currentActiveCourse.id}`]) || window.currentActiveCourse.defaultImageUrl;
             
+            resetImageTransform();
+            
             wrapper.innerHTML = currentImg ? 
-                `<img src="${currentImg}" class="lightbox-img" onclick="event.stopPropagation(); toggleImageZoom(this);" alt="訓練示範圖" onerror="this.outerHTML='<div style=\\\'transform:scale(3.5);\\\'>${window.currentActiveCourse.svgIcon.replace(/'/g, "\\'")}</div>'">` : 
+                `<img src="${currentImg}" id="activeLbImage" class="lightbox-img" alt="示範分解圖" onerror="this.outerHTML='<div style=\\\'transform:scale(3.5);\\\'>${window.currentActiveCourse.svgIcon.replace(/'/g, "\\'")}</div>'">` : 
                 `<div style="transform: scale(3.5);">${window.currentActiveCourse.svgIcon}</div>`;
             
             modal.classList.add('active');
+            setupStageDrag();
         };
 
         window.closeLightbox = function() {
             const modal = document.getElementById('lightboxModal');
-            const img = modal.querySelector('.lightbox-img');
-            if (img) img.classList.remove('zoomed');
             modal.classList.remove('active');
+            resetImageTransform();
         };
+
+        function setupStageDrag() {
+            const stage = document.getElementById('lightboxStage');
+            
+            // 滑鼠拖曳
+            stage.onmousedown = (e) => {
+                if (lbScale <= 1 && lbRotation === 0) return;
+                isDragging = true;
+                dragStartX = e.clientX - lbPosX;
+                dragStartY = e.clientY - lbPosY;
+            };
+            window.onmousemove = (e) => {
+                if (!isDragging) return;
+                lbPosX = e.clientX - dragStartX;
+                lbPosY = e.clientY - dragStartY;
+                applyLbTransform();
+            };
+            window.onmouseup = () => { isDragging = false; };
+
+            // 手機觸控滑動
+            stage.ontouchstart = (e) => {
+                if (e.touches.length === 1 && (lbScale > 1 || lbRotation !== 0)) {
+                    isDragging = true;
+                    dragStartX = e.touches[0].clientX - lbPosX;
+                    dragStartY = e.touches[0].clientY - lbPosY;
+                }
+            };
+            stage.ontouchmove = (e) => {
+                if (!isDragging || e.touches.length !== 1) return;
+                lbPosX = e.touches[0].clientX - dragStartX;
+                lbPosY = e.touches[0].clientY - dragStartY;
+                applyLbTransform();
+            };
+            stage.ontouchend = () => { isDragging = false; };
+        }
 
         window.closeDetail = function() {
             if (window.recognition) {
