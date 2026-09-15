@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>630樂活科技 - 語音與吞嚥復康訓練沙盒 (超清全螢幕手勢縮放版)</title>
+    <title>630樂活科技 - 語音與吞嚥復康訓練沙盒 (AI 質地檢測版)</title>
 
-    <!-- PWA Manifest 與 顏色設定 -->
+    <!-- PWA 配置 -->
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#1e293b">
 
-    <!-- iOS / iPad 專用 PWA 及原生應用標籤 -->
+    <!-- iOS 專用配置 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="樂活吞嚥沙盒">
@@ -30,7 +30,7 @@
         .screen { width: 100%; height: 100%; overflow-y: auto; position: absolute; top: 0; left: 0; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding-bottom: 60px; opacity: 0; pointer-events: none; }
         .screen::-webkit-scrollbar { display: none; }
         
-        #cover-screen { z-index: 10; background-color: #A0E7E5; display: flex; flex-direction: column; justify-content: flex-start; padding: 20px 20px 75px; overflow-y: auto; }
+        #cover-screen { z-index: 10; background-color: #A0E7E5; display: flex; flex-direction: column; justify-content: flex-start; padding: 18px 18px 75px; overflow-y: auto; }
         #list-screen { z-index: 1; background-color: #FAF6F0; }
         #detail-screen { z-index: 5; background-color: #F8F9FA; }
         #end-screen { z-index: 20; background-color: #E8AEFF; display: flex; flex-direction: column; justify-content: space-between; padding: 50px 30px; }
@@ -41,16 +41,20 @@
         .cover-content { text-align: center; margin-top: 2px; }
         .brand-header { font-size: 19px; font-weight: 800; color: #334155; letter-spacing: 0.5px; margin-bottom: 2px; }
         .brand-sub { font-size: 12.5px; font-weight: 700; color: #475569; letter-spacing: 0.5px; margin-bottom: 6px; }
-        .cover-title { font-size: 23px; font-weight: 900; color: #1e293b; line-height: 1.25; margin-bottom: 4px; }
-        .cover-subtitle { font-size: 12.5px; font-weight: 700; color: rgba(30, 41, 59, 0.85); line-height: 1.35; padding: 0 5px; }
+        .cover-title { font-size: 22px; font-weight: 900; color: #1e293b; line-height: 1.25; margin-bottom: 4px; }
+        .cover-subtitle { font-size: 12px; font-weight: 700; color: rgba(30, 41, 59, 0.85); line-height: 1.35; padding: 0 5px; }
         
-        .disclaimer-banner { background-color: #FFF3CD; border: 2px solid #FFEBAA; border-left: 5px solid #FF9F1C; padding: 10px 12px; border-radius: 12px; font-size: 11.5px; font-weight: 700; color: #856404; margin: 10px 0; text-align: left; line-height: 1.45; }
+        .disclaimer-banner { background-color: #FFF3CD; border: 2px solid #FFEBAA; border-left: 5px solid #FF9F1C; padding: 9px 11px; border-radius: 12px; font-size: 11px; font-weight: 700; color: #856404; margin: 8px 0; text-align: left; line-height: 1.4; }
         
-        .cover-img-box { width: 90px; height: 90px; border-radius: 50%; border: 3px solid #1e293b; box-shadow: 4px 4px 0px #1e293b; margin: 8px auto 12px; display: flex; justify-content: center; align-items: center; background: #fff; overflow: hidden; cursor: pointer; flex-shrink: 0; }
+        .cover-img-box { width: 85px; height: 85px; border-radius: 50%; border: 3px solid #1e293b; box-shadow: 4px 4px 0px #1e293b; margin: 6px auto 10px; display: flex; justify-content: center; align-items: center; background: #fff; overflow: hidden; cursor: pointer; flex-shrink: 0; }
         .cover-img-box img { width: 100%; height: 100%; object-fit: cover; }
         
-        .cover-btn-group { display: flex; flex-direction: column; gap: 7px; width: 100%; z-index: 50; margin-bottom: 15px; }
-        .module-btn { display: block; width: 100%; padding: 10px 12px; color: #1e293b; font-size: 13px; font-weight: 800; border: 3px solid #1e293b; border-radius: 18px; cursor: pointer; box-shadow: 3.5px 3.5px 0px #1e293b; text-align: left; line-height: 1.3; transition: transform 0.1s; }
+        /* 膳食快檢專用突出按鈕 */
+        .btn-ai-meal { background-color: #38BDF8; color: #0F172A; font-size: 13.5px; font-weight: 900; border: 3px solid #1e293b; border-radius: 18px; padding: 11px; width: 100%; cursor: pointer; box-shadow: 3.5px 3.5px 0px #1e293b; margin-bottom: 9px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform 0.1s; }
+        .btn-ai-meal:active { transform: translate(2px, 2px); box-shadow: 1.5px 1.5px 0px #1e293b; }
+
+        .cover-btn-group { display: flex; flex-direction: column; gap: 7px; width: 100%; z-index: 50; margin-bottom: 12px; }
+        .module-btn { display: block; width: 100%; padding: 9px 12px; color: #1e293b; font-size: 12.5px; font-weight: 800; border: 3px solid #1e293b; border-radius: 16px; cursor: pointer; box-shadow: 3px 3px 0px #1e293b; text-align: left; line-height: 1.3; transition: transform 0.1s; }
         .module-btn:active { transform: translate(2px, 2px); box-shadow: 1.5px 1.5px 0px #1e293b; }
         
         .btn-m1 { background-color: #FF9F1C; }
@@ -75,7 +79,6 @@
         .progress-bar-bg { width: 100%; height: 12px; background: #e2e8f0; border-radius: 6px; border: 1.5px solid #1e293b; overflow: hidden; }
         .progress-bar-fill { height: 100%; background: #25D366; width: 0%; transition: width 0.4s ease; }
 
-        /* 處方輸入列 */
         .prescription-box { margin: 0 20px 12px 20px; background: #E0F2FE; border: 2px solid #0284C7; border-radius: 14px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; font-weight: 800; color: #0369A1; }
         .prescription-input { width: 120px; padding: 4px 8px; border: 1.5px solid #1e293b; border-radius: 8px; font-size: 12px; font-weight: 800; text-align: center; }
 
@@ -102,137 +105,37 @@
         .detail-img-actions { position: absolute; bottom: 10px; right: 10px; display: flex; gap: 6px; z-index: 20; }
         .img-action-badge { background: #FAF6F0; border: 2px solid #1e293b; padding: 5px 12px; font-size: 11.5px; font-weight: 800; border-radius: 14px; box-shadow: 2px 2px 0px #1e293b; cursor: pointer; }
 
-        /* ─── 旗艦級：超清全螢幕獨立視口燈箱與全手勢縮放 ─── */
-        .lightbox-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: #000000;
-            z-index: 999999;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            touch-action: none;
-            user-select: none;
-            overflow: hidden;
-        }
-        .lightbox-modal.active {
-            display: flex;
-        }
+        /* ─── 燈箱全螢幕高清檢視器 ─── */
+        .lightbox-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #000000; z-index: 999999; flex-direction: column; justify-content: center; align-items: center; touch-action: none; user-select: none; overflow: hidden; }
+        .lightbox-modal.active { display: flex; }
+        .lightbox-top-bar { position: fixed; top: 0; left: 0; width: 100vw; height: 65px; background: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 1000001; }
+        .lightbox-title-text { color: #ffffff; font-size: 15px; font-weight: 800; letter-spacing: 0.5px; }
+        .lightbox-close-btn { background: #ffffff; border: 2.5px solid #1e293b; border-radius: 20px; padding: 6px 16px; font-size: 14px; font-weight: 900; color: #1e293b; cursor: pointer; box-shadow: 2px 2px 0px #000; }
+        .lightbox-stage { width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; cursor: grab; }
+        .lightbox-stage:active { cursor: grabbing; }
+        .lightbox-img { width: 95vw; max-width: 1200px; max-height: 80vh; object-fit: contain; border-radius: 14px; box-shadow: 0 10px 40px rgba(255, 255, 255, 0.1); transform-origin: center center; transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1); }
+        .lightbox-bottom-toolbar { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: rgba(30, 41, 59, 0.92); border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 30px; padding: 8px 16px; display: flex; align-items: center; gap: 10px; z-index: 1000001; box-shadow: 0 10px 25px rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
+        .lb-tool-btn { background: #ffffff; color: #1e293b; border: 1.5px solid #1e293b; border-radius: 18px; padding: 7px 13px; font-size: 12.5px; font-weight: 900; cursor: pointer; white-space: nowrap; }
 
-        .lightbox-top-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 65px;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.88), transparent);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            z-index: 1000001;
-        }
-        .lightbox-title-text {
-            color: #ffffff;
-            font-size: 15px;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.9);
-        }
-        .lightbox-close-btn {
-            background: #ffffff;
-            border: 2px solid #1e293b;
-            border-radius: 20px;
-            padding: 6px 16px;
-            font-size: 14px;
-            font-weight: 900;
-            color: #1e293b;
-            cursor: pointer;
-            box-shadow: 2px 2px 0px #000;
-        }
-
-        /* 畫布舞台：支援全螢幕自動鋪滿、捏合縮放與拖曳 */
-        .lightbox-stage {
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            position: relative;
-            touch-action: none;
-        }
-
-        /* 自動鋪滿全畫面：寬度佔視口 98%、高度覆蓋達 86% */
-        .lightbox-img {
-            width: 98vw;
-            height: 86vh;
-            max-width: 100vw;
-            max-height: 88vh;
-            object-fit: contain;
-            border-radius: 8px;
-            transform-origin: center center;
-            will-change: transform;
-            user-select: none;
-            -webkit-user-drag: none;
-            pointer-events: auto;
-        }
-
-        .lightbox-bottom-toolbar {
-            position: fixed;
-            bottom: 25px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(30, 41, 59, 0.92);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 30px;
-            padding: 8px 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            z-index: 1000001;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
-            backdrop-filter: blur(8px);
-        }
-        .lb-tool-btn {
-            background: #ffffff;
-            color: #1e293b;
-            border: 1.5px solid #1e293b;
-            border-radius: 18px;
-            padding: 7px 14px;
-            font-size: 13px;
-            font-weight: 900;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            white-space: nowrap;
-            box-shadow: 1.5px 1.5px 0px #000;
-        }
-        .lb-tool-btn:active {
-            transform: scale(0.95);
-        }
+        /* ─── AI IDDSI 分析結果彈窗 ─── */
+        .meal-result-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.88); z-index: 30000; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px); }
+        .meal-result-modal.active { display: flex; }
+        .meal-result-card { background: #FAF6F0; border: 4px solid #1e293b; border-radius: 30px; width: 100%; max-width: 370px; padding: 22px; box-shadow: 6px 6px 0px #1e293b; display: flex; flex-direction: column; gap: 10px; max-height: 90vh; overflow-y: auto; }
+        .meal-badge-level { display: inline-block; padding: 4px 12px; border-radius: 14px; font-size: 15px; font-weight: 900; border: 2px solid #1e293b; box-shadow: 2px 2px 0px #1e293b; align-self: flex-start; }
+        .meal-stat-row { display: flex; justify-content: space-between; font-size: 12px; font-weight: 800; color: #475569; border-bottom: 1.5px dashed #cbd5e1; padding-bottom: 6px; }
 
         .steps-container { padding: 18px; }
         .detail-title { font-size: 20px; font-weight: 900; color: #1e293b; margin-bottom: 8px; line-height: 1.3; }
         .detail-goal { font-size: 13px; font-weight: 600; color: #334155; background-color: #ffffff; padding: 10px 12px; border-radius: 16px; margin-bottom: 10px; border: 2px solid #1e293b; border-left: 6px solid #1e293b; box-shadow: 2.5px 2.5px 0px rgba(30, 41, 59, 0.1); line-height: 1.45; }
-        
         .warning-box { font-size: 12px; font-weight: 700; color: #721c24; background-color: #f8d7da; padding: 10px 12px; border-radius: 14px; margin-bottom: 10px; border: 2px solid #1e293b; border-left: 6px solid #dc3545; line-height: 1.4; }
         .dosage-box { font-size: 12px; font-weight: 700; color: #0c5460; background-color: #d1ecf1; padding: 10px 12px; border-radius: 14px; margin-bottom: 14px; border: 2px solid #1e293b; border-left: 6px solid #17a2b8; line-height: 1.4; }
-        
         .step-card { background-color: #ffffff; border-radius: 20px; padding: 14px; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 10px; border: 2px solid #1e293b; box-shadow: 3px 3px 0px rgba(30, 41, 59, 0.15); }
         .step-number { width: 32px; height: 32px; border-radius: 50%; color: #1e293b; font-weight: 900; font-size: 14px; display: flex; justify-content: center; align-items: center; flex-shrink: 0; border: 2px solid #1e293b; box-shadow: 1.5px 1.5px 0px #1e293b; }
         .step-text-wrapper { display: flex; flex-direction: column; gap: 2px; }
         .step-tag { font-size: 11px; font-weight: 800; color: #475569; }
         .step-text { font-size: 13.5px; font-weight: 600; color: #1e293b; line-height: 1.4; }
-        
         .emergency-notice { margin-top: 12px; background: #FFF3CD; border: 2px dashed #D97706; padding: 10px; border-radius: 14px; font-size: 11.5px; font-weight: 800; color: #92400E; text-align: center; }
 
-        /* 計時器 UI */
         .timer-box { margin-top: 14px; background: #E0F2FE; border: 2px solid #0284C7; border-radius: 18px; padding: 12px; text-align: center; }
         .timer-display { font-size: 26px; font-weight: 900; color: #0369A1; font-family: monospace; margin: 4px 0; }
         .btn-timer { padding: 8px 16px; background: #0284C7; color: white; font-size: 13px; font-weight: 800; border: 2px solid #1e293b; border-radius: 12px; cursor: pointer; box-shadow: 2px 2px 0px #1e293b; }
@@ -252,15 +155,13 @@
         .symptom-btn-group { display: flex; gap: 5px; }
         .symptom-chip { flex: 1; padding: 7px 2px; font-size: 11px; font-weight: 800; border: 1.5px solid #1e293b; border-radius: 10px; background: #FFF; color: #1e293b; cursor: pointer; text-align: center; box-shadow: 1.5px 1.5px 0px #1e293b; }
 
-        /* 臨床文獻區塊 */
         .evidence-box { margin-top: 14px; background: #F1F5F9; border: 1.5px solid #64748B; border-radius: 14px; padding: 10px; font-size: 11px; color: #475569; }
         .evidence-title { font-weight: 800; cursor: pointer; display: flex; justify-content: space-between; }
         .evidence-content { display: none; margin-top: 6px; line-height: 1.4; border-top: 1px solid #CBD5E1; padding-top: 6px; }
 
-        .loading-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); color: white; font-weight: 800; justify-content: center; align-items: center; z-index: 1000; border-radius: 36px; backdrop-filter: blur(2px); }
+        .loading-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); color: white; font-weight: 800; justify-content: center; align-items: center; z-index: 2000; border-radius: 36px; backdrop-filter: blur(4px); text-align: center; padding: 20px; line-height: 1.6; }
         .loading-overlay.active { display: flex; }
 
-        /* 合規彈窗 */
         .consent-modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.88); z-index: 20000; display: flex; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(6px); }
         .consent-modal-box { background: #FAF6F0; border: 4px solid #1e293b; border-radius: 28px; width: 100%; max-width: 360px; padding: 20px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); display: flex; flex-direction: column; gap: 12px; }
         .consent-title { font-size: 17px; font-weight: 900; color: #1e293b; text-align: center; }
@@ -269,26 +170,25 @@
         .screening-q-title { font-size: 11.5px; font-weight: 800; color: #991B1B; }
         .consent-checkbox-group { display: flex; align-items: flex-start; gap: 8px; font-size: 11.5px; font-weight: 800; color: #1e293b; }
         .consent-checkbox-group input { width: 16px; height: 16px; margin-top: 2px; }
-        .consent-btn { width: 100%; padding: 12px; background: #25D366; color: #fff; font-size: 14.5px; font-weight: 900; border: 3px solid #1e293b; border-radius: 16px; box-shadow: 3px 3px 0px #1e293b; cursor: pointer; opacity: 0.5; pointer-events: none; transition: opacity 0.2s; }
+        .consent-btn { width: 100%; padding: 12px; background: #25D366; color: #fff; font-size: 14.5px; font-weight: 900; border: 3px solid #1e293b; border-radius: 16px; box-shadow: 3px 3px 0px #1e293b; cursor: pointer; opacity: 0.5; pointer-events: none; }
         .consent-btn.ready { opacity: 1; pointer-events: auto; }
     </style>
 </head>
 <body>
 
-    <!-- 臨床安全篩查與條款同意彈窗 -->
+    <!-- 臨床安全篩查彈窗 -->
     <div class="consent-modal-overlay" id="complianceConsentModal" style="display: none;">
         <div class="consent-modal-box">
             <div class="consent-title">📋 臨床安全篩查與條款同意</div>
             <div class="consent-body">
                 <strong>【輔助工具聲明】</strong><br>
-                本 App 為居家輔助復康工具，由註冊言語治療師團隊設計指引，絕不能取代專業言語治療師或醫師之診斷與臨床評估。請在醫療人員指導下使用。<br><br>
+                本 App 為居家輔助復康工具，不能取代專業言語治療師之診斷。請在指導下安全使用。<br><br>
                 <strong>【PDPO 私隱數據聲明】</strong><br>
-                數據（語音紀錄/症狀日誌）加密儲存於 Firebase 新加坡數據中心 (`asia-southeast1`)，保存期為 12 個月。您可以隨時關閉雲端同步切換至純離線模式，或一鍵刪除所有紀錄。
+                紀錄加密儲存於亞太伺服器，保留期為 12 個月。您可隨時切換純離線模式或一鍵抹除紀錄。
             </div>
 
-            <!-- 前置健康篩查問卷 -->
             <div class="screening-question-group">
-                <div class="screening-q-title">🩺 安全篩查（若有以下狀況將自動鎖定高風險訓練）：</div>
+                <div class="screening-q-title">🩺 安全篩查（若有狀況將自動鎖定高風險訓練）：</div>
                 <label style="font-size: 11px; font-weight:700;"><input type="checkbox" id="chkRiskTrach"> 有佩戴氣切管 / 急性頸椎受傷</label>
                 <label style="font-size: 11px; font-weight:700;"><input type="checkbox" id="chkRiskDementia"> 患有嚴重認知障礙，無法跟從指令</label>
                 <label style="font-size: 11px; font-weight:700;"><input type="checkbox" id="chkRiskBP"> 未控制之嚴重高血壓 / 嚴重心臟病</label>
@@ -300,14 +200,18 @@
             </div>
             <div class="consent-checkbox-group">
                 <input type="checkbox" id="chkPrivacyConsent" onchange="checkConsentStatus()">
-                <label for="chkPrivacyConsent">我同意私隱數據條款，並了解數據儲存與撤回權利。</label>
+                <label for="chkPrivacyConsent">我同意私隱條款，並了解數據儲存與撤回權利。</label>
             </div>
             <button class="consent-btn" id="btnAcceptConsent" onclick="acceptComplianceTerms()">進入樂活吞嚥沙盒 🚀</button>
         </div>
     </div>
 
+    <!-- 主手機容器 -->
     <div class="phone-container" id="app-phone-shell">
+        <!-- 檔案拾取器：更換教材照片 -->
         <input type="file" id="image-file-picker" accept="image/*" style="display: none;">
+        <!-- 鏡頭拾取器：手機即時拍照分析 IDDSI -->
+        <input type="file" id="mealCameraInput" accept="image/*" capture="environment" style="display: none;">
         
         <div class="loading-overlay" id="loadingOverlay">☁️ 正在處理數據...</div>
 
@@ -320,24 +224,29 @@
                 <div class="cover-subtitle">(Voice & Swallowing Rehab Sandbox)</div>
                 
                 <div class="disclaimer-banner">
-                    ⚠️ <strong>醫療免責聲明：</strong> 本 App 為輔助復康工具，不能取代專業言語治療師或醫生之臨床評估，必須在專業指導下使用。
+                    ⚠️ <strong>醫療免責聲明：</strong> 本 App 為輔助工具，不能取代臨床評估，請在專業指導下使用。
                 </div>
 
                 <div class="cover-img-box" id="cover-img-container" onclick="triggerFilePicker('cover')" title="點擊修改歡迎頁相片"></div>
             </div>
+
+            <!-- 核心功能：拍照檢測 IDDSI 質地按鈕 -->
+            <button class="btn-ai-meal" onclick="triggerMealCapture()">
+                📸 影相快檢餐膳質地 (AI IDDSI)
+            </button>
             
             <div class="cover-btn-group">
                 <button class="module-btn btn-m1" onclick="filterAndNavigate('1')">
-                    一、 喉部提升與吞嚥安全訓練<br><span style="font-size: 10.5px; opacity: 0.85;">(Laryngeal Elevation & Protection)</span>
+                    一、 喉部提升與吞嚥安全訓練<br><span style="font-size: 10px; opacity: 0.85;">(Laryngeal Elevation & Protection)</span>
                 </button>
                 <button class="module-btn btn-m2" onclick="filterAndNavigate('2')">
-                    二、 舌部控球與推動力訓練<br><span style="font-size: 10.5px; opacity: 0.85;">(Tongue Mobility & Strength)</span>
+                    二、 舌部控球與推動力訓練<br><span style="font-size: 10px; opacity: 0.85;">(Tongue Mobility & Strength)</span>
                 </button>
                 <button class="module-btn btn-m3" onclick="filterAndNavigate('3')">
-                    三、 唇頰密封與呼吸協調訓練<br><span style="font-size: 10.5px; opacity: 0.85;">(Lip Seal & Breathing)</span>
+                    三、 唇頰密封與呼吸協調訓練<br><span style="font-size: 10px; opacity: 0.85;">(Lip Seal & Breathing)</span>
                 </button>
                 <button class="module-btn btn-m4" onclick="filterAndNavigate('4')">
-                    四、 下顎咀嚼與口腔感覺準備<br><span style="font-size: 10.5px; opacity: 0.85;">(Jaw Mobility & Preparation)</span>
+                    四、 下顎咀嚼與口腔感覺準備<br><span style="font-size: 10px; opacity: 0.85;">(Jaw Mobility & Preparation)</span>
                 </button>
             </div>
         </div>
@@ -353,7 +262,6 @@
                 </div>
             </div>
 
-            <!-- 治療師處方輸入列 -->
             <div class="prescription-box">
                 <span>🩺 我的治療師處方碼：</span>
                 <input type="text" class="prescription-input" id="prescriptionCodeInput" placeholder="例如: 1,2,11" onchange="applyPrescriptionFilter()">
@@ -390,7 +298,6 @@
                 
                 <div id="steps-list-wrapper"></div>
                 
-                <!-- 動態維持秒數計時器容器 -->
                 <div class="timer-box" id="timerBoxContainer" style="display: none;">
                     <div style="font-size:12px; font-weight:800; color:#0369A1;">⏱️ 臨床動作維持計時器</div>
                     <div class="timer-display" id="timerDisplay">00:00</div>
@@ -398,7 +305,7 @@
                 </div>
 
                 <div class="emergency-notice">
-                    🚨 <strong>臨床安全提醒：</strong> 本訓練需在言語治療師指導下執行。如練習期間出現嗆咳、呼吸困難或聲音變濕，請立即停止。
+                    🚨 <strong>臨床安全提醒：</strong> 如練習期間出現嗆咳、呼吸困難或聲音變濕，請立即停止。
                 </div>
 
                 <div class="tool-box" id="tool-box-container"></div>
@@ -412,7 +319,6 @@
                     </div>
                 </div>
 
-                <!-- 臨床文獻支持 -->
                 <div class="evidence-box">
                     <div class="evidence-title" onclick="toggleEvidenceDisplay()">
                         <span>📚 臨床文獻實證支持 (Evidence Base)</span>
@@ -450,29 +356,65 @@
             </button>
         </div>
 
+        <!-- 底部導航列 -->
         <div class="bottom-bar">
             <button class="bottom-bar-btn" onclick="toggleSeniorFont()">👓 大字模式</button>
+            <button class="bottom-bar-btn" onclick="triggerMealCapture()" style="color:#0284C7;">📸 拍照快檢</button>
             <button class="bottom-bar-btn" onclick="toggleFullscreen()" id="zoom-toggle-btn">⤢ 全螢幕</button>
             <button class="bottom-bar-btn" onclick="navigateTo('cover-screen')">🏠 首頁</button>
         </div>
     </div>
 
-    <!-- 旗艦級：超清全螢幕獨立視口燈箱（支援原生雙指縮放與拖曳） -->
+    <!-- 超清全螢幕檢視器 -->
     <div class="lightbox-modal" id="lightboxModal">
         <div class="lightbox-top-bar">
-            <div class="lightbox-title-text" id="lightboxTitleText">🔍 分解動作超清全螢幕檢視</div>
+            <div class="lightbox-title-text" id="lightboxTitleText">🔍 分解動作超清檢視</div>
             <button class="lightbox-close-btn" onclick="closeLightbox()">✕ 關閉</button>
         </div>
-        
         <div class="lightbox-stage" id="lightboxStage">
             <div id="lightboxContentWrapper" style="display:flex; justify-content:center; align-items:center;"></div>
         </div>
-
         <div class="lightbox-bottom-toolbar">
-            <button class="lb-tool-btn" onclick="zoomInImage()">🔍➕ 放大</button>
-            <button class="lb-tool-btn" onclick="zoomOutImage()">🔍➖ 縮小</button>
-            <button class="lb-tool-btn" onclick="rotateImage()">🔄 旋轉90°</button>
+            <button class="lb-tool-btn" onclick="zoomInImage()">🔍 放大</button>
+            <button class="lb-tool-btn" onclick="zoomOutImage()">🔍 縮小</button>
+            <button class="lb-tool-btn" onclick="rotateImage()">🔄 旋轉</button>
             <button class="lb-tool-btn" onclick="resetImageTransform()">↺ 還原</button>
+        </div>
+    </div>
+
+    <!-- AI IDDSI 分析結果呈現彈窗 -->
+    <div class="meal-result-modal" id="mealResultModal">
+        <div class="meal-result-card">
+            <div style="font-size: 18px; font-weight: 900; color: #1e293b; text-align: center;">🍽️ 膳食質地 AI 檢測報告</div>
+            
+            <div style="text-align: center; margin: 4px 0;">
+                <span class="meal-badge-level" id="resLevelBadge" style="background:#BFFCC6;">Level 4</span>
+            </div>
+
+            <div class="meal-stat-row">
+                <span>食物名稱：</span>
+                <strong id="resFoodName" style="color:#1e293b;">--</strong>
+            </div>
+            <div class="meal-stat-row">
+                <span>AI 信心把握度：</span>
+                <strong id="resConfidence" style="color:#0284C7;">--</strong>
+            </div>
+
+            <div style="font-size: 12px; font-weight: 700; color: #334155; background: #fff; padding: 10px; border-radius: 12px; border: 2px solid #1e293b; line-height: 1.45;">
+                <div style="color:#475569; font-size:11px; font-weight:800; margin-bottom:2px;">🔍 視覺特徵判斷：</div>
+                <div id="resVisualReason">--</div>
+            </div>
+
+            <div style="font-size: 12px; font-weight: 700; color: #0369A1; background: #E0F2FE; padding: 10px; border-radius: 12px; border: 2px solid #0284C7; line-height: 1.45;">
+                <div style="font-size:11px; font-weight:900; margin-bottom:2px;">🧪 建議臨床實測方式：</div>
+                <div id="resOfficialTest">--</div>
+            </div>
+
+            <div class="warning-box" id="resWarningBox" style="margin-bottom: 0;">
+                ⚠️ 提示：如對質地有疑慮，請切勿冒險吞嚥。
+            </div>
+
+            <button class="consent-btn ready" style="margin-top: 6px;" onclick="closeMealResult()">了解並完成記錄 了解並完成記錄 ✅</button>
         </div>
     </div>
 
@@ -498,7 +440,7 @@
         const storage = getStorage(app);
         const database = getDatabase(app);
 
-        // Firebase 圖片下載網址輔助函式（自動轉譯中文字元與空格）
+        // 轉譯中文及空格至 Firebase Storage 公開 HTTPS URL
         const getStorageUrl = (fileName) => 
             `https://firebasestorage.googleapis.com/v0/b/lohas-st-training-sandbox.firebasestorage.app/o/${encodeURIComponent('training_assets/' + fileName)}?alt=media`;
 
@@ -512,18 +454,17 @@
         window.completedCoursesSet = new Set();
         window.prescriptionFilterSet = null;
 
-        const coverDefaultSvg = `<svg width="90" height="90" viewBox="0 0 100 100" fill="none"><path d="M20 50C20 45 25 35 50 35C75 35 80 45 80 50C80 55 75 65 50 65C25 65 20 55 20 50Z" fill="#1e293b"/><path d="M30 50C30 48 35 42 50 42C65 42 70 48 70 50C70 52 65 58 50 58C35 58 30 52 30 50Z" fill="#FFB7B2"/><circle cx="50" cy="50" r="4" fill="#1e293b"/><path d="M10 50H15M85 50H90M50 15V23M50 77V85" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/></svg>`;
+        const coverDefaultSvg = `<svg width="85" height="85" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="40" fill="#1e293b"/><path d="M25 50Q50 25 75 50Q50 75 25 50Z" fill="#FFF"/><circle cx="50" cy="50" r="10" fill="#FF9F1C"/></svg>`;
 
-        // 26 項訓練資料庫（100% 完整綁定真實臨床分解圖與維持秒數）
+        // 26 課臨床資料庫（100% 完整綁定相片）
         window.coursesData = [
-            // ─── 模組一：喉部提升與吞嚥安全訓練 ───
             {
                 id: '1', categoryId: '1', isHighRisk: false, holdSeconds: 0,
                 title: '🌟 訓練 1：', titleTitle: '用力吞嚥法', subtitle: 'Effortful Swallow',
                 description: '增加舌根向後收縮力與咽部收縮力，促進食物推進並減少咽部殘留。',
                 contraindication: '需在言語治療師評估指導下執行。', dosage: '每次 5-10 次吞嚥，每日 3 組。',
                 defaultImageUrl: getStorageUrl('用力吞嚥法.jpeg'),
-                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><path d="M30 50Q50 30 70 50Q50 70 30 50Z" fill="#FFF" stroke="#1e293b" stroke-width="3"/><circle cx="50" cy="50" r="8" fill="#FF9F1C"/></svg>`,
+                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><circle cx="50" cy="50" r="8" fill="#FF9F1C"/></svg>`,
                 themeColor: '#A0E7E5', goal: '增加舌根向後收縮力與咽部收縮力，促進食物推進。',
                 steps: [
                     { tag: '步驟一', text: '將唾液含在口中，將舌頭完全平貼於上顎位置。' },
@@ -539,7 +480,7 @@
                 description: '強化舌骨上肌群，提升吞嚥時舌骨向前向上移動的幅度。',
                 contraindication: '頸椎受傷、急性頸痛或關節炎患者不適用。', dosage: '每次壓球維持 10 秒，重複 3 次，每日 3 組。',
                 defaultImageUrl: getStorageUrl('等長下巴抗阻低頭訓練.jpeg'),
-                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><circle cx="50" cy="65" r="14" fill="#FFB7B2" stroke="#1e293b" stroke-width="3"/><path d="M35 35Q50 45 65 35" stroke="#1e293b" stroke-width="4" stroke-linecap="round" fill="none"/></svg>`,
+                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><circle cx="50" cy="65" r="14" fill="#FFB7B2"/></svg>`,
                 themeColor: '#A0E7E5', goal: '強化舌骨上肌群，提升吞嚥時舌骨移動幅度。',
                 steps: [
                     { tag: '步驟一', text: '坐姿挺直，將小球或抗阻工具夾在下巴與胸骨之間。' },
@@ -555,7 +496,7 @@
                 description: '提升舌骨上肌群的爆發力與肌耐力，改善食道入口開啟能力。',
                 contraindication: '頸椎受傷或急性頸部肌肉拉傷者不適用。', dosage: '連續壓球 10-15 次為一組，每日 3 組。',
                 defaultImageUrl: getStorageUrl('等動態下巴抗阻低頭訓練.jpeg'),
-                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><path d="M50 25V55M50 55L40 45M50 55L60 45" stroke="#1e293b" stroke-width="5" stroke-linecap="round"/><circle cx="50" cy="70" r="10" fill="#FFF275" stroke="#1e293b" stroke-width="3"/></svg>`,
+                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><path d="M50 25V55" stroke="#1e293b" stroke-width="5"/></svg>`,
                 themeColor: '#A0E7E5', goal: '提升舌骨上肌群爆發力。',
                 steps: [
                     { tag: '步驟一', text: '將小球端正夾於下巴與胸骨之間。' },
@@ -571,7 +512,7 @@
                 description: '強迫咽後壁向前收縮，補償舌根收縮不足的問題。',
                 contraindication: '口腔疼痛、舌頭創傷或顯著乾口症患者不適用。切勿含食物練習！', dosage: '每次 5 次空吞嚥，每日 2-3 組。',
                 defaultImageUrl: getStorageUrl('咬舌吞嚥法.jpeg'),
-                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><path d="M35 50C35 65 65 65 65 50" fill="#FF9F1C" stroke="#1e293b" stroke-width="3"/><rect x="40" y="42" width="20" height="8" rx="2" fill="#FFF" stroke="#1e293b" stroke-width="2"/></svg>`,
+                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5"/></svg>`,
                 themeColor: '#A0E7E5', goal: '強迫咽後壁向前收縮。',
                 steps: [
                     { tag: '步驟一', text: '將舌頭輕輕吐出牙齒外，用門牙輕咬住舌尖。' },
@@ -587,7 +528,7 @@
                 description: '強化下顎下肌群，促進舌骨向前移動及咽部打開。',
                 contraindication: '顳顎關節紊亂 (TMJ) 或關節脫位風險者不適用。', dosage: '每次維持張口吞嚥 3-5 次，每日 2 組。',
                 defaultImageUrl: getStorageUrl('下巴張開併吞嚥.jpeg'),
-                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><ellipse cx="50" cy="55" rx="15" ry="20" fill="#1e293b"/><path d="M35 35L45 40M65 35L55 40" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/></svg>`,
+                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5"/></svg>`,
                 themeColor: '#A0E7E5', goal: '強化下顎下肌群，促進舌骨向前移動。',
                 steps: [
                     { tag: '步驟一', text: '將嘴巴張開至最大極限，感受下巴下方肌肉收緊。' },
@@ -603,7 +544,7 @@
                 description: '強化聲帶閉合力、音高控制及輔助喉部提升。',
                 contraindication: '聲帶結節、息肉或嚴重聲帶發炎者不適用。', dosage: '每次發音 5 秒，重複 5 次，每日 3 組。',
                 defaultImageUrl: getStorageUrl('假聲發音訓練.jpeg'),
-                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><path d="M30 65Q50 20 70 35" stroke="#1e293b" stroke-width="4" fill="none" stroke-linecap="round"/><polygon points="70,25 78,38 64,38" fill="#1e293b"/></svg>`,
+                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5"/></svg>`,
                 themeColor: '#A0E7E5', goal: '強化聲帶閉合力與喉部提升。',
                 steps: [
                     { tag: '步驟一', text: '深吸一口氣，從正常音高開始發出「伊—」的聲音。' },
@@ -619,7 +560,7 @@
                 description: '縮小呼吸道入口，防止食物過早落入咽部或誤吸入氣管。',
                 contraindication: '頸椎關節僵直或神經肌肉病變導致低頭困難者。', dosage: '進食液體或特定質地時按治療師指導使用。',
                 defaultImageUrl: getStorageUrl('低頭吞嚥法.jpeg'),
-                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><path d="M35 40Q50 60 65 40" stroke="#1e293b" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M40 65L60 65" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/></svg>`,
+                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5"/></svg>`,
                 themeColor: '#A0E7E5', goal: '縮小呼吸道入口，防止誤吸。',
                 steps: [
                     { tag: '步驟一', text: '將食物或水放入口中，先不要急著吞下去。' },
@@ -635,7 +576,7 @@
                 description: '在吞嚥前主動關閉聲帶，防止食物掉入氣管造成嗆咳。',
                 contraindication: '嚴重認知障礙、無法跟從指令、未控制高血壓或心血管病患者禁用。', dosage: '每餐練習 3-5 次（需治療師監督）。',
                 defaultImageUrl: getStorageUrl('閉氣吞嚥法.jpeg'),
-                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><path d="M35 45H65M35 55H65" stroke="#1e293b" stroke-width="5" stroke-linecap="round"/></svg>`,
+                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5"/></svg>`,
                 themeColor: '#A0E7E5', goal: '吞嚥前主動關閉聲帶保護氣管。',
                 steps: [
                     { tag: '步驟一', text: '口含食物或水，深吸一口氣後緊緊憋住呼吸。' },
@@ -651,7 +592,7 @@
                 description: '延長喉部提升時間，促進食道上括約肌 (UES) 充分開啟。',
                 contraindication: '嚴重體力虛弱、心肺功能不全或高血壓患者禁用。', dosage: '每次卡住 2-3 秒，重複 5 次為一組。',
                 defaultImageUrl: getStorageUrl('孟德爾頌吞嚥法.jpeg'),
-                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><path d="M50 70V30M50 30L40 40M50 30L60 40" stroke="#1e293b" stroke-width="5" stroke-linecap="round"/></svg>`,
+                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5"/></svg>`,
                 themeColor: '#A0E7E5', goal: '延長喉部提升時間，促進 UES 開啟。',
                 steps: [
                     { tag: '步驟一', text: '進行正常吞嚥，用手指摸喉結感受其向上移動。' },
@@ -667,7 +608,7 @@
                 description: '利用冷酸刺激提升咽部感知，誘發並加快吞嚥反射。',
                 contraindication: '口腔黏膜潰瘍、對酸過敏或極度敏感引發嘔吐者。', dosage: '刺激前顎弓 3-5 次後引導空吞嚥。',
                 defaultImageUrl: getStorageUrl('熱冰刺激法.jpeg'),
-                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><path d="M40 30L60 70M60 30L40 70" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/><circle cx="50" cy="65" r="6" fill="#FFF275"/></svg>`,
+                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5"/></svg>`,
                 themeColor: '#A0E7E5', goal: '提升咽部感知，誘發吞嚥反射。',
                 steps: [
                     { tag: '步驟一', text: '將冰凍的冰棉棒浸冰水，確保表面極度冰冷。' },
@@ -683,7 +624,7 @@
                 description: '結合喉部上提卡住、聲帶閉合咳嗽及頸前屈曲，全面強化進食安全屏障。',
                 contraindication: '頸椎病變、氣切管或嚴重高血壓患者禁用。', dosage: '重複 3-5 次為一組，每日 2 組。',
                 defaultImageUrl: getStorageUrl('鍛煉進食時的吞嚥安全肌群.jpeg'),
-                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5" stroke="#1e293b" stroke-width="4"/><path d="M25 70H75M30 65L60 40" stroke="#1e293b" stroke-width="5" stroke-linecap="round"/></svg>`,
+                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#A0E7E5"/></svg>`,
                 themeColor: '#A0E7E5', goal: '強化頸前與喉部提升肌群，改善誤吸風險。',
                 steps: [
                     { tag: '步驟一', text: '空吞嚥口水，並在吞嚥最頂點嘗試憋氣維持 2 秒，隨後放鬆。' },
@@ -693,15 +634,13 @@
                 evidence: 'Logemann et al. (1997): Multi-component laryngeal maneuvers enhance airway clearance.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '提喉憋氣清喉嚨'
             },
-
-            // ─── 模組二：舌部控球與推動力訓練 ───
             {
                 id: '11', categoryId: '2', isHighRisk: false, holdSeconds: 5,
                 title: '🌟 訓練 11：', titleTitle: '舌頭前伸', subtitle: 'Tongue Protrusion',
                 description: '增加舌頭向前移動的範圍與控制力，協助口腔清掃。',
                 contraindication: '舌繫帶過短或舌部急性創傷者。', dosage: '每次前伸維持 5 秒，重複 10 次，每日 3 組。',
                 defaultImageUrl: getStorageUrl('舌頭前伸.jpeg'),
-                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFF275" stroke="#1e293b" stroke-width="4"/><path d="M50 40V75" stroke="#1e293b" stroke-width="8" stroke-linecap="round"/></svg>`,
+                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFF275"/></svg>`,
                 themeColor: '#FFF275', goal: '增加舌頭前伸範圍。',
                 steps: [
                     { tag: '步驟一', text: '將嘴巴稍微張開，放鬆唇部與下顎肌肉。' },
@@ -717,7 +656,7 @@
                 description: '提升舌頭左右移動能力，協助將食物移至牙齒進行咀嚼。',
                 contraindication: '無特殊禁忌。', dosage: '左右交替各 10 次，每日 3 組。',
                 defaultImageUrl: getStorageUrl('舌頭側移.jpeg'),
-                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFF275" stroke="#1e293b" stroke-width="4"/><path d="M25 50H75" stroke="#1e293b" stroke-width="6" stroke-linecap="round"/></svg>`,
+                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFF275"/></svg>`,
                 themeColor: '#FFF275', goal: '提升舌頭左右控球能力。',
                 steps: [
                     { tag: '步驟一', text: '微張嘴巴，將舌尖伸出嘴唇外側中間位置。' },
@@ -733,7 +672,7 @@
                 description: '強化舌尖與舌前部力量，促進食物團的形成與推進。',
                 contraindication: '無特殊禁忌。', dosage: '每次頂顎 5 秒，重複 10 次，每日 3 組。',
                 defaultImageUrl: getStorageUrl('舌尖上舉.jpeg'),
-                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFF275" stroke="#1e293b" stroke-width="4"/><path d="M50 70V30" stroke="#1e293b" stroke-width="6" stroke-linecap="round"/></svg>`,
+                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFF275"/></svg>`,
                 themeColor: '#FFF275', goal: '強化舌尖頂顎力量。',
                 steps: [
                     { tag: '步驟一', text: '張開嘴巴約兩指寬度保持下巴固定。' },
@@ -749,7 +688,7 @@
                 description: '強化舌根部肌肉力量，協助推動食團進入咽部。',
                 contraindication: '無特殊禁忌。', dosage: '每次維持 3 秒，重複 10 次，每日 3 組。',
                 defaultImageUrl: getStorageUrl('舌根上舉.jpeg'),
-                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFF275" stroke="#1e293b" stroke-width="4"/><path d="M30 65Q50 35 70 65" stroke="#1e293b" stroke-width="6" fill="none" stroke-linecap="round"/></svg>`,
+                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFF275"/></svg>`,
                 themeColor: '#FFF275', goal: '強化舌根向後向上力量。',
                 steps: [
                     { tag: '步驟一', text: '將嘴巴微張，做好發「K」或「G」的發音準備動作。' },
@@ -765,7 +704,7 @@
                 description: '提升舌頭靈活性與關節活動度，促進口腔清理能力。',
                 contraindication: '無特殊禁忌。', dosage: '順時針與逆時針各繞 5 圈，每日 3 組。',
                 defaultImageUrl: getStorageUrl('舌頭環繞運動.jpeg'),
-                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFF275" stroke="#1e293b" stroke-width="4"/><circle cx="50" cy="50" r="20" stroke="#1e293b" stroke-width="4" fill="none" stroke-dasharray="6 4"/></svg>`,
+                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFF275"/></svg>`,
                 themeColor: '#FFF275', goal: '促進口腔自動清掃能力。',
                 steps: [
                     { tag: '步驟一', text: '嘴唇閉合，將舌尖伸至牙齒與嘴唇之間的縫隙。' },
@@ -781,7 +720,7 @@
                 description: '鍛鍊舌肌爆發力與推力，提升吞嚥推進力量。',
                 contraindication: '口腔內有嚴重潰瘍或急性出血者。', dosage: '每次抗阻推壓 5 秒，重複 10 次，每日 3 組。',
                 defaultImageUrl: getStorageUrl('舌尖力量彈跳.jpeg'),
-                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFF275" stroke="#1e293b" stroke-width="4"/><rect x="25" y="45" width="50" height="10" fill="#FF9F1C" stroke="#1e293b" stroke-width="2"/><path d="M50 30V45" stroke="#1e293b" stroke-width="5"/></svg>`,
+                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFF275"/></svg>`,
                 themeColor: '#FFF275', goal: '量化強化舌肌抗阻力量。',
                 steps: [
                     { tag: '步驟一', text: '向上頂到鼻尖、向下舔到下巴練習極限延伸。' },
@@ -791,15 +730,13 @@
                 evidence: 'Adams et al. (2013): Lingual resistance training increases isometric strength.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '舌頭用力頂臉頰'
             },
-
-            // ─── 模組三：唇頰密封與呼吸協調訓練 ───
             {
                 id: '16', categoryId: '3', isHighRisk: false, holdSeconds: 10,
                 title: '🌟 訓練 16：', titleTitle: '吸管發聲法', subtitle: 'Straw Phonation',
                 description: '降低聲帶負擔，增加聲帶閉合度並強化呼吸吞嚥協調能力。',
                 contraindication: '嚴重氣胸或肺氣腫患者。', dosage: '每次吹氣發聲 10 秒，重複 5 次，每日 3 組。',
                 defaultImageUrl: getStorageUrl('吸管發聲法.jpeg'),
-                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFB7B2" stroke="#1e293b" stroke-width="4"/><rect x="46" y="25" width="8" height="50" rx="3" fill="#1e293b"/></svg>`,
+                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFB7B2"/></svg>`,
                 themeColor: '#FFB7B2', goal: '強化聲帶閉合與呼吸協調。',
                 steps: [
                     { tag: '步驟一', text: '將吸管含於唇間，另一端放入半杯水中的適當位置。' },
@@ -815,7 +752,7 @@
                 description: '增加唇部閉合力、軟顎提升度與呼氣氣流控制能力。',
                 contraindication: '嚴重腹疝氣或近期眼科手術患者。', dosage: '每次吹展開維持 5 秒，重複 5-10 次，每日 2 組。',
                 defaultImageUrl: getStorageUrl('派對吹龍訓練.jpeg'),
-                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFB7B2" stroke="#1e293b" stroke-width="4"/><path d="M30 60Q60 40 80 50" stroke="#1e293b" stroke-width="5" fill="none"/></svg>`,
+                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFB7B2"/></svg>`,
                 themeColor: '#FFB7B2', goal: '強化雙唇密封與呼氣控制。',
                 steps: [
                     { tag: '步驟一', text: '將派對吹龍含於雙唇之間，確保緊密貼合不漏氣。' },
@@ -831,7 +768,7 @@
                 description: '進行階梯式氣流與唇部控制訓練，促進軟顎閉合能力。',
                 contraindication: '無特殊禁忌。', dosage: '依笛子阻力等級，每次吹響 5 秒，重複 5 次。',
                 defaultImageUrl: getStorageUrl('TalkTools 語音吹笛訓練.jpeg'),
-                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFB7B2" stroke="#1e293b" stroke-width="4"/><polygon points="30,40 70,25 70,75 30,60" fill="#1e293b"/></svg>`,
+                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFB7B2"/></svg>`,
                 themeColor: '#FFB7B2', goal: '階梯式氣流控制訓練。',
                 steps: [
                     { tag: '步驟一', text: '選擇合適阻力的專用長笛含於唇間。' },
@@ -847,7 +784,7 @@
                 description: '強化嘴唇閉合肌力，防止食物或液體從口中流出。',
                 contraindication: '無特殊禁忌。', dosage: '每次抿緊 10 秒，重複 10 次，每日 3 組。',
                 defaultImageUrl: getStorageUrl('雙唇緊閉訓練.jpeg'),
-                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFB7B2" stroke="#1e293b" stroke-width="4"/><ellipse cx="50" cy="50" rx="20" ry="6" fill="#1e293b"/></svg>`,
+                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFB7B2"/></svg>`,
                 themeColor: '#FFB7B2', goal: '防止前口漏流。',
                 steps: [
                     { tag: '步驟一', text: '將雙唇上下緊密閉合，保持牙齒自然微張。' },
@@ -863,7 +800,7 @@
                 description: '增強頰肌力量與唇部密封度，防止食物積聚在口腔兩側。',
                 contraindication: '顏面神經麻痺急性期聽從治療師指導。', dosage: '每次鼓頰 5 秒，左右交替 5 次，每日 3 組。',
                 defaultImageUrl: getStorageUrl('鼓頰訓練.jpeg'),
-                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFB7B2" stroke="#1e293b" stroke-width="4"/><circle cx="50" cy="50" r="22" fill="#FFF" stroke="#1e293b" stroke-width="3"/></svg>`,
+                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFB7B2"/></svg>`,
                 themeColor: '#FFB7B2', goal: '增強頰肌力量，防止側腔殘留。',
                 steps: [
                     { tag: '步驟一', text: '雙唇緊閉，將空氣吸入口腔並用力將兩頰鼓起。' },
@@ -879,7 +816,7 @@
                 description: '促進唇部肌肉靈活度與感覺回饋，改善雙唇運動控制。',
                 contraindication: '無特殊禁忌。', dosage: '重複發聲 10-15 次，每日 3 組。',
                 defaultImageUrl: getStorageUrl('嘖嘖作響發嘖聲.jpeg'),
-                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFB7B2" stroke="#1e293b" stroke-width="4"/><path d="M35 50C40 42 60 42 65 50C60 58 40 58 35 50Z" fill="#1e293b"/></svg>`,
+                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFB7B2"/></svg>`,
                 themeColor: '#FFB7B2', goal: '促進唇部感覺回饋與控制。',
                 steps: [
                     { tag: '步驟一', text: '將上下嘴唇向內緊抿，使唇部保持緊貼。' },
@@ -895,7 +832,7 @@
                 description: '增加面部表情肌與唇部的活動範圍，改善言語與吞嚥功能。',
                 contraindication: '無特殊禁忌。', dosage: '伊—嗚交替 10 次，每次維持 3 秒，每日 3 組。',
                 defaultImageUrl: getStorageUrl('面部與嘴唇關節活動度訓練.jpeg'),
-                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFB7B2" stroke="#1e293b" stroke-width="4"/><path d="M30 45Q50 65 70 45" stroke="#1e293b" stroke-width="4" fill="none"/></svg>`,
+                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#FFB7B2"/></svg>`,
                 themeColor: '#FFB7B2', goal: '增加唇部關節活動度。',
                 steps: [
                     { tag: '步驟一', text: '將嘴唇用力向前噘起發出「嗚」音，維持 3 秒。' },
@@ -905,15 +842,13 @@
                 evidence: 'Solomon (2006): Range of motion exercises reduce muscle stiffness.',
                 toolName: '🛠️ 課後練習輔助工具', targetText: '伊嗚咧嘴噘嘴'
             },
-
-            // ─── 模組四：下顎咀嚼與口腔感覺準備 ───
             {
                 id: '23', categoryId: '4', isHighRisk: false, holdSeconds: 3,
                 title: '🌟 訓練 23：', titleTitle: '下顎關節運動', subtitle: 'Jaw Exercise',
                 description: '增加下顎關節活動度與咀嚼肌肌力，改善咀嚼功能。',
                 contraindication: '顳顎關節脫位或急性發炎痛楚者。', dosage: '張口與側移各維持 3 秒，重複 5-10 次。',
                 defaultImageUrl: getStorageUrl('下顎運動.jpeg'),
-                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#BFFCC6" stroke="#1e293b" stroke-width="4"/><path d="M35 40L65 40M35 60L65 60" stroke="#1e293b" stroke-width="6" stroke-linecap="round"/></svg>`,
+                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#BFFCC6"/></svg>`,
                 themeColor: '#BFFCC6', goal: '改善下顎關節活動度。',
                 steps: [
                     { tag: '步驟一', text: '將嘴巴緩慢張開至最大極限，停留 3-5 秒。' },
@@ -929,7 +864,7 @@
                 description: '增加液體黏稠度以減緩流速，降低誤吸風險（屬於飲食質地準備）。',
                 contraindication: '未有言語治療師評估黏稠度等級 (IDDSI) 者切勿自行盲目加濃。', dosage: '按言語治療師處方調配。',
                 defaultImageUrl: getStorageUrl('凝固粉增稠劑之使用.jpeg'),
-                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#BFFCC6" stroke="#1e293b" stroke-width="4"/><path d="M40 30H60V70H40Z" fill="#FFF" stroke="#1e293b" stroke-width="3"/><path d="M40 50H60" stroke="#1e293b" stroke-width="3"/></svg>`,
+                svgIcon: `<svg width="85" height="85" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#BFFCC6"/></svg>`,
                 themeColor: '#BFFCC6', goal: '減緩液體流速，降低誤吸風險。',
                 steps: [
                     { tag: '步驟一', text: '依言語治療師建議，將指定劑量凝固粉倒入液體中。' },
@@ -944,22 +879,9 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 window.currentUser = user;
-                console.log("🔒 匿名登入成功，用戶 UID:", user.uid);
-                
-                const therapistRef = dbRef(database, `users/${user.uid}/therapist_access`);
-                onValue(therapistRef, (snapshot) => {
-                    if (!snapshot.exists()) {
-                        set(therapistRef, {
-                            assignedTherapistId: null,
-                            isSharedWithTherapist: false,
-                            lastUpdated: Date.now()
-                        });
-                    }
-                }, { onlyOnce: true });
-
                 initUserDataListeners(user.uid);
             } else {
-                signInAnonymously(auth).catch((error) => console.error("匿名登入失敗:", error));
+                signInAnonymously(auth).catch(console.error);
             }
         });
 
@@ -991,254 +913,174 @@
             });
         }
 
-        async function deleteOldImageByUrl(url) {
-            if (!url || !url.includes("firebasestorage.googleapis.com")) return;
-            try {
-                const oldRef = storageRef(storage, url);
-                await deleteObject(oldRef);
-            } catch (err) {
-                console.warn("舊圖片清理略過:", err.message);
-            }
-        }
+        // ─── 核心功能：手機拍照後上傳 Firebase 並由 Dify 分析 ───
+        window.triggerMealCapture = function() {
+            document.getElementById('mealCameraInput').click();
+        };
 
-        document.getElementById('image-file-picker').addEventListener('change', async function(event) {
-            const file = event.target.files[0];
-            if (!file || !window.currentUser) return;
-            if (file.size > 5000000) { alert("請選擇 5MB 以下的照片！"); this.value = ""; return; }
+        document.getElementById('mealCameraInput').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
 
             const loading = document.getElementById('loadingOverlay');
+            loading.innerText = "📸 正在安全上傳相片至 Firebase...";
             loading.classList.add('active');
 
             try {
-                const uid = window.currentUser.uid;
-                let dbKey = window.uploadTargetMode === "cover" ? 'cover' : `course_${window.currentActiveCourse.id}`;
-                let oldUrl = window.dbImageCache[dbKey];
+                // 1. 上傳至 Firebase Storage 取得公開 HTTPS 網址
+                const uid = window.currentUser ? window.currentUser.uid : "anonymous_user";
+                const storagePath = `meal_inspections/${uid}/${Date.now()}_meal.jpg`;
+                const imageReference = storageRef(storage, storagePath);
+                
+                await uploadBytes(imageReference, file);
+                const mealImageUrl = await getDownloadURL(imageReference);
 
-                await deleteOldImageByUrl(oldUrl);
+                loading.innerText = "🤖 AI 正在進行 IDDSI 質地分析...";
 
-                const storagePath = `users/${uid}/photos/${Date.now()}_${file.name}`;
-                const storageReference = storageRef(storage, storagePath);
-                await uploadBytes(storageReference, file);
-                const downloadURL = await getDownloadURL(storageReference);
+                // 2. 呼叫 Dify Workflow API（請替換為您的 Dify API Key）
+                const DIFY_API_KEY = "Bearer app-your-dify-api-key-here";
+                const DIFY_API_URL = "https://api.dify.ai/v1/workflows/run";
 
-                if (window.isCloudSyncEnabled) {
-                    await set(dbRef(database, `users/${uid}/images/${dbKey}`), downloadURL);
+                const response = await fetch(DIFY_API_URL, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": DIFY_API_KEY,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        inputs: {
+                            user_id: uid,
+                            meal_type: "正餐",
+                            iddsi_prescription: "照護處方等級",
+                            meal_photo: {
+                                type: "image",
+                                transfer_method: "remote_url",
+                                url: mealImageUrl
+                            }
+                        },
+                        response_mode: "blocking",
+                        user: uid
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.data && result.data.outputs) {
+                    showMealResult(result.data.outputs);
+                } else {
+                    alert("⚠️ 辨識逾時或格式錯誤，請確認光線充足後再試一次！");
                 }
+
             } catch (err) {
-                console.error("Firebase 上傳失敗:", err);
-                alert("處理失敗，請檢查網絡連線！");
+                console.error("AI 餐膳檢測失敗:", err);
+                alert("連線發生錯誤，請檢查網絡連線與 Dify API 金鑰設定！");
             } finally {
                 loading.classList.remove('active');
-                event.target.value = "";
+                e.target.value = "";
             }
         });
 
-        window.recordPracticeLog = function(transcript) {
-            if (!window.currentUser || !window.currentActiveCourse) return;
+        function showMealResult(out) {
+            document.getElementById('resLevelBadge').innerText = out.iddsi_level || 'N/A';
+            document.getElementById('resFoodName').innerText = out.food || '未辨識食物';
+            document.getElementById('resConfidence').innerText = out.confidence ? `${Math.round(out.confidence * 100)}%` : '--';
+            document.getElementById('resVisualReason').innerText = out.visual_reason || '無詳細特徵說明';
+            document.getElementById('resOfficialTest').innerText = out.recommended_official_test || '請使用標準叉子/湯匙傾側測試';
+            document.getElementById('resWarningBox').innerText = out.safety_warning || '⚠️ 提示：若長者吞嚥不適，請立即停止進食。';
             
-            if (window.isCloudSyncEnabled) {
-                const uid = window.currentUser.uid;
-                const logRef = push(dbRef(database, `users/${uid}/logs`));
-                set(logRef, {
-                    courseId: window.currentActiveCourse.id,
-                    courseTitle: window.currentActiveCourse.titleTitle,
-                    transcript: transcript,
-                    timestamp: Date.now()
-                });
-            }
-            
-            window.completedCoursesSet.add(window.currentActiveCourse.id);
-            updateProgressBar();
-        };
-
-        // 臨床紅旗即時告警
-        window.logSymptomStatus = function(symptomText) {
-            if (!window.currentUser || !window.currentActiveCourse) return;
-            if (window.isCloudSyncEnabled) {
-                const uid = window.currentUser.uid;
-                const symptomRef = push(dbRef(database, `users/${uid}/symptom_logs`));
-                set(symptomRef, {
-                    courseId: window.currentActiveCourse.id,
-                    courseTitle: window.currentActiveCourse.titleTitle,
-                    symptom: symptomText,
-                    timestamp: Date.now()
-                });
-            }
-
-            if (symptomText.includes('嗆咳') || symptomText.includes('濕聲') || symptomText.includes('痰')) {
-                alert(
-                    "🚨【吞嚥臨床紅旗警告】🚨\n\n" +
-                    "檢測到您練習時出現嗆咳或聲音變濕（有痰音），這代表水分或食物可能滲入喉頭！\n\n" +
-                    "請立即執行以下步驟：\n" +
-                    "1. 立即停止任何進食或訓練。\n" +
-                    "2. 身體坐直向前微傾，用力做 2 次乾吞嚥。\n" +
-                    "3. 輕咳 1 至 2 聲清喉嚨，將異物咳出。\n" +
-                    "4. 若持續呼吸不暢或劇烈咳嗽，請立即聯繫負責言語治療師或尋求醫療協助。"
-                );
-            } else {
-                alert(`✅ 已記錄今日吞嚥反應：「${symptomText}」！`);
-            }
-        };
-
-        window.clearUserCloudLogs = async function() {
-            if (!window.currentUser) return;
-            if (confirm("確定要清空所有雲端復康日誌嗎？（此操作不可復原，符合 PDPO 撤回機制）")) {
-                try {
-                    const uid = window.currentUser.uid;
-                    await remove(dbRef(database, `users/${uid}/logs`));
-                    await remove(dbRef(database, `users/${uid}/symptom_logs`));
-                    window.completedCoursesSet.clear();
-                    updateProgressBar();
-                    alert("已成功清空您的所有雲端練習紀錄！");
-                } catch (e) {
-                    alert("處理失敗，請檢查網絡連線！");
-                }
-            }
-        };
-
-        window.toggleCloudSyncMode = function() {
-            window.isCloudSyncEnabled = !window.isCloudSyncEnabled;
-            const btn = document.getElementById('btnToggleSync');
-            if (window.isCloudSyncEnabled) {
-                btn.innerText = "🌐 雲端數據同步：已開啟";
-                btn.style.backgroundColor = "#3B82F6";
-            } else {
-                btn.innerText = "🔒 純離線保護模式：已切換";
-                btn.style.backgroundColor = "#64748B";
-            }
-        };
-
-        // 語音辨識機制
-        window.isListening = false;
-        window.recognition = null;
-
-        window.toggleSttSimulation = function() {
-            const btn = document.getElementById('btnSttAction');
-            const wave = document.getElementById('liveWave');
-            
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                alert("目前的瀏覽器暫不支援語音辨識，建議使用 Safari 或 Chrome 瀏覽器！");
-                return;
-            }
-
-            if (window.recognition) {
-                try { window.recognition.abort(); } catch(e) {}
-                window.recognition = null;
-            }
-
-            window.recognition = new SpeechRecognition();
-            window.recognition.lang = 'zh-HK';
-            window.recognition.continuous = false;
-            window.recognition.interimResults = true;
-
-            window.recognition.onstart = function() {
-                window.isListening = true;
-                btn.innerText = "正在聆聽中... 請朗讀上圖字詞 🛑";
-                btn.style.backgroundColor = "#FFB7B2";
-                wave.style.visibility = "visible";
-            };
-
-            window.recognition.onresult = function(event) {
-                const transcript = event.results[0][0].transcript;
-                if (event.results[0].isFinal) {
-                    wave.style.visibility = "hidden";
-                    btn.style.backgroundColor = "#BFFCC6";
-                    btn.innerHTML = `👏 聽到您練習了：「${transcript}」<br>🌟 棒極了！聲音非常清晰！`;
-                    window.recordPracticeLog(transcript);
-                } else {
-                    btn.innerText = `聆聽中... 「${transcript}」`;
-                }
-            };
-
-            window.recognition.onerror = function() {
-                window.isListening = false;
-                wave.style.visibility = "hidden";
-                btn.style.backgroundColor = "#BFFCC6";
-                btn.innerHTML = "👏 唔緊要！練習嘅重點係你個口部肌肉有郁動到，已經好棒了！繼續加油！💪";
-                if (window.currentActiveCourse) {
-                    window.recordPracticeLog("肌肉運動完成");
-                }
-            };
-
-            window.recognition.onend = function() {
-                window.isListening = false;
-                wave.style.visibility = "hidden";
-            };
-
-            if (!window.isListening) {
-                window.recognition.start();
-            } else {
-                window.recognition.stop();
-            }
-        };
-
-        // 動態維持計時器邏輯
-        let timerInterval = null;
-        window.startDynamicPracticeTimer = function(seconds) {
-            clearInterval(timerInterval);
-            let left = seconds;
-            const display = document.getElementById('timerDisplay');
-            const btn = document.getElementById('btnStartTimer');
-            btn.disabled = true;
-
-            timerInterval = setInterval(() => {
-                left--;
-                display.innerText = `00:${left < 10 ? '0' : ''}${left}`;
-                if (left <= 0) {
-                    clearInterval(timerInterval);
-                    display.innerText = "🎉 時間到！非常棒！";
-                    btn.disabled = false;
-                    if (window.currentActiveCourse) {
-                        window.completedCoursesSet.add(window.currentActiveCourse.id);
-                        updateProgressBar();
-                    }
-                }
-            }, 1000);
-        };
-
-        window.toggleEvidenceDisplay = function() {
-            const content = document.getElementById('evidenceContentText');
-            const arrow = document.getElementById('evidenceToggleArrow');
-            if (content.style.display === 'block') {
-                content.style.display = 'none';
-                arrow.innerText = '▼';
-            } else {
-                content.style.display = 'block';
-                arrow.innerText = '▲';
-            }
-        };
-
-        window.applyPrescriptionFilter = function() {
-            const input = document.getElementById('prescriptionCodeInput').value.trim();
-            if (!input) {
-                window.prescriptionFilterSet = null;
-            } else {
-                const ids = input.split(',').map(s => s.trim());
-                window.prescriptionFilterSet = new Set(ids);
-            }
-            window.filterAndNavigate(window.currentCategoryId || '1');
-        };
-
-        window.toggleSeniorFont = function() {
-            const shell = document.getElementById('app-phone-shell');
-            shell.classList.toggle('senior-font-mode');
-        };
-
-        function updateProgressBar() {
-            const total = window.coursesData.length;
-            const completedCount = window.completedCoursesSet.size;
-            const percent = Math.round((completedCount / total) * 100);
-            document.getElementById('progress-val-text').innerText = `${completedCount} / ${total} 課 (${percent}%)`;
-            document.getElementById('progress-bar-fill').style.width = `${percent}%`;
+            document.getElementById('mealResultModal').classList.add('active');
         }
 
+        window.closeMealResult = function() {
+            document.getElementById('mealResultModal').classList.remove('active');
+        };
+
+        // ─── 超清檢視器：平移與旋轉縮放 ───
+        let lbScale = 1, lbRotation = 0, lbPosX = 0, lbPosY = 0, isDragging = false, dragStartX = 0, dragStartY = 0;
+
+        function applyLbTransform() {
+            const img = document.getElementById('activeLbImage');
+            if (!img) return;
+            img.style.transform = `translate(${lbPosX}px, ${lbPosY}px) rotate(${lbRotation}deg) scale(${lbScale})`;
+        }
+
+        window.zoomInImage = () => { lbScale = Math.min(lbScale + 0.35, 3.5); applyLbTransform(); };
+        window.zoomOutImage = () => { lbScale = Math.max(lbScale - 0.35, 0.8); if (lbScale <= 1) { lbPosX = 0; lbPosY = 0; } applyLbTransform(); };
+        window.rotateImage = () => { lbRotation = (lbRotation + 90) % 360; applyLbTransform(); };
+        window.resetImageTransform = () => { lbScale = 1; lbRotation = 0; lbPosX = 0; lbPosY = 0; applyLbTransform(); };
+
+        window.openLightbox = function() {
+            if (!window.currentActiveCourse) return;
+            const modal = document.getElementById('lightboxModal');
+            const wrapper = document.getElementById('lightboxContentWrapper');
+            const title = document.getElementById('lightboxTitleText');
+            
+            title.innerText = `🔍 ${window.currentActiveCourse.titleTitle} (分解動作超清大圖)`;
+            const currentImg = (window.dbImageCache && window.dbImageCache[`course_${window.currentActiveCourse.id}`]) || window.currentActiveCourse.defaultImageUrl;
+            
+            resetImageTransform();
+            wrapper.innerHTML = currentImg ? 
+                `<img src="${currentImg}" id="activeLbImage" class="lightbox-img" alt="示範分解圖" onerror="this.outerHTML='<div style=\\\'transform:scale(3.5);\\\'>${window.currentActiveCourse.svgIcon.replace(/'/g, "\\'")}</div>'">` : 
+                `<div style="transform: scale(3.5);">${window.currentActiveCourse.svgIcon}</div>`;
+            
+            modal.classList.add('active');
+            setupStageDrag();
+        };
+
+        window.closeLightbox = function() {
+            document.getElementById('lightboxModal').classList.remove('active');
+            resetImageTransform();
+        };
+
+        function setupStageDrag() {
+            const stage = document.getElementById('lightboxStage');
+            stage.onmousedown = (e) => {
+                if (lbScale <= 1 && lbRotation === 0) return;
+                isDragging = true;
+                dragStartX = e.clientX - lbPosX;
+                dragStartY = e.clientY - lbPosY;
+            };
+            window.onmousemove = (e) => {
+                if (!isDragging) return;
+                lbPosX = e.clientX - dragStartX;
+                lbPosY = e.clientY - dragStartY;
+                applyLbTransform();
+            };
+            window.onmouseup = () => { isDragging = false; };
+
+            stage.ontouchstart = (e) => {
+                if (e.touches.length === 1 && (lbScale > 1 || lbRotation !== 0)) {
+                    isDragging = true;
+                    dragStartX = e.touches[0].clientX - lbPosX;
+                    dragStartY = e.touches[0].clientY - lbPosY;
+                }
+            };
+            stage.ontouchmove = (e) => {
+                if (!isDragging || e.touches.length !== 1) return;
+                lbPosX = e.touches[0].clientX - dragStartX;
+                lbPosY = e.touches[0].clientY - dragStartY;
+                applyLbTransform();
+            };
+            stage.ontouchend = () => { isDragging = false; };
+        }
+
+        // ─── 介面導航與輔助功能 ───
         window.navigateTo = function(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
         };
 
-        // 圖片渲染分層邏輯：自訂圖 > Firebase Link > SVG 兜底
+        window.toggleSeniorFont = function() {
+            document.getElementById('app-phone-shell').classList.toggle('senior-font-mode');
+        };
+
+        window.toggleFullscreen = function() {
+            const shell = document.getElementById('app-phone-shell');
+            const zoomBtn = document.getElementById('zoom-toggle-btn');
+            shell.classList.toggle('fullscreen-mode');
+            zoomBtn.innerText = shell.classList.contains('fullscreen-mode') ? "⤡ 退出全螢幕" : "⤢ 全螢幕";
+        };
+
         function renderThumbnailHtml(imgUrl, svgIcon) {
             if (imgUrl) {
                 return `<img src="${imgUrl}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" style="width:100%; height:100%; object-fit:cover;">
@@ -1270,7 +1112,6 @@
             headerTitle.innerText = categoryTitles[catId] || '復康訓練牆 🗺️';
 
             let filteredCourses = window.coursesData.filter(c => c.categoryId === catId);
-
             if (window.prescriptionFilterSet) {
                 filteredCourses = filteredCourses.filter(c => window.prescriptionFilterSet.has(c.id));
             }
@@ -1307,230 +1148,29 @@
             navigateTo('list-screen');
         };
 
-        window.toggleFullscreen = function() {
-            const shell = document.getElementById('app-phone-shell');
-            const zoomBtn = document.getElementById('zoom-toggle-btn');
-            shell.classList.toggle('fullscreen-mode');
-            zoomBtn.innerText = shell.classList.contains('fullscreen-mode') ? "⤡ 退出全螢幕" : "⤢ 全螢幕";
-        };
-
-        window.triggerFilePicker = function(mode) {
-            window.uploadTargetMode = mode;
-            document.getElementById('image-file-picker').click();
-        };
-
-        // ─── 超清全螢幕原生手勢縮放與拖曳引擎 (Pinch & Pan Engine) ───
-        let lbScale = 1;
-        let lbRotation = 0;
-        let lbPosX = 0;
-        let lbPosY = 0;
-
-        // 手勢追蹤狀態
-        let isTouching = false;
-        let isDraggingMouse = false;
-        let dragStartX = 0;
-        let dragStartY = 0;
-        let initialPinchDistance = 0;
-        let initialPinchScale = 1;
-        let lastTapTimestamp = 0;
-
-        function applyLbTransform(animate = false) {
-            const img = document.getElementById('activeLbImage');
-            if (!img) return;
-            img.style.transition = animate ? 'transform 0.22s cubic-bezier(0.2, 0, 0.2, 1)' : 'none';
-            img.style.transform = `translate3d(${lbPosX}px, ${lbPosY}px, 0px) rotate(${lbRotation}deg) scale(${lbScale})`;
+        function updateProgressBar() {
+            const total = window.coursesData.length;
+            const completedCount = window.completedCoursesSet.size;
+            const percent = Math.round((completedCount / total) * 100);
+            document.getElementById('progress-val-text').innerText = `${completedCount} / ${total} 課 (${percent}%)`;
+            document.getElementById('progress-bar-fill').style.width = `${percent}%`;
         }
-
-        window.zoomInImage = function() {
-            lbScale = Math.min(lbScale + 0.35, 4.5);
-            applyLbTransform(true);
-        };
-
-        window.zoomOutImage = function() {
-            lbScale = Math.max(lbScale - 0.35, 0.75);
-            if (lbScale <= 1) { lbPosX = 0; lbPosY = 0; }
-            applyLbTransform(true);
-        };
-
-        window.rotateImage = function() {
-            lbRotation = (lbRotation + 90) % 360;
-            applyLbTransform(true);
-        };
-
-        window.resetImageTransform = function() {
-            lbScale = 1;
-            lbRotation = 0;
-            lbPosX = 0;
-            lbPosY = 0;
-            applyLbTransform(true);
-        };
-
-        window.openLightbox = function() {
-            if (!window.currentActiveCourse) return;
-            const modal = document.getElementById('lightboxModal');
-            const wrapper = document.getElementById('lightboxContentWrapper');
-            const title = document.getElementById('lightboxTitleText');
-            
-            title.innerText = `🔍 ${window.currentActiveCourse.titleTitle} (全螢幕超清分解圖)`;
-            const currentImg = (window.dbImageCache && window.dbImageCache[`course_${window.currentActiveCourse.id}`]) || window.currentActiveCourse.defaultImageUrl;
-            
-            resetImageTransform();
-            
-            wrapper.innerHTML = currentImg ? 
-                `<img src="${currentImg}" id="activeLbImage" class="lightbox-img" alt="示範分解圖" onerror="this.outerHTML='<div style=\\\'transform:scale(3.5);\\\'>${window.currentActiveCourse.svgIcon.replace(/'/g, "\\'")}</div>'">` : 
-                `<div style="transform: scale(3.5);">${window.currentActiveCourse.svgIcon}</div>`;
-            
-            modal.classList.add('active');
-            bindPinchAndPanGestures();
-        };
-
-        window.closeLightbox = function() {
-            const modal = document.getElementById('lightboxModal');
-            modal.classList.remove('active');
-            resetImageTransform();
-        };
-
-        function bindPinchAndPanGestures() {
-            const stage = document.getElementById('lightboxStage');
-
-            // 雙指距離計算
-            const getTouchDistance = (touches) => {
-                return Math.hypot(
-                    touches[0].clientX - touches[1].clientX,
-                    touches[0].clientY - touches[1].clientY
-                );
-            };
-
-            // 觸控開始 (Touchstart)
-            stage.ontouchstart = (e) => {
-                if (e.touches.length === 2) {
-                    // 進入雙指縮放模式
-                    isTouching = true;
-                    initialPinchDistance = getTouchDistance(e.touches);
-                    initialPinchScale = lbScale;
-                } else if (e.touches.length === 1) {
-                    // 單指拖曳或點擊偵測
-                    isTouching = true;
-                    dragStartX = e.touches[0].clientX - lbPosX;
-                    dragStartY = e.touches[0].clientY - lbPosY;
-                }
-            };
-
-            // 觸控移動 (Touchmove)
-            stage.ontouchmove = (e) => {
-                if (!isTouching) return;
-                e.preventDefault(); // 阻止原生滾動
-
-                if (e.touches.length === 2) {
-                    // 雙指自由放大縮小
-                    const currentDist = getTouchDistance(e.touches);
-                    if (initialPinchDistance > 0) {
-                        const factor = currentDist / initialPinchDistance;
-                        lbScale = Math.min(Math.max(initialPinchScale * factor, 0.7), 5.0);
-                        applyLbTransform(false);
-                    }
-                } else if (e.touches.length === 1 && lbScale > 1.02) {
-                    // 放大後單指自由平移畫布
-                    lbPosX = e.touches[0].clientX - dragStartX;
-                    lbPosY = e.touches[0].clientY - dragStartY;
-                    applyLbTransform(false);
-                }
-            };
-
-            // 觸控結束 (Touchend)
-            stage.ontouchend = (e) => {
-                if (e.touches.length === 0) {
-                    isTouching = false;
-                    
-                    // 雙擊放大/還原偵測 (Double Tap < 280ms)
-                    const now = Date.now();
-                    if (now - lastTapTimestamp < 280) {
-                        if (lbScale > 1.25) {
-                            resetImageTransform();
-                        } else {
-                            lbScale = 2.2;
-                            applyLbTransform(true);
-                        }
-                    }
-                    lastTapTimestamp = now;
-
-                    // 若縮小過頭自動回彈平滑還原
-                    if (lbScale < 0.95) {
-                        resetImageTransform();
-                    }
-                } else if (e.touches.length === 1) {
-                    // 由雙指切回單指
-                    dragStartX = e.touches[0].clientX - lbPosX;
-                    dragStartY = e.touches[0].clientY - lbPosY;
-                }
-            };
-
-            // 電腦滑鼠滾輪縮放支援
-            stage.onwheel = (e) => {
-                e.preventDefault();
-                const delta = e.deltaY < 0 ? 0.25 : -0.25;
-                lbScale = Math.min(Math.max(lbScale + delta, 0.75), 5.0);
-                if (lbScale <= 1) { lbPosX = 0; lbPosY = 0; }
-                applyLbTransform(true);
-            };
-
-            // 電腦滑鼠拖曳支援
-            stage.onmousedown = (e) => {
-                if (lbScale <= 1) return;
-                isDraggingMouse = true;
-                dragStartX = e.clientX - lbPosX;
-                dragStartY = e.clientY - lbPosY;
-            };
-            window.onmousemove = (e) => {
-                if (!isDraggingMouse) return;
-                lbPosX = e.clientX - dragStartX;
-                lbPosY = e.clientY - dragStartY;
-                applyLbTransform(false);
-            };
-            window.onmouseup = () => { isDraggingMouse = false; };
-        }
-
-        window.closeDetail = function() {
-            if (window.recognition) {
-                try { window.recognition.abort(); } catch(e){}
-                window.isListening = false;
-            }
-            clearInterval(timerInterval);
-            window.currentActiveCourse = null;
-            navigateTo('list-screen');
-        };
-
-        window.shareToWhatsApp = function() {
-            const text = encodeURIComponent("好高興同你分享！我啱啱喺「630樂活科技 語音與吞嚥復康訓練沙盒」完成咗吞嚥復康練習，飲食更安全，身體更健康！💪🎉");
-            window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
-        };
 
         function openDetail(course) {
             window.currentActiveCourse = course;
-
             const topBar = document.getElementById('detail-top-bar');
-            const title = document.getElementById('detail-title');
-            const goal = document.getElementById('detail-goal');
-            const contra = document.getElementById('detail-contra');
-            const dosage = document.getElementById('detail-dosage');
-            const stepsListWrapper = document.getElementById('steps-list-wrapper');
-            const toolBoxContainer = document.getElementById('tool-box-container');
-            const evidenceText = document.getElementById('evidenceContentText');
-            const timerBox = document.getElementById('timerBoxContainer');
-            const timerDisplay = document.getElementById('timerDisplay');
-            const btnStartTimer = document.getElementById('btnStartTimer');
-
             topBar.style.backgroundColor = course.themeColor;
             
             const currentImg = (window.dbImageCache && window.dbImageCache[`course_${course.id}`]) || course.defaultImageUrl;
             renderDetailImage(currentImg, course.svgIcon);
 
-            title.innerHTML = `<span style="font-size: 12px; color:#475569; font-weight:800;">${course.title} ${course.subtitle}</span><br>${course.titleTitle}`;
-            goal.innerText = `🎯 訓練目的：${course.goal}`;
-            contra.innerHTML = `🚫 <strong>禁忌症（誰不適合做）：</strong>${course.contraindication || '無特殊禁忌'}`;
-            dosage.innerHTML = `⏱️ <strong>建議訓練劑量：</strong>${course.dosage || '依言語治療師指示'}`;
-            evidenceText.innerText = course.evidence || '本訓練項目之臨床成效參照 Logemann (2011) 吞嚥障礙處方指南。';
+            document.getElementById('detail-title').innerHTML = `<span style="font-size: 12px; color:#475569; font-weight:800;">${course.title} ${course.subtitle}</span><br>${course.titleTitle}`;
+            document.getElementById('detail-goal').innerText = `🎯 訓練目的：${course.goal}`;
+            document.getElementById('detail-contra').innerHTML = `🚫 <strong>禁忌症：</strong>${course.contraindication || '無特殊禁忌'}`;
+            document.getElementById('detail-dosage').innerHTML = `⏱️ <strong>建議訓練劑量：</strong>${course.dosage || '依言語治療師指示'}`;
+            document.getElementById('evidenceContentText').innerText = course.evidence || '臨床實證指引參照 Logemann (2011)。';
 
+            const stepsListWrapper = document.getElementById('steps-list-wrapper');
             stepsListWrapper.innerHTML = '';
             course.steps.forEach((step, index) => {
                 const stepCard = document.createElement('div');
@@ -1545,85 +1185,207 @@
                 stepsListWrapper.appendChild(stepCard);
             });
 
-            // 動態配置秒數計時器
             clearInterval(timerInterval);
+            const timerBox = document.getElementById('timerBoxContainer');
             if (course.holdSeconds && course.holdSeconds > 0) {
                 timerBox.style.display = 'block';
-                timerDisplay.innerText = `00:${course.holdSeconds < 10 ? '0' : ''}${course.holdSeconds}`;
-                btnStartTimer.innerText = `開始 ${course.holdSeconds} 秒維持計時 ⏱️`;
-                btnStartTimer.disabled = false;
-                btnStartTimer.onclick = () => window.startDynamicPracticeTimer(course.holdSeconds);
+                document.getElementById('timerDisplay').innerText = `00:${course.holdSeconds < 10 ? '0' : ''}${course.holdSeconds}`;
+                const btn = document.getElementById('btnStartTimer');
+                btn.innerText = `開始 ${course.holdSeconds} 秒維持計時 ⏱️`;
+                btn.disabled = false;
+                btn.onclick = () => window.startDynamicPracticeTimer(course.holdSeconds);
             } else {
                 timerBox.style.display = 'none';
             }
 
-            toolBoxContainer.innerHTML = `
+            document.getElementById('tool-box-container').innerHTML = `
                 <div class="tool-title">${course.toolName}</div>
                 <div class="stt-practice-box">
-                    <div class="stt-text-target">📌 建議朗讀 / 口肌肉搭配語句：<br><span style="color:#1e293b; font-size:14px; font-weight:900;">${course.targetText}</span></div>
+                    <div class="stt-text-target">📌 建議搭配發音字詞：<br><span style="color:#1e293b; font-size:14px; font-weight:900;">${course.targetText}</span></div>
                     <div class="stt-live-wave" id="liveWave" style="visibility:hidden;">
-                        <div class="wave-bar active" style="animation-delay: 0.1s;"></div>
-                        <div class="wave-bar active" style="animation-delay: 0.3s;"></div>
-                        <div class="wave-bar active" style="animation-delay: 0.5s;"></div>
+                        <div class="wave-bar active"></div><div class="wave-bar active"></div><div class="wave-bar active"></div>
                     </div>
-                    <button class="btn-action-tool" id="btnSttAction" onclick="toggleSttSimulation()">
-                        按此開始居家語音練習 🎙️
-                    </button>
+                    <button class="btn-action-tool" id="btnSttAction" onclick="toggleSttSimulation()">按此開始居家語音練習 🎙️</button>
                 </div>
             `;
 
             navigateTo('detail-screen');
         }
 
-        // 首頁 LOGO 載入（對應 Designer.jpeg，自帶 SVG 兜底保護）
+        window.closeDetail = function() {
+            if (window.recognition) {
+                try { window.recognition.abort(); } catch(e){}
+                window.isListening = false;
+            }
+            clearInterval(timerInterval);
+            window.currentActiveCourse = null;
+            navigateTo('list-screen');
+        };
+
+        // 計時器
+        let timerInterval = null;
+        window.startDynamicPracticeTimer = function(seconds) {
+            clearInterval(timerInterval);
+            let left = seconds;
+            const display = document.getElementById('timerDisplay');
+            const btn = document.getElementById('btnStartTimer');
+            btn.disabled = true;
+
+            timerInterval = setInterval(() => {
+                left--;
+                display.innerText = `00:${left < 10 ? '0' : ''}${left}`;
+                if (left <= 0) {
+                    clearInterval(timerInterval);
+                    display.innerText = "🎉 時間到！非常棒！";
+                    btn.disabled = false;
+                    if (window.currentActiveCourse) {
+                        window.completedCoursesSet.add(window.currentActiveCourse.id);
+                        updateProgressBar();
+                    }
+                }
+            }, 1000);
+        };
+
+        // 語音辨識
+        window.isListening = false;
+        window.recognition = null;
+        window.toggleSttSimulation = function() {
+            const btn = document.getElementById('btnSttAction');
+            const wave = document.getElementById('liveWave');
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("瀏覽器暫不支援語音辨識，請使用 Chrome 或 Safari。");
+                return;
+            }
+            if (window.recognition) {
+                try { window.recognition.abort(); } catch(e){}
+            }
+            window.recognition = new SpeechRecognition();
+            window.recognition.lang = 'zh-HK';
+            window.recognition.onstart = () => {
+                window.isListening = true;
+                btn.innerText = "正在聆聽中... 請朗讀上圖字詞 🛑";
+                wave.style.visibility = "visible";
+            };
+            window.recognition.onresult = (e) => {
+                const transcript = e.results[0][0].transcript;
+                wave.style.visibility = "hidden";
+                btn.innerHTML = `👏 聽到您朗讀：「${transcript}」！`;
+                if (window.currentUser && window.currentActiveCourse && window.isCloudSyncEnabled) {
+                    push(dbRef(database, `users/${window.currentUser.uid}/logs`), {
+                        courseId: window.currentActiveCourse.id,
+                        courseTitle: window.currentActiveCourse.titleTitle,
+                        transcript: transcript,
+                        timestamp: Date.now()
+                    });
+                }
+            };
+            window.recognition.onerror = () => {
+                wave.style.visibility = "hidden";
+                btn.innerHTML = "👏 動作完成！繼續加油！💪";
+            };
+            window.recognition.onend = () => {
+                window.isListening = false;
+                wave.style.visibility = "hidden";
+            };
+            window.recognition.start();
+        };
+
+        // 紅旗症狀回報
+        window.logSymptomStatus = function(symptomText) {
+            if (!window.currentUser || !window.currentActiveCourse) return;
+            if (window.isCloudSyncEnabled) {
+                push(dbRef(database, `users/${window.currentUser.uid}/symptom_logs`), {
+                    courseId: window.currentActiveCourse.id,
+                    courseTitle: window.currentActiveCourse.titleTitle,
+                    symptom: symptomText,
+                    timestamp: Date.now()
+                });
+            }
+            if (symptomText.includes('嗆咳') || symptomText.includes('濕聲') || symptomText.includes('痰')) {
+                alert("🚨【吞嚥臨床紅旗警告】🚨\n\n檢測到嗆咳或喉頭濕聲，代表可能有水分滲入氣道！\n請立即停止練習，坐直並清咳排空。若持續不適請聯繫言語治療師。");
+            } else {
+                alert(`✅ 已記錄今日吞嚥反應：「${symptomText}」！`);
+            }
+        };
+
+        // 處方過濾
+        window.applyPrescriptionFilter = function() {
+            const input = document.getElementById('prescriptionCodeInput').value.trim();
+            window.prescriptionFilterSet = input ? new Set(input.split(',').map(s => s.trim())) : null;
+            window.filterAndNavigate(window.currentCategoryId || '1');
+        };
+
+        // 實證文獻折疊
+        window.toggleEvidenceDisplay = function() {
+            const content = document.getElementById('evidenceContentText');
+            const arrow = document.getElementById('evidenceToggleArrow');
+            const isOpen = content.style.display === 'block';
+            content.style.display = isOpen ? 'none' : 'block';
+            arrow.innerText = isOpen ? '▼' : '▲';
+        };
+
+        // 教材照片換圖 (File Picker)
+        window.triggerFilePicker = function(mode) {
+            window.uploadTargetMode = mode;
+            document.getElementById('image-file-picker').click();
+        };
+
+        document.getElementById('image-file-picker').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file || !window.currentUser) return;
+            const loading = document.getElementById('loadingOverlay');
+            loading.innerText = "☁️ 正在處理教材照片...";
+            loading.classList.add('active');
+            try {
+                const uid = window.currentUser.uid;
+                let dbKey = window.uploadTargetMode === "cover" ? 'cover' : `course_${window.currentActiveCourse.id}`;
+                const fileRef = storageRef(storage, `users/${uid}/photos/${Date.now()}_${file.name}`);
+                await uploadBytes(fileRef, file);
+                const url = await getDownloadURL(fileRef);
+                if (window.isCloudSyncEnabled) {
+                    await set(dbRef(database, `users/${uid}/images/${dbKey}`), url);
+                }
+            } catch(err) {
+                alert("更換教材相片失敗，請檢查網絡！");
+            } finally {
+                loading.classList.remove('active');
+                e.target.value = "";
+            }
+        });
+
+        // 載入預設 LOGO
         const defaultLogoUrl = getStorageUrl('Designer.jpeg');
         document.getElementById('cover-img-container').innerHTML = `
             <img src="${defaultLogoUrl}" alt="630樂活科技" onerror="this.outerHTML='${coverDefaultSvg.replace(/'/g, "\\'")}'">
         `;
 
-        // 知情同意與安全篩查檢查 (持久化修復)
+        // 篩查合規控制
         window.checkConsentStatus = function() {
-            const chk1 = document.getElementById('chkMedicalConsent').checked;
-            const chk2 = document.getElementById('chkPrivacyConsent').checked;
-            const btn = document.getElementById('btnAcceptConsent');
-            if (chk1 && chk2) {
-                btn.classList.add('ready');
-            } else {
-                btn.classList.remove('ready');
-            }
+            const c1 = document.getElementById('chkMedicalConsent').checked;
+            const c2 = document.getElementById('chkPrivacyConsent').checked;
+            document.getElementById('btnAcceptConsent').classList.toggle('ready', c1 && c2);
         };
 
         window.acceptComplianceTerms = function() {
-            const isTrach = document.getElementById('chkRiskTrach').checked;
-            const isDementia = document.getElementById('chkRiskDementia').checked;
-            const isBP = document.getElementById('chkRiskBP').checked;
-
-            const shouldLock = isTrach || isDementia || isBP;
-            window.isHighRiskLocked = shouldLock;
-            localStorage.setItem('lohas_risk_locked', shouldLock ? 'true' : 'false');
+            const lock = document.getElementById('chkRiskTrach').checked || 
+                         document.getElementById('chkRiskDementia').checked || 
+                         document.getElementById('chkRiskBP').checked;
+            window.isHighRiskLocked = lock;
+            localStorage.setItem('lohas_risk_locked', lock ? 'true' : 'false');
             localStorage.setItem('lohas_compliance_accepted', 'true');
-
-            if (shouldLock) {
-                alert("⚠️ 檢測到您勾選了高風險項目。為了您的吞嚥安全，系統已自動為您鎖定高風險訓練（如 Supraglottic、Shaker），請在言語治療師親自監督下練習！");
-            }
-
+            if (lock) alert("⚠️ 檢測到高風險項目，已為您自動鎖定高風險訓練！");
             document.getElementById('complianceConsentModal').style.display = 'none';
-            if (window.currentCategoryId) {
-                window.filterAndNavigate(window.currentCategoryId);
-            }
         };
 
         window.addEventListener('DOMContentLoaded', () => {
-            const isAccepted = localStorage.getItem('lohas_compliance_accepted');
-            if (!isAccepted) {
+            if (!localStorage.getItem('lohas_compliance_accepted')) {
                 document.getElementById('complianceConsentModal').style.display = 'flex';
             }
         });
 
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js').catch(err => console.error(err));
-            });
+            window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(console.error));
         }
     </script>
 </body>
