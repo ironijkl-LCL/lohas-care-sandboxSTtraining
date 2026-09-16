@@ -5,54 +5,67 @@ const multer = require('multer');
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
 
-// 允許所有來源跨域請求（解決瀏覽器 CORS 限制）
 app.use(cors());
 app.use(express.json());
 
-const DIFY_API_KEY = process.env.DIFY_API_KEY || '';
-const DIFY_API_BASE = (process.env.DIFY_API_BASE || 'https://api.dify.ai/v1').replace(/\/$/, '');
+// 自動補全 /v1 與清洗手誤
+function getDifyBase() {
+    let base = (process.env.DIFY_API_BASE || 'https://api.dify.ai/v1').trim();
+    base = base.replace(/\[.*?\]\((.*?)\)/g, '$1').replace(/[\[\]\(\)\s]/g, '').replace(/\/+$/, '');
+    base = base.replace(/\/(files\/upload|workflows\/run|chat-messages)$/, '');
+    if (!base.endsWith('/v1')) {
+        base += '/v1';
+    }
+    return base;
+}
 
-// 測試健康檢查端點
+function getDifyKey() {
+    let key = (process.env.DIFY_API_KEY || '').trim();
+    key = key.replace(/\[.*?\]\((.*?)\)/g, '$1').replace(/[\[\]\(\)\s]/g, '');
+    if (key.startsWith('Bearer')) key = key.replace(/^Bearer\s*/, '');
+    return key;
+}
+
 app.get('/', (req, res) => {
-    res.send('✅ Lohas Dify API Proxy 正在正常運作！');
+    res.send(`✅ Lohas Dify API Proxy 正常在線！<br>端點位址: ${getDifyBase()}<br>金鑰已載入: ${getDifyKey() ? '是' : '否'}`);
 });
 
-// 接收前端相片並轉發至 Dify
 app.post('/api/analyze', upload.single('file'), async (req, res) => {
     try {
-        if (!req.file) {
-            return res.status(400).json({ error: '請提供食物相片' });
-        }
+        if (!req.file) return res.status(400).json({ error: '未接收到相片檔案' });
+        
+        const DIFY_API_KEY = getDifyKey();
+        const DIFY_API_BASE = getDifyBase();
+
         if (!DIFY_API_KEY) {
             return res.status(500).json({ error: 'Render 未設定 DIFY_API_KEY 環境變數' });
         }
 
         const user = req.body.user || 'web_user_' + Date.now();
 
-        // 步驟 1：將相片上傳至 Dify 檔案伺服器
-        const fileBlob = new Blob([req.file.buffer], { type: req.file.mimetype });
+        // 1. 上傳相片到 Dify 取得 file_id
+        const fileBlob = new Blob([req.file.buffer], { type: req.file.mimetype || 'image/jpeg' });
         const uploadFormData = new FormData();
         uploadFormData.append('file', fileBlob, req.file.originalname || 'meal.jpg');
         uploadFormData.append('user', user);
 
         const uploadRes = await fetch(`${DIFY_API_BASE}/files/upload`, {
             method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${DIFY_API_KEY}`
-            },
+            headers: { 'Authorization': `Bearer ${DIFY_API_KEY}` },
             body: uploadFormData
         });
 
         if (!uploadRes.ok) {
             const errText = await uploadRes.text();
-            console.error('Dify 上傳失敗:', errText);
-            return res.status(uploadRes.status).json({ error: `Dify 圖片上傳失敗: ${errText}` });
+            return res.status(uploadRes.status).json({ 
+                error: `Dify 圖片上傳失敗 (${uploadRes.status}): ${errText || '請確認 API Key 與端點正確'}` 
+            });
         }
 
         const uploadJson = await uploadRes.json();
         const uploadFileId = uploadJson.id;
 
-        // 步驟 2：執行 Dify 質地分析工作流 (Workflow)
+        // 2. 執行分析（優先以 Workflow 執行，若為 Chatflow 則自動轉向）
         const workflowPayload = {
             inputs: {
                 user_id: user,
@@ -67,7 +80,7 @@ app.post('/api/analyze', upload.single('file'), async (req, res) => {
             user: user
         };
 
-        const workflowRes = await fetch(`${DIFY_API_BASE}/workflows/run`, {
+        let runRes = await fetch(`${DIFY_API_BASE}/workflows/run`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${DIFY_API_KEY}`,
@@ -76,25 +89,39 @@ app.post('/api/analyze', upload.single('file'), async (req, res) => {
             body: JSON.stringify(workflowPayload)
         });
 
-        if (!workflowRes.ok) {
-            const errText = await workflowRes.text();
-            console.error('Dify 分析失敗:', errText);
-            return res.status(workflowRes.status).json({ error: `Dify 工作流執行失敗: ${errText}` });
+        if (runRes.status === 404) {
+            // 兼容 Chatflow / Agent 類型
+            runRes = await fetch(`${DIFY_API_BASE}/chat-messages`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${DIFY_API_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    inputs: {},
+                    query: "請分析食物名稱與 IDDSI 質地等級（Level 0到7），以 JSON 回傳。",
+                    response_mode: "blocking",
+                    user: user,
+                    files: [{ type: "image", transfer_method: "local_file", upload_file_id: uploadFileId }]
+                })
+            });
         }
 
-        const workflowJson = await workflowRes.json();
-        const outputs = workflowJson.data?.outputs || {};
+        if (!runRes.ok) {
+            const errText = await runRes.text();
+            return res.status(runRes.status).json({ error: `Dify 分析失敗 (${runRes.status}): ${errText}` });
+        }
 
-        // 直接將分析結果輸出回前端 App
+        const runJson = await runRes.json();
+        const outputs = runJson.data?.outputs || runJson.answer || runJson;
         res.json(outputs);
 
     } catch (err) {
-        console.error('伺服器發生異常:', err);
         res.status(500).json({ error: '伺服器內部錯誤: ' + err.message });
     }
 });
 
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
-    console.log(`Lohas Dify API 伺服器已在端口 ${PORT} 啟動`);
+    console.log(`Lohas Dify API 伺服器啟動於端口 ${PORT}`);
 });
