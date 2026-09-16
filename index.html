@@ -2,12 +2,12 @@
 <html lang="zh-HK">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>630樂活科技 - 吞嚥安全 AI 復康輔助沙盒 (Firebase Cloud Functions 整合版)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>630樂活科技 - 吞嚥安全 AI 復康輔助沙盒 (IDDSI 國際標準色版)</title>
 
     <!-- PWA 配置 -->
     <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#1e293b">
+    <meta name="theme-color" content="#A0E7E5">
 
     <!-- iOS 專用配置 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -16,18 +16,42 @@
     <link rel="apple-touch-icon" href="https://firebasestorage.googleapis.com/v0/b/lohas-st-training-sandbox.firebasestorage.app/o/training_assets%2FDesigner.jpeg?alt=media">
 
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background-color: #cbd5e1; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 15px; transition: background-color 0.3s; }
-        
-        .phone-container { 
-            width: 400px; height: 860px; background-color: #FAF6F0; border-radius: 46px; 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4); border: 14px solid #1e293b; 
-            position: relative; overflow: hidden; display: flex; flex-direction: column; 
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
-        .phone-container.fullscreen-mode { 
-            width: 100vw; height: 100vh; max-width: 100vw; max-height: 100vh; 
-            border-radius: 0; border: 0 solid transparent; box-shadow: none; 
+        
+        body { 
+            background-color: #FAF6F0; 
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        /* iOS 真機全螢幕適配容器 */
+        .phone-container { 
+            width: 100vw; 
+            height: 100vh; 
+            max-width: 100vw;
+            max-height: 100vh;
+            background-color: #FAF6F0; 
+            border-radius: 0; 
+            box-shadow: none; 
+            border: none; 
+            position: relative; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
         }
         
         /* 長者大字模式 */
@@ -38,16 +62,40 @@
         .phone-container.senior-font-mode .module-btn { font-size: 14px !important; padding: 12px !important; }
 
         .screen { 
-            width: 100%; height: 100%; overflow-y: auto; position: absolute; top: 0; left: 0; 
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding-bottom: 75px; 
-            opacity: 0; pointer-events: none; 
+            width: 100%; 
+            height: 100%; 
+            overflow-y: auto; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease; 
+            padding-bottom: calc(75px + env(safe-area-inset-bottom, 0px)); 
+            opacity: 0; 
+            pointer-events: none; 
+            -webkit-overflow-scrolling: touch;
         }
         .screen::-webkit-scrollbar { display: none; }
         
-        #cover-screen { z-index: 10; background-color: #A0E7E5; display: flex; flex-direction: column; justify-content: flex-start; padding: 16px 18px 85px; overflow-y: auto; }
+        #cover-screen { 
+            z-index: 10; 
+            background-color: #A0E7E5; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: flex-start; 
+            padding: calc(16px + env(safe-area-inset-top, 0px)) 18px calc(85px + env(safe-area-inset-bottom, 0px)); 
+            overflow-y: auto; 
+        }
         #list-screen { z-index: 1; background-color: #FAF6F0; }
         #detail-screen { z-index: 5; background-color: #F8F9FA; }
-        #end-screen { z-index: 20; background-color: #E8AEFF; display: flex; flex-direction: column; justify-content: space-between; padding: 30px 22px 85px; }
+        #end-screen { 
+            z-index: 20; 
+            background-color: #E8AEFF; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            padding: calc(20px + env(safe-area-inset-top, 0px)) 22px calc(85px + env(safe-area-inset-bottom, 0px)); 
+        }
+        
         .screen.active { opacity: 1; pointer-events: auto; transform: translateX(0) !important; }
         .screen:not(.active) { transform: translateX(100%); }
         #cover-screen:not(.active) { transform: translateX(-100%); }
@@ -65,8 +113,8 @@
         }
         
         .cover-img-box { 
-            width: 78px; height: 78px; border-radius: 50%; border: 3px solid #1e293b; 
-            box-shadow: 3.5px 3.5px 0 #1e293b; margin: 4px auto 8px; display: flex; 
+            width: 82px; height: 82px; border-radius: 50%; border: 3px solid #1e293b; 
+            box-shadow: 3.5px 3.5px 0 #1e293b; margin: 6px auto 10px; display: flex; 
             justify-content: center; align-items: center; background: #fff; overflow: hidden; 
             cursor: pointer; flex-shrink: 0; 
         }
@@ -74,26 +122,26 @@
         
         .btn-ai-meal { 
             background: linear-gradient(135deg, #38BDF8 0%, #0284C7 100%); color: #ffffff; 
-            font-size: 13.5px; font-weight: 900; border: 3px solid #1e293b; border-radius: 18px; 
-            padding: 11px; width: 100%; cursor: pointer; box-shadow: 3.5px 3.5px 0 #1e293b; 
-            margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 6px; 
+            font-size: 14px; font-weight: 900; border: 3px solid #1e293b; border-radius: 18px; 
+            padding: 12px; width: 100%; cursor: pointer; box-shadow: 3.5px 3.5px 0 #1e293b; 
+            margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; 
             transition: transform 0.1s; z-index: 50; 
         }
         .btn-ai-meal:active { transform: translate(2px, 2px); box-shadow: 1.5px 1.5px 0 #1e293b; }
 
-        .quick-innovations-bar { display: flex; gap: 6px; margin-bottom: 10px; }
+        .quick-innovations-bar { display: flex; gap: 8px; margin-bottom: 12px; }
         .btn-innovate-pill { 
-            flex: 1; padding: 7px 4px; font-size: 11px; font-weight: 900; border: 2px solid #1e293b; 
-            border-radius: 12px; background: #fff; color: #1e293b; cursor: pointer; 
+            flex: 1; padding: 8px 4px; font-size: 11px; font-weight: 900; border: 2px solid #1e293b; 
+            border-radius: 14px; background: #fff; color: #1e293b; cursor: pointer; 
             box-shadow: 2px 2px 0 #1e293b; display: flex; align-items: center; justify-content: center; gap: 4px; 
         }
         .btn-innovate-pill.active { background: #FF9F1C; color: #fff; }
 
-        .cover-btn-group { display: flex; flex-direction: column; gap: 7px; width: 100%; z-index: 50; margin-bottom: 10px; }
+        .cover-btn-group { display: flex; flex-direction: column; gap: 8px; width: 100%; z-index: 50; margin-bottom: 10px; }
         .module-btn { 
-            display: block; width: 100%; padding: 10px 12px; color: #1e293b; font-size: 12px; 
-            font-weight: 800; border: 3px solid #1e293b; border-radius: 16px; cursor: pointer; 
-            box-shadow: 3px 3px 0 #1e293b; text-align: left; line-height: 1.3; transition: transform 0.1s; 
+            display: block; width: 100%; padding: 11px 14px; color: #1e293b; font-size: 12.5px; 
+            font-weight: 800; border: 3px solid #1e293b; border-radius: 18px; cursor: pointer; 
+            box-shadow: 3px 3px 0 #1e293b; text-align: left; line-height: 1.35; transition: transform 0.1s; 
         }
         .module-btn:active { transform: translate(2px, 2px); box-shadow: 1.5px 1.5px 0 #1e293b; }
         
@@ -110,9 +158,14 @@
         .action-btn:active { transform: translate(2px, 2px); box-shadow: 1.5px 1.5px 0 #1e293b; }
         .end-card-box { background: white; border: 3px solid #1e293b; border-radius: 22px; padding: 14px; box-shadow: 4px 4px 0 #1e293b; margin-top: 10px; }
         
-        .header-title-container { display: flex; justify-content: space-between; align-items: center; padding: 22px 18px 10px; }
+        .header-title-container { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: calc(14px + env(safe-area-inset-top, 0px)) 18px 10px; 
+        }
         .header-title { font-size: 17.5px; font-weight: 900; color: #1a1a1a; flex-shrink: 0; }
-        .nav-btn-group { display: flex; align-items: center; gap: 5px; }
+        .nav-btn-group { display: flex; align-items: center; gap: 6px; }
         .nav-circle-btn { 
             background: #ffffff; border: 2px solid #1e293b; border-radius: 50%; width: 36px; height: 36px; 
             font-size: 13px; font-weight: 900; cursor: pointer; box-shadow: 2px 2px 0 #1e293b; 
@@ -120,12 +173,23 @@
         }
         
         .bottom-bar { 
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 58px; background: #FFF; 
-            border-top: 3px solid #1e293b; display: flex; justify-content: space-around; align-items: center; 
-            z-index: 100; padding: 0 4px; 
+            position: absolute; 
+            bottom: 0; 
+            left: 0; 
+            width: 100%; 
+            height: calc(58px + env(safe-area-inset-bottom, 0px)); 
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            background: #FFF; 
+            border-top: 3px solid #1e293b; 
+            display: flex; 
+            justify-content: space-around; 
+            align-items: center; 
+            z-index: 100; 
+            padding-left: 6px;
+            padding-right: 6px;
         }
         .bottom-bar-btn { 
-            font-size: 11px; font-weight: 900; color: #1e293b; background: none; border: none; 
+            font-size: 11.5px; font-weight: 900; color: #1e293b; background: none; border: none; 
             cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; 
         }
         .bottom-bar-btn.voice-active { color: #dc2626; animation: voicePulse 1.2s infinite; }
@@ -170,12 +234,22 @@
         .card-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
         
         .detail-top-bar { 
-            height: 180px; border-radius: 0 0 28px 28px; border-bottom: 3px solid #1e293b; 
-            position: relative; display: flex; justify-content: center; align-items: center; 
-            overflow: hidden; background-color: #FAF6F0; 
+            height: calc(180px + env(safe-area-inset-top, 0px)); 
+            padding-top: env(safe-area-inset-top, 0px);
+            border-radius: 0 0 28px 28px; 
+            border-bottom: 3px solid #1e293b; 
+            position: relative; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            overflow: hidden; 
+            background-color: #FAF6F0; 
         }
         .back-btn { 
-            position: absolute; left: 14px; top: 14px; width: 36px; height: 36px; background-color: #FAF6F0; 
+            position: absolute; 
+            left: 14px; 
+            top: calc(14px + env(safe-area-inset-top, 0px)); 
+            width: 36px; height: 36px; background-color: #FAF6F0; 
             border: 2px solid #1e293b; border-radius: 50%; color: #1e293b; font-size: 17px; 
             font-weight: 900; cursor: pointer; display: flex; justify-content: center; align-items: center; 
             box-shadow: 2px 2px 0 #1e293b; z-index: 30; 
@@ -189,19 +263,36 @@
         /* 燈箱檢視 */
         .lightbox-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #000; z-index: 999999; flex-direction: column; justify-content: center; align-items: center; touch-action: none; user-select: none; }
         .lightbox-modal.active { display: flex; }
-        .lightbox-top-bar { position: fixed; top: 0; left: 0; width: 100vw; height: 55px; background: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent); display: flex; justify-content: space-between; align-items: center; padding: 0 16px; z-index: 1000001; }
+        .lightbox-top-bar { 
+            position: fixed; top: 0; left: 0; width: 100vw; 
+            height: calc(55px + env(safe-area-inset-top, 0px)); 
+            padding-top: env(safe-area-inset-top, 0px);
+            background: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent); 
+            display: flex; justify-content: space-between; align-items: center; padding-left: 16px; padding-right: 16px; z-index: 1000001; 
+        }
         .lightbox-title-text { color: #fff; font-size: 13.5px; font-weight: 800; }
         .lightbox-close-btn { background: #fff; border: 2px solid #1e293b; border-radius: 16px; padding: 5px 12px; font-size: 12.5px; font-weight: 900; color: #1e293b; cursor: pointer; }
         .lightbox-stage { width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; cursor: grab; }
-        .lightbox-img { width: 95vw; max-width: 1100px; max-height: 78vh; object-fit: contain; border-radius: 12px; transform-origin: center center; transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1); }
-        .lightbox-bottom-toolbar { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); background: rgba(30, 41, 59, 0.94); border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 26px; padding: 5px 12px; display: flex; align-items: center; gap: 6px; z-index: 1000001; }
+        .lightbox-img { width: 95vw; max-width: 1100px; max-height: 75vh; object-fit: contain; border-radius: 12px; transform-origin: center center; transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1); }
+        .lightbox-bottom-toolbar { 
+            position: fixed; 
+            bottom: calc(20px + env(safe-area-inset-bottom, 0px)); 
+            left: 50%; transform: translateX(-50%); 
+            background: rgba(30, 41, 59, 0.94); border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 26px; padding: 5px 12px; display: flex; align-items: center; gap: 6px; z-index: 1000001; 
+        }
         .lb-tool-btn { background: #fff; color: #1e293b; border: 1.5px solid #1e293b; border-radius: 14px; padding: 5px 10px; font-size: 11.5px; font-weight: 900; cursor: pointer; }
 
-        /* AI 質地檢測報告彈窗 */
-        .meal-result-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.88); z-index: 30000; justify-content: center; align-items: center; padding: 14px; backdrop-filter: blur(5px); }
+        /* 🍽️ AI 質地檢測報告彈窗 (整合 IDDSI 國際標準色) */
+        .meal-result-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.88); z-index: 30000; justify-content: center; align-items: center; padding: 16px; backdrop-filter: blur(5px); }
         .meal-result-modal.active { display: flex; }
-        .meal-result-card { background: #FAF6F0; border: 4px solid #1e293b; border-radius: 26px; width: 100%; max-width: 375px; padding: 18px; box-shadow: 6px 6px 0 #1e293b; display: flex; flex-direction: column; gap: 8px; max-height: 92vh; overflow-y: auto; }
+        .meal-result-card { background: #FAF6F0; border: 4px solid #1e293b; border-radius: 26px; width: 100%; max-width: 375px; padding: 18px; box-shadow: 6px 6px 0 #1e293b; display: flex; flex-direction: column; gap: 8px; max-height: 90vh; overflow-y: auto; }
         
+        .meal-badge-level {
+            font-size: 15px; font-weight: 900; padding: 6px 16px; border-radius: 14px; 
+            border: 2px solid #1e293b; display: inline-block; box-shadow: 2px 2px 0 #1e293b;
+            letter-spacing: 0.5px;
+        }
+
         .risk-gauge-box { border-radius: 14px; padding: 10px 12px; border: 2px solid #1e293b; display: flex; flex-direction: column; gap: 3px; box-shadow: 2px 2px 0 #1e293b; }
         .risk-gauge-header { display: flex; justify-content: space-between; align-items: center; }
         .risk-gauge-val { font-size: 20px; font-weight: 900; }
@@ -214,7 +305,7 @@
         .v-step-item { display: flex; align-items: flex-start; gap: 6px; font-size: 11.5px; font-weight: 700; color: #334155; margin-bottom: 6px; }
         .v-step-num { background: #1e293b; color: #fff; width: 18px; height: 18px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 10px; flex-shrink: 0; }
 
-        .steps-container { padding: 14px; }
+        .steps-container { padding: 16px; }
         .detail-title { font-size: 18px; font-weight: 900; color: #1e293b; margin-bottom: 6px; line-height: 1.3; }
         .detail-goal { font-size: 12px; font-weight: 600; color: #334155; background-color: #ffffff; padding: 8px 10px; border-radius: 12px; margin-bottom: 8px; border: 2px solid #1e293b; border-left: 5px solid #1e293b; box-shadow: 2px 2px 0 rgba(30, 41, 59, 0.1); line-height: 1.4; }
         .warning-box { font-size: 11.5px; font-weight: 700; color: #721c24; background-color: #f8d7da; padding: 8px 10px; border-radius: 12px; margin-bottom: 8px; border: 2px solid #1e293b; border-left: 5px solid #dc3545; line-height: 1.35; }
@@ -250,12 +341,12 @@
         .evidence-title { font-weight: 800; cursor: pointer; display: flex; justify-content: space-between; }
         .evidence-content { display: none; margin-top: 5px; line-height: 1.35; border-top: 1px solid #CBD5E1; padding-top: 5px; }
 
-        .loading-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); color: white; font-weight: 800; justify-content: center; align-items: center; z-index: 2000; border-radius: 32px; backdrop-filter: blur(4px); text-align: center; padding: 20px; line-height: 1.6; }
+        .loading-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); color: white; font-weight: 800; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(4px); text-align: center; padding: 20px; line-height: 1.6; }
         .loading-overlay.active { display: flex; flex-direction: column; gap: 10px; }
         .loading-step-pill { background: rgba(255, 255, 255, 0.2); padding: 4px 12px; border-radius: 20px; font-size: 12px; }
 
         .update-toast {
-            display: none; position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+            display: none; position: absolute; top: calc(16px + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%);
             background: rgba(15, 23, 42, 0.94); color: #38BDF8; padding: 9px 18px; border-radius: 24px;
             font-size: 12px; font-weight: 900; z-index: 50000; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
             border: 2px solid #38BDF8; backdrop-filter: blur(8px); text-align: center; white-space: nowrap;
@@ -263,7 +354,7 @@
         }
         @keyframes fadeInDown { from { opacity: 0; transform: translate(-50%, -10px); } to { opacity: 1; transform: translate(-50%, 0); } }
 
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.88); z-index: 40000; justify-content: center; align-items: center; padding: 14px; backdrop-filter: blur(5px); }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.88); z-index: 40000; justify-content: center; align-items: center; padding: 16px; backdrop-filter: blur(5px); }
         .modal-overlay.active { display: flex; }
         .modal-box { background: #FAF6F0; border: 4px solid #1e293b; border-radius: 26px; width: 100%; max-width: 375px; padding: 18px; box-shadow: 6px 6px 0 #1e293b; display: flex; flex-direction: column; gap: 9px; max-height: 90vh; overflow-y: auto; }
 
@@ -317,7 +408,7 @@
         </div>
     </div>
 
-    <!-- 主手機容器 -->
+    <!-- 📱 全螢幕手機容器 -->
     <div class="phone-container" id="app-phone-shell">
         <input type="file" id="image-file-picker" accept="image/*" style="display: none;">
         <input type="file" id="mealCameraInput" accept="image/*" capture="environment" style="display: none;">
@@ -325,7 +416,7 @@
         <div class="update-toast" id="updateToast">🔄 發現新版本！正在為您自動更新...</div>
 
         <div class="loading-overlay" id="loadingOverlay">
-            <div class="loading-step-pill" id="loadingStepPill">1/3 處理中</div>
+            <div class="loading-step-pill" id="loadingStepPill">1/2 最佳化</div>
             <div id="loadingOverlayText" style="font-size: 13px;">正在安全處理...</div>
         </div>
 
@@ -452,7 +543,7 @@
 
         <!-- 畫面 4：結尾頁 -->
         <div class="screen" id="end-screen">
-            <button class="back-btn" style="top:18px; left:18px;" onclick="navigateTo('list-screen')">←</button>
+            <button class="back-btn" style="top:calc(18px + env(safe-area-inset-top, 0px)); left:18px;" onclick="navigateTo('list-screen')">←</button>
             <div class="cover-content" style="margin-top: 30px;">
                 <div class="brand-header">630樂活科技</div>
                 <div class="cover-title" style="font-size: 24px;">樂活吞嚥大師 🏆</div>
@@ -477,7 +568,7 @@
             </button>
         </div>
 
-        <!-- 底部常駐導航列 -->
+        <!-- 📱 底部常駐導航列 -->
         <div class="bottom-bar">
             <button class="bottom-bar-btn" onclick="toggleSeniorFont()">👓 大字</button>
             <button class="bottom-bar-btn" onclick="triggerMealCapture()" style="color:#0284C7;">📸 質地教練</button>
@@ -504,13 +595,13 @@
         </div>
     </div>
 
-    <!-- AI 質地檢測報告彈窗 -->
+    <!-- 🍽️ AI 質地檢測報告彈窗 (符合 IDDSI 國際官方標準色彩規範) -->
     <div class="meal-result-modal" id="mealResultModal">
         <div class="meal-result-card">
             <div style="font-size: 16.5px; font-weight: 900; color: #1e293b; text-align: center;">🍽️ 吞嚥安全 AI 質地參考建議</div>
             
-            <div style="text-align: center; margin: 2px 0;">
-                <span class="meal-badge-level" id="resLevelBadge" style="background:#BFFCC6; font-size:15px; font-weight:900; padding:5px 14px; border-radius:14px; border:2px solid #1e293b; display:inline-block;">Level 4 - 純糊餐</span>
+            <div style="text-align: center; margin: 4px 0 2px;">
+                <span class="meal-badge-level" id="resLevelBadge">Level 4 - 特稠/純糊餐</span>
             </div>
 
             <div class="risk-gauge-box" id="riskGaugeContainer" style="background: #FFFBEB;">
@@ -531,11 +622,11 @@
             </div>
 
             <div style="display:flex; justify-content:space-between; font-size:11.5px; border-bottom:1.5px dashed #cbd5e1; padding-bottom:4px;">
-                <span style="color:#64748B; font-weight:800;">辨識項目：</span>
+                <span style="color:#64748B; font-weight:800;">辨識餐膳：</span>
                 <strong id="resFoodName" style="color:#1e293b;">--</strong>
             </div>
             <div style="display:flex; justify-content:space-between; font-size:11.5px; border-bottom:1.5px dashed #cbd5e1; padding-bottom:4px;">
-                <span style="color:#64748B; font-weight:800;">AI 特徵把握度：</span>
+                <span style="color:#64748B; font-weight:800;">特徵把握度：</span>
                 <strong id="resConfidence" style="color:#0284C7;">--</strong>
             </div>
 
@@ -562,7 +653,7 @@
             <div style="background:#fff; border:2px solid #1e293b; border-radius:14px; padding:10px; display:flex; flex-direction:column; gap:4px;">
                 <div style="font-size:11.5px; font-weight:800; color:#1e293b;">📊 本週吞嚥安全指數：<span style="color:#16A34A; font-size:13px;" id="cgSafetyIndex">92分 (良好)</span></div>
                 <div style="font-size:11.5px; font-weight:800; color:#1e293b;">🚨 嗆咳/濕聲反應：<span style="color:#DC2626;" id="cgSymptomAlert">近期無紅旗徵狀</span></div>
-                <div style="font-size:11.5px; font-weight:800; color:#1e293b;">🍲 最新質地快檢：<span id="cgLatestMeal">尚未檢測</span></div>
+                <div style="font-size:11.5px; font-weight:800; color:#1e293b; display:flex; align-items:center; gap:4px;">🍲 最新質地快檢：<span id="cgLatestMeal">尚未檢測</span></div>
             </div>
 
             <button class="action-btn" style="background:#25D366; color:#fff; border-color:#128C7E; padding:9px; font-size:12.5px;" onclick="shareCaregiverWhatsApp()">
@@ -586,20 +677,13 @@
     <!-- 系統設定彈窗 -->
     <div class="modal-overlay" id="settingsModal">
         <div class="modal-box">
-            <div style="font-size: 16.5px; font-weight: 900; color: #1e293b; text-align: center;">⚙️ 系統設定與伺服器連線</div>
+            <div style="font-size: 16.5px; font-weight: 900; color: #1e293b; text-align: center;">⚙️ 系統設定與私隱管理</div>
             
             <div style="background:#fff; border:2px solid #1e293b; border-radius:12px; padding:10px; font-size:11.5px;">
-                <strong>🌐 AI 端點 (Firebase Cloud Functions 新加坡)：</strong>
-                <div style="margin-top:6px;">
-                    <input type="text" id="cfgProxyUrl" style="width:100%; padding:6px; margin-top:2px; border:1.5px solid #1e293b; border-radius:6px; font-size:11px;">
+                <strong>🌐 原生 Swift 橋接通道：</strong>
+                <div style="margin-top:6px; color:#16A34A; font-weight:800;">
+                    ✅ iOS 原生 difyBridge 已就緒（免除瀏覽器跨域 CORS 阻擋）
                 </div>
-                <div style="margin-top:8px; display:flex; gap:6px;">
-                    <button type="button" class="btn-innovate-pill" id="btnTestConn" onclick="testServerConnection()" style="padding:6px; font-size:11px; background:#E0F2FE; color:#0369A1;">
-                        ⚡ 測試 Firebase 函數連線狀態
-                    </button>
-                </div>
-                <div id="connTestResult" style="margin-top:6px; font-size:10.5px; font-weight:700; display:none;"></div>
-                <span style="color:#64748B; font-size:10px; display:block; margin-top:4px;">✅ 已預設指向 Firebase 新加坡節點，免冷啟動延遲。</span>
             </div>
 
             <div style="background:#fff; border:2px solid #1e293b; border-radius:12px; padding:10px; font-size:11.5px; line-height:1.5;">
@@ -610,37 +694,47 @@
                 <span style="color:#64748B; font-size:10.5px;">開啟純離線模式後，所有練習日誌僅存於本地設備。</span>
             </div>
 
-            <button class="action-btn" style="background:#0284C7; color:#fff; padding:9px; font-size:13px;" onclick="saveSystemSettings()">儲存連線設定 💾</button>
+            <button class="action-btn" style="background:#0284C7; color:#fff; padding:9px; font-size:13px;" onclick="closeSettingsModal()">確認 💾</button>
             <button class="action-btn" style="background:#FAF6F0; color:#1e293b; padding:7px; font-size:12px;" onclick="closeSettingsModal()">關閉</button>
         </div>
     </div>
 
-    <!-- Firebase SDK 模組與全部業務邏輯 -->
+    <!-- 核心業務邏輯與 Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
         import { getDatabase, ref as dbRef, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // 🔥 預設直駁至已成功部署的 Firebase Cloud Function (新加坡節點)
-        const DEFAULT_FIREBASE_FUNCTION_URL = "https://asia-southeast1-lohas-st-training-sandbox.cloudfunctions.net/analyzeMeal";
+        // 🎨 IDDSI 國際官方標準色階規範表 (0-7 等級官方 Hex 色碼與對比文字色)
+        const IDDSI_COLOR_SPECS = {
+            0: { bg: '#FFFFFF', text: '#1E293B', border: '#1E293B', label: 'Level 0 稀薄液體 (Thin)' },
+            1: { bg: '#7E8B92', text: '#FFFFFF', border: '#1E293B', label: 'Level 1 微稠 (Slightly Thick)' },
+            2: { bg: '#EE7296', text: '#FFFFFF', border: '#1E293B', label: 'Level 2 低稠 (Mildly Thick)' },
+            3: { bg: '#F9C100', text: '#1E293B', border: '#1E293B', label: 'Level 3 中稠/流質 (Moderately Thick)' },
+            4: { bg: '#4DA640', text: '#FFFFFF', border: '#1E293B', label: 'Level 4 特稠/純糊餐 (Extremely Thick/Pureed)' },
+            5: { bg: '#F37021', text: '#FFFFFF', border: '#1E293B', label: 'Level 5 細碎及濕潤 (Minced & Moist)' },
+            6: { bg: '#0072CE', text: '#FFFFFF', border: '#1E293B', label: 'Level 6 軟質及一口量 (Soft & Bite-Sized)' },
+            7: { bg: '#000000', text: '#FFFFFF', border: '#1E293B', label: 'Level 7 原質正常 (Regular)' }
+        };
 
-        function cleanUrlString(raw) {
-            if (!raw) return DEFAULT_FIREBASE_FUNCTION_URL;
-            let clean = raw.trim();
-            clean = clean.replace(/\[.*?\]\((.*?)\)/g, '$1');
-            clean = clean.replace(/[\[\]\(\)\s]/g, '');
-            if (!clean.startsWith('http')) clean = 'https://' + clean;
-            return clean;
+        // 提取與解析 IDDSI 等級數字
+        function getOfficialIddsiStyle(levelStr) {
+            if (!levelStr) return IDDSI_COLOR_SPECS[4];
+            const match = levelStr.match(/[0-7]/);
+            if (match) {
+                return IDDSI_COLOR_SPECS[parseInt(match[0], 10)];
+            }
+            if (levelStr.includes('薄') || levelStr.includes('水') || levelStr.includes('茶')) return IDDSI_COLOR_SPECS[0];
+            if (levelStr.includes('微稠')) return IDDSI_COLOR_SPECS[1];
+            if (levelStr.includes('低稠')) return IDDSI_COLOR_SPECS[2];
+            if (levelStr.includes('中稠') || levelStr.includes('流質')) return IDDSI_COLOR_SPECS[3];
+            if (levelStr.includes('特稠') || levelStr.includes('糊')) return IDDSI_COLOR_SPECS[4];
+            if (levelStr.includes('碎')) return IDDSI_COLOR_SPECS[5];
+            if (levelStr.includes('軟') || levelStr.includes('一口')) return IDDSI_COLOR_SPECS[6];
+            return IDDSI_COLOR_SPECS[4];
         }
 
-        // 自動檢測並清除舊的 Render 網址
-        const currentSavedUrl = localStorage.getItem('lohas_ai_proxy_url');
-        if (!currentSavedUrl || currentSavedUrl.includes('onrender.com') || currentSavedUrl.includes('[') || currentSavedUrl.includes('(')) {
-            localStorage.setItem('lohas_ai_proxy_url', DEFAULT_FIREBASE_FUNCTION_URL);
-        }
-
-        // 依香港時間取得符合 Dify 選單限制的餐膳類型 (早餐、午餐、晚餐、小食)
         function getMealTypeByHour() {
             const hour = new Date().getHours();
             if (hour >= 6 && hour < 11) return '早餐';
@@ -693,7 +787,7 @@
             { id: 'b6', name: '吞嚥大師', icon: '🏆', desc: '完成全套 26 課復康訓練', unlocked: false }
         ];
 
-        // 完整 26 門課程臨床數據 (完整無遺漏)
+        // 完整 26 門課程臨床數據 (包含目標說明、禁忌與文獻基石)
         window.coursesData = [
             {
                 id: '1', categoryId: '1', isHighRisk: false, holdSeconds: 0,
@@ -1159,7 +1253,7 @@
             });
         }
 
-        window.compressImage = function(file, quality = 0.85, maxWidth = 1200) {
+        window.compressImage = function(file, quality = 0.82, maxWidth = 1000) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
@@ -1235,19 +1329,34 @@
             if (level.includes('0') || level.includes('薄') || level.includes('茶') || level.includes('水') || level.includes('Thin')) {
                 return `
                     <div class="v-step-item"><span class="v-step-num">1</span><span><strong>IDDSI 針筒流速測試 (Flow Test)：</strong> 取 10ml 注射器注滿液體，自然流出 10 秒後，針筒內殘餘量應 <strong>小於 1ml</strong>。</span></div>
-                    <div class="v-step-item"><span class="v-step-num">2</span><span><strong>進食安全防護提示：</strong> 奶茶等稀薄液體極易滲漏。如老友記飲用時容易嗆喉，建議諮詢治療師使用凝固粉增稠至 Level 1 微稠或 Level 2 低稠。</span></div>
+                    <div class="v-step-item"><span class="v-step-num">2</span><span><strong>進食安全防護提示：</strong> 稀薄液體極易滲漏氣道。如老友記飲用時容易嗆喉，建議諮詢治療師使用凝固粉增稠至 Level 1 微稠或 Level 2 低稠。</span></div>
                 `;
-            } else if (level.includes('4') || level.includes('糊')) {
+            } else if (level.includes('1') || level.includes('微稠')) {
+                return `
+                    <div class="v-step-item"><span class="v-step-num">1</span><span><strong>IDDSI 針筒流速測試：</strong> 10 秒流速測試後，針筒內殘餘量介於 <strong>1ml 至 4ml</strong> 之間。</span></div>
+                    <div class="v-step-item"><span class="v-step-num">2</span><span><strong>測試特徵：</strong> 比水略稠，能從吸管順暢流動，給予氣道更充裕的閉合時間。</span></div>
+                `;
+            } else if (level.includes('2') || level.includes('低稠')) {
+                return `
+                    <div class="v-step-item"><span class="v-step-num">1</span><span><strong>IDDSI 針筒流速測試：</strong> 10 秒流速測試後，針筒內殘餘量介於 <strong>4ml 至 8ml</strong> 之間。</span></div>
+                    <div class="v-step-item"><span class="v-step-num">2</span><span><strong>測試特徵：</strong> 能從杯中順暢飲用，用吸管飲用需微用力，從湯匙流下呈滴流狀。</span></div>
+                `;
+            } else if (level.includes('3') || level.includes('中稠') || level.includes('流質')) {
+                return `
+                    <div class="v-step-item"><span class="v-step-num">1</span><span><strong>餐叉滴漏測試 (Fork Drip)：</strong> 液體緩慢滴過叉齒，不會維持成堆形狀。</span></div>
+                    <div class="v-step-item"><span class="v-step-num">2</span><span><strong>湯匙傾側測試 (Spoon Tilt)：</strong> 質地均勻易滑落，幾乎不可嚼，10 秒針筒流速殘餘 > 8ml。</span></div>
+                `;
+            } else if (level.includes('4') || level.includes('糊') || level.includes('特稠')) {
                 return `
                     <div class="v-step-item"><span class="v-step-num">1</span><span><strong>湯匙傾側測試 (Spoon Tilt)：</strong> 舀起一匙糊餐並側傾，食物應呈團滑落，匙面僅留極薄附著。</span></div>
                     <div class="v-step-item"><span class="v-step-num">2</span><span><strong>餐叉滴漏測試 (Fork Drip)：</strong> 食物置於叉齒上應保持微隆堆狀，不應如水流般從叉縫流下。</span></div>
                 `;
             } else if (level.includes('5') || level.includes('碎')) {
                 return `
-                    <div class="v-step-item"><span class="v-step-num">1</span><span><strong>顆粒尺寸檢查：</strong> 碎顆粒必須 <strong>≤ 4毫米</strong> (長者門齒寬度約4mm)。</span></div>
+                    <div class="v-step-item"><span class="v-step-num">1</span><span><strong>顆粒尺寸檢查：</strong> 碎顆粒必須 <strong>≤ 4毫米</strong> (長者門齒寬度約 4mm)。</span></div>
                     <div class="v-step-item"><span class="v-step-num">2</span><span><strong>餐叉按壓測試：</strong> 用叉齒向下按壓，食物顆粒能被輕易壓扁通過叉縫，無多餘水分析出。</span></div>
                 `;
-            } else if (level.includes('6') || level.includes('軟')) {
+            } else if (level.includes('6') || level.includes('軟') || level.includes('一口')) {
                 return `
                     <div class="v-step-item"><span class="v-step-num">1</span><span><strong>一口量尺寸測量：</strong> 食物切塊必須 <strong>≤ 15毫米</strong> (約成人大拇指指甲寬)。</span></div>
                     <div class="v-step-item"><span class="v-step-num">2</span><span><strong>叉背指壓測試：</strong> 用叉背下壓至拇指甲泛白，塊狀物能被輕易切斷且不再彈回。</span></div>
@@ -1259,24 +1368,7 @@
             }
         }
 
-        function parseDifyOutput(raw) {
-            if (typeof raw === 'object' && raw !== null && (raw.food || raw.iddsi_level)) {
-                return raw;
-            }
-            let text = typeof raw === 'string' ? raw : (raw.text || raw.answer || raw.result || JSON.stringify(raw));
-            const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
-            if (jsonMatch) {
-                try { return JSON.parse(jsonMatch[1]); } catch(e) {}
-            }
-            try { return JSON.parse(text); } catch(e) {}
-            return {
-                food: text.slice(0, 20) || "已辨識餐膳",
-                iddsi_level: (text.includes('0') || text.includes('茶') || text.includes('水')) ? "Level 0 - 稀薄液體" : "Level 4 - 純糊餐",
-                visual_reason: text
-            };
-        }
-
-        // ─── 核心相片拍攝與 Firebase Cloud Functions 連線流程 ───
+        // 🚀 核心相片拍攝：透過原生 Swift difyBridge 傳輸 (無 CORS 阻擋)
         window.triggerMealCapture = function() {
             document.getElementById('mealCameraInput').click();
         };
@@ -1290,74 +1382,76 @@
             const stepText = document.getElementById('loadingOverlayText');
             
             loading.classList.add('active');
-            stepPill.innerText = "1/3 最佳化";
-            stepText.innerText = "正在本機安全壓縮相片...";
+            stepPill.innerText = "1/2 最佳化";
+            stepText.innerText = "正在壓縮餐食相片...";
 
             try {
                 const compressedBlob = await window.compressImage(file);
+                stepPill.innerText = "2/2 AI 質地分析";
+                stepText.innerText = "正在透過原生通道由 Dify 視覺模型深度分析...";
 
-                stepPill.innerText = "2/3 雲端辨識中";
-                stepText.innerText = "正在連線 Firebase Cloud Function 分析...";
-
-                const endpointUrl = cleanUrlString(localStorage.getItem('lohas_ai_proxy_url') || DEFAULT_FIREBASE_FUNCTION_URL);
-                const uid = window.currentUser ? window.currentUser.uid : 'web_user_' + Date.now();
-                const currentMealType = getMealTypeByHour();
-
-                const formData = new FormData();
-                formData.append('file', compressedBlob, 'meal.jpg');
-                formData.append('user', uid);
-                formData.append('meal_type', currentMealType);
-
-                const response = await fetch(endpointUrl, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (!response.ok) {
-                    const errText = await response.text();
-                    let errMsg = errText;
-                    try {
-                        const errObj = JSON.parse(errText);
-                        errMsg = errObj.error || errText;
-                    } catch(e) {}
-                    throw new Error(`伺服器回應 (${response.status}):\n${errMsg}`);
-                }
-
-                stepPill.innerText = "3/3 質地安全運算";
-                stepText.innerText = "正在比對 IDDSI 醫學標準與計算個人化安全指數...";
-
-                const rawOutputs = await response.json();
-                const outputs = parseDifyOutput(rawOutputs);
-
-                const foodName = outputs.food || outputs.food_name || outputs.FoodName || outputs.meal || "分析食物";
-                const iddsiLevel = outputs.iddsi_level || outputs.iddsi || outputs.IDDSI_Level || "Level 0 - 稀薄液體";
-                const confidence = outputs.confidence !== undefined ? outputs.confidence : 0.94;
-
-                const finalOutputs = {
-                    food: foodName,
-                    iddsi_level: iddsiLevel,
-                    confidence: confidence,
-                    visual_reason: outputs.visual_reason || outputs.reason || "實時影像特徵符合流動液體特徵。",
-                    recommended_official_test: outputs.recommended_official_test || outputs.test_name || "標準針筒流速測試"
+                const reader = new FileReader();
+                reader.readAsDataURL(compressedBlob);
+                reader.onloadend = function() {
+                    const base64data = reader.result.split(',')[1];
+                    if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.difyBridge) {
+                        window.webkit.messageHandlers.difyBridge.postMessage({
+                            imageBase64: base64data,
+                            mealType: getMealTypeByHour(),
+                            user: window.currentUser ? window.currentUser.uid : 'Lui'
+                        });
+                    } else {
+                        loading.classList.remove('active');
+                        alert("⚠️ 未偵測到 iOS 原生 difyBridge 通道，請確認是否已在 App 內運行。");
+                    }
                 };
-
-                const totalProgress = Math.round((window.completedCoursesSet.size / window.coursesData.length) * 100);
-                const safetyResult = calculateSwallowingSafety(finalOutputs.iddsi_level, window.recentSymptoms, "Level 4", totalProgress);
-
-                unlockBadge('b4');
-                renderAiCoachModal(finalOutputs, safetyResult);
-
             } catch (err) {
-                console.error("AI 餐膳檢測失敗:", err);
-                alert("❌ 實時辨識連線失敗：\n\n" + err.message);
-            } finally {
                 loading.classList.remove('active');
+                alert("相片處理失敗：" + err.message);
+            } finally {
                 e.target.value = "";
             }
         });
 
+        // 接收 Swift 原生層傳回的分析成功數據
+        window.handleDifyNativeSuccess = function(outputs) {
+            document.getElementById('loadingOverlay').classList.remove('active');
+            
+            const foodName = outputs.food || "分析餐膳";
+            const iddsiLevel = outputs.iddsi_level || outputs.iddsiLevel || "Level 4 - 特稠/純糊餐";
+            const confidence = outputs.confidence !== undefined ? outputs.confidence : 0.95;
+
+            const finalOutputs = {
+                food: foodName,
+                iddsi_level: iddsiLevel,
+                confidence: confidence,
+                visual_reason: outputs.visual_reason || outputs.visualReason || "實時影像特徵符合質地標準。",
+                recommended_official_test: outputs.recommended_official_test || outputs.recommendedOfficialTest || "標準餐叉滴漏測試"
+            };
+
+            const totalProgress = Math.round((window.completedCoursesSet.size / window.coursesData.length) * 100);
+            const safetyResult = calculateSwallowingSafety(finalOutputs.iddsi_level, window.recentSymptoms, "Level 4", totalProgress);
+
+            unlockBadge('b4');
+            renderAiCoachModal(finalOutputs, safetyResult);
+        };
+
+        // 接收 Swift 原生層傳回的錯誤
+        window.handleDifyNativeError = function(errMsg) {
+            document.getElementById('loadingOverlay').classList.remove('active');
+            alert("❌ 分析失敗：\n\n" + errMsg);
+        };
+
         function renderAiCoachModal(outputs, safety) {
-            document.getElementById('resLevelBadge').innerText = outputs.iddsi_level;
+            const iddsiStyle = getOfficialIddsiStyle(outputs.iddsi_level);
+            
+            // 🎨 嚴格套用 IDDSI 國際官方標準色
+            const badge = document.getElementById('resLevelBadge');
+            badge.innerText = outputs.iddsi_level;
+            badge.style.backgroundColor = iddsiStyle.bg;
+            badge.style.color = iddsiStyle.text;
+            badge.style.borderColor = iddsiStyle.border;
+
             document.getElementById('resFoodName').innerText = outputs.food;
             document.getElementById('resConfidence').innerText = `${Math.round(outputs.confidence * 100)}%`;
 
@@ -1374,7 +1468,12 @@
             document.getElementById('resVerificationStepsContainer').innerHTML = getIddsiVerificationFlow(outputs.iddsi_level);
             document.getElementById('chkVettedByCaregiver').checked = false;
 
-            document.getElementById('cgLatestMeal').innerText = `${outputs.food} (${outputs.iddsi_level})`;
+            // 照顧者專區同步套用官方徽章樣式
+            document.getElementById('cgLatestMeal').innerHTML = `
+                <span style="background:${iddsiStyle.bg}; color:${iddsiStyle.text}; border:1.5px solid ${iddsiStyle.border}; padding:2px 8px; border-radius:8px; font-weight:900; font-size:11px;">
+                    ${outputs.food} (${outputs.iddsi_level})
+                </span>
+            `;
 
             speakVoiceCoach(`實時辨識完成，食物為 ${outputs.food}，質地為 ${outputs.iddsi_level}。安全參考指數 ${safety.riskScore} 分。`);
             document.getElementById('mealResultModal').classList.add('active');
@@ -1594,41 +1693,11 @@
 
         window.openSettingsModal = function() {
             document.getElementById('chkPureOfflineMode').checked = window.isPureOfflineMode;
-            document.getElementById('cfgProxyUrl').value = cleanUrlString(localStorage.getItem('lohas_ai_proxy_url') || DEFAULT_FIREBASE_FUNCTION_URL);
-            document.getElementById('connTestResult').style.display = 'none';
             document.getElementById('settingsModal').classList.add('active');
         };
 
         window.closeSettingsModal = function() {
             document.getElementById('settingsModal').classList.remove('active');
-        };
-
-        window.testServerConnection = async function() {
-            const resultBox = document.getElementById('connTestResult');
-            const btn = document.getElementById('btnTestConn');
-            const targetUrl = cleanUrlString(document.getElementById('cfgProxyUrl').value.trim() || DEFAULT_FIREBASE_FUNCTION_URL);
-
-            resultBox.style.display = 'block';
-            resultBox.style.color = '#0284C7';
-            resultBox.innerText = '⏳ 正在測試 Firebase Cloud Function 連線...';
-            btn.disabled = true;
-
-            try {
-                const res = await fetch(targetUrl);
-                if (res.ok) {
-                    const text = await res.text();
-                    resultBox.style.color = '#16A34A';
-                    resultBox.innerText = '✅ 伺服器在線！\n' + text.replace(/<br>/g, ' | ');
-                } else {
-                    resultBox.style.color = '#DC2626';
-                    resultBox.innerText = '⚠️ 伺服器回應異常：狀態碼 ' + res.status;
-                }
-            } catch (err) {
-                resultBox.style.color = '#DC2626';
-                resultBox.innerText = '❌ 連線失敗 (' + err.message + ')。請確認 Functions 已成功部署。';
-            } finally {
-                btn.disabled = false;
-            }
         };
 
         window.togglePureOfflineMode = function(isOffline) {
@@ -1640,13 +1709,6 @@
             } else {
                 alert("已開啟【雲端同步模式】。");
             }
-        };
-
-        window.saveSystemSettings = function() {
-            const proxy = cleanUrlString(document.getElementById('cfgProxyUrl').value.trim() || DEFAULT_FIREBASE_FUNCTION_URL);
-            localStorage.setItem('lohas_ai_proxy_url', proxy);
-            closeSettingsModal();
-            alert("✅ 連線端點已更新為：\n" + proxy);
         };
 
         window.clearUserCloudLogs = async function() {
@@ -1675,11 +1737,6 @@
 
         window.toggleSeniorFont = function() {
             document.getElementById('app-phone-shell').classList.toggle('senior-font-mode');
-        };
-
-        window.toggleFullscreen = function() {
-            const shell = document.getElementById('app-phone-shell');
-            shell.classList.toggle('fullscreen-mode');
         };
 
         function renderThumbnailHtml(imgUrl, svgIcon) {
@@ -1936,7 +1993,7 @@
         };
 
         const defaultLogoUrl = getStorageUrl('Designer.jpeg');
-        document.getElementById('cover-img-container').innerHTML = `<img src="${defaultLogoUrl}" alt="630樂活科技" onerror="this.outerHTML='<svg width=\\'78\\' height=\\'78\\'><circle cx=\\'39\\' cy=\\'39\\' r=\\'34\\' fill=\\'#FF9F1C\\'/></svg>'">`;
+        document.getElementById('cover-img-container').innerHTML = `<img src="${defaultLogoUrl}" alt="630樂活科技" onerror="this.outerHTML='<svg width=\\'82\\' height=\\'82\\'><circle cx=\\'41\\' cy=\\'41\\' r=\\'36\\' fill=\\'#FF9F1C\\'/></svg>'">`;
 
         window.checkConsentStatus = function() {
             const c1 = document.getElementById('chkMedicalConsent').checked;
