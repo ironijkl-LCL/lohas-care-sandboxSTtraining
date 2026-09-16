@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>630樂活科技 - 吞嚥安全 AI 復康輔助沙盒 (Render 實時連線版)</title>
+    <title>630樂活科技 - 吞嚥安全 AI 復康輔助沙盒 (Firebase Cloud Functions 整合版)</title>
 
     <!-- PWA 配置 -->
     <link rel="manifest" href="./manifest.json">
@@ -119,7 +119,6 @@
             display: flex; justify-content: center; align-items: center; color: #1e293b; 
         }
         
-        /* 底部導航欄 */
         .bottom-bar { 
             position: absolute; bottom: 0; left: 0; width: 100%; height: 58px; background: #FFF; 
             border-top: 3px solid #1e293b; display: flex; justify-content: space-around; align-items: center; 
@@ -251,12 +250,10 @@
         .evidence-title { font-weight: 800; cursor: pointer; display: flex; justify-content: space-between; }
         .evidence-content { display: none; margin-top: 5px; line-height: 1.35; border-top: 1px solid #CBD5E1; padding-top: 5px; }
 
-        /* 多階段載入遮罩 */
         .loading-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); color: white; font-weight: 800; justify-content: center; align-items: center; z-index: 2000; border-radius: 32px; backdrop-filter: blur(4px); text-align: center; padding: 20px; line-height: 1.6; }
         .loading-overlay.active { display: flex; flex-direction: column; gap: 10px; }
         .loading-step-pill { background: rgba(255, 255, 255, 0.2); padding: 4px 12px; border-radius: 20px; font-size: 12px; }
 
-        /* 自動檢測更新提示 Toast */
         .update-toast {
             display: none; position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
             background: rgba(15, 23, 42, 0.94); color: #38BDF8; padding: 9px 18px; border-radius: 24px;
@@ -290,7 +287,7 @@
 </head>
 <body>
 
-    <!-- 2026 Apple/PDPO 標準合規與安全健康檢核彈窗 -->
+    <!-- PDPO 免責聲明與安全檢核彈窗 -->
     <div class="consent-modal-overlay" id="complianceConsentModal" style="display: none;">
         <div class="consent-modal-box">
             <div class="consent-title">📋 使用者條款、免責聲明與隱私授權</div>
@@ -298,7 +295,7 @@
                 <strong>【非受監管醫療設備聲明 (Wellness & Education)】</strong><br>
                 本應用程式僅供教育及居家輔助吞嚥復康用途，<strong>不構成醫療建議、診斷或治療</strong>。在做出任何醫療決定、改變治療方案或膳食質地前，請務必諮詢醫生或言語治療師。<br><br>
                 <strong>【香港 PDPO 私隱條例保障】</strong><br>
-                我們極度重視您的隱私。健康日誌資料僅在您的帳戶活躍期間或服務必要期間保留。您享有隨時查閱、更正及<strong>一鍵抹除所有個人健康紀錄（被遺忘權）</strong>之權利，亦可隨時切換為<strong>「純離線模式」</strong>停止任何雲端資料同步。
+                健康日誌資料僅在服務必要期間保留。您享有隨時查閱、更正及<strong>一鍵抹除所有個人健康紀錄（被遺忘權）</strong>之權利，亦可隨時切換為<strong>「純離線模式」</strong>停止任何雲端資料同步。
             </div>
 
             <div class="screening-question-group">
@@ -507,7 +504,7 @@
         </div>
     </div>
 
-    <!-- AI 吞嚥安全教練分析報告彈窗 -->
+    <!-- AI 質地檢測報告彈窗 -->
     <div class="meal-result-modal" id="mealResultModal">
         <div class="meal-result-card">
             <div style="font-size: 16.5px; font-weight: 900; color: #1e293b; text-align: center;">🍽️ 吞嚥安全 AI 質地參考建議</div>
@@ -592,17 +589,17 @@
             <div style="font-size: 16.5px; font-weight: 900; color: #1e293b; text-align: center;">⚙️ 系統設定與伺服器連線</div>
             
             <div style="background:#fff; border:2px solid #1e293b; border-radius:12px; padding:10px; font-size:11.5px;">
-                <strong>🌐 Render 後端代理端點：</strong>
+                <strong>🌐 AI 端點 (Firebase Cloud Functions 新加坡)：</strong>
                 <div style="margin-top:6px;">
                     <input type="text" id="cfgProxyUrl" style="width:100%; padding:6px; margin-top:2px; border:1.5px solid #1e293b; border-radius:6px; font-size:11px;">
                 </div>
                 <div style="margin-top:8px; display:flex; gap:6px;">
-                    <button type="button" class="btn-innovate-pill" id="btnTestConn" onclick="testRenderConnection()" style="padding:6px; font-size:11px; background:#E0F2FE; color:#0369A1;">
-                        ⚡ 測試伺服器是否在線 / 主動喚醒
+                    <button type="button" class="btn-innovate-pill" id="btnTestConn" onclick="testServerConnection()" style="padding:6px; font-size:11px; background:#E0F2FE; color:#0369A1;">
+                        ⚡ 測試 Firebase 函數連線狀態
                     </button>
                 </div>
                 <div id="connTestResult" style="margin-top:6px; font-size:10.5px; font-weight:700; display:none;"></div>
-                <span style="color:#64748B; font-size:10px; display:block; margin-top:4px;">✅ 端點網址：<code>https://lohas-care-sandboxsttraining-dify-api.onrender.com/api/analyze</code></span>
+                <span style="color:#64748B; font-size:10px; display:block; margin-top:4px;">✅ 已預設指向 Firebase 新加坡節點，免冷啟動延遲。</span>
             </div>
 
             <div style="background:#fff; border:2px solid #1e293b; border-radius:12px; padding:10px; font-size:11.5px; line-height:1.5;">
@@ -610,7 +607,7 @@
                 <label style="display:flex; align-items:center; gap:6px; margin:6px 0; font-weight:800;">
                     <input type="checkbox" id="chkPureOfflineMode" onchange="togglePureOfflineMode(this.checked)"> 開啟「純離線模式」(不傳輸資料至雲端)
                 </label>
-                <span style="color:#64748B; font-size:10.5px;">開啟純離線模式後，所有練習日誌僅存於本地手機。</span>
+                <span style="color:#64748B; font-size:10.5px;">開啟純離線模式後，所有練習日誌僅存於本地設備。</span>
             </div>
 
             <button class="action-btn" style="background:#0284C7; color:#fff; padding:9px; font-size:13px;" onclick="saveSystemSettings()">儲存連線設定 💾</button>
@@ -625,10 +622,11 @@
         import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
         import { getDatabase, ref as dbRef, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const CORRECT_RENDER_PROXY = "https://lohas-care-sandboxsttraining-dify-api.onrender.com/api/analyze";
+        // 🔥 預設直駁至已成功部署的 Firebase Cloud Function (新加坡節點)
+        const DEFAULT_FIREBASE_FUNCTION_URL = "https://asia-southeast1-lohas-st-training-sandbox.cloudfunctions.net/analyzeMeal";
 
         function cleanUrlString(raw) {
-            if (!raw) return CORRECT_RENDER_PROXY;
+            if (!raw) return DEFAULT_FIREBASE_FUNCTION_URL;
             let clean = raw.trim();
             clean = clean.replace(/\[.*?\]\((.*?)\)/g, '$1');
             clean = clean.replace(/[\[\]\(\)\s]/g, '');
@@ -636,12 +634,21 @@
             return clean;
         }
 
+        // 自動檢測並清除舊的 Render 網址
         const currentSavedUrl = localStorage.getItem('lohas_ai_proxy_url');
-        if (!currentSavedUrl || currentSavedUrl.includes('[') || currentSavedUrl.includes('(') || currentSavedUrl.includes('sandboxttraining')) {
-            localStorage.setItem('lohas_ai_proxy_url', CORRECT_RENDER_PROXY);
+        if (!currentSavedUrl || currentSavedUrl.includes('onrender.com') || currentSavedUrl.includes('[') || currentSavedUrl.includes('(')) {
+            localStorage.setItem('lohas_ai_proxy_url', DEFAULT_FIREBASE_FUNCTION_URL);
         }
 
-        // Firebase 配置
+        // 依香港時間取得符合 Dify 選單限制的餐膳類型 (早餐、午餐、晚餐、小食)
+        function getMealTypeByHour() {
+            const hour = new Date().getHours();
+            if (hour >= 6 && hour < 11) return '早餐';
+            if (hour >= 11 && hour < 14) return '午餐';
+            if (hour >= 17 && hour < 21) return '晚餐';
+            return '小食';
+        }
+
         const firebaseConfig = {
             apiKey: "AIzaSyBG65952X2d1pzpfrtWEBnthzCxDWFePXA",
             authDomain: "lohas-st-training-sandbox.firebaseapp.com",
@@ -677,7 +684,6 @@
         window.targetFilterSet = null;
         window.recentSymptoms = [];
 
-        // 成就徽章清單
         window.badgeList = [
             { id: 'b1', name: '吞嚥新星', icon: '🌟', desc: '完成第 1 節訓練', unlocked: false },
             { id: 'b2', name: '喉部衛士', icon: '🛡️', desc: '完成模組一練習', unlocked: false },
@@ -1107,7 +1113,6 @@
             }
         ];
 
-        // 登入驗證
         if (auth) {
             onAuthStateChanged(auth, (user) => {
                 if (user) {
@@ -1154,7 +1159,6 @@
             });
         }
 
-        // 前端圖片壓縮 (Canvas)
         window.compressImage = function(file, quality = 0.85, maxWidth = 1200) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -1182,7 +1186,6 @@
             });
         };
 
-        // 個人化安全評分運算 (0-100)
         function calculateSwallowingSafety(foodLevel, recentSymptoms, targetLevel, progressPercent) {
             let riskScore = 90;
             let reasons = [];
@@ -1228,7 +1231,6 @@
             return { riskScore, reasons, isRedAlert };
         }
 
-        // IDDSI 測試標準化指示 (包含 Level 0 針筒測試)
         function getIddsiVerificationFlow(level) {
             if (level.includes('0') || level.includes('薄') || level.includes('茶') || level.includes('水') || level.includes('Thin')) {
                 return `
@@ -1257,7 +1259,6 @@
             }
         }
 
-        // 容錯解析器：解析 Dify 傳回之純文字或 Markdown 包裹之 JSON
         function parseDifyOutput(raw) {
             if (typeof raw === 'object' && raw !== null && (raw.food || raw.iddsi_level)) {
                 return raw;
@@ -1270,12 +1271,12 @@
             try { return JSON.parse(text); } catch(e) {}
             return {
                 food: text.slice(0, 20) || "已辨識餐膳",
-                iddsi_level: text.includes('0') ? "Level 0 - 稀薄液體" : "Level 4 - 純糊餐",
+                iddsi_level: (text.includes('0') || text.includes('茶') || text.includes('水')) ? "Level 0 - 稀薄液體" : "Level 4 - 純糊餐",
                 visual_reason: text
             };
         }
 
-        // ─── 核心相片拍攝與 Render API 連線流程 ───
+        // ─── 核心相片拍攝與 Firebase Cloud Functions 連線流程 ───
         window.triggerMealCapture = function() {
             document.getElementById('mealCameraInput').click();
         };
@@ -1295,18 +1296,19 @@
             try {
                 const compressedBlob = await window.compressImage(file);
 
-                stepPill.innerText = "2/3 實時辨識中";
-                stepText.innerText = "正在連線 Render 伺服器分析 (若休眠喚醒約需 20-30 秒，請稍候)...";
+                stepPill.innerText = "2/3 雲端辨識中";
+                stepText.innerText = "正在連線 Firebase Cloud Function 分析...";
 
-                const proxyUrl = cleanUrlString(localStorage.getItem('lohas_ai_proxy_url') || CORRECT_RENDER_PROXY);
+                const endpointUrl = cleanUrlString(localStorage.getItem('lohas_ai_proxy_url') || DEFAULT_FIREBASE_FUNCTION_URL);
                 const uid = window.currentUser ? window.currentUser.uid : 'web_user_' + Date.now();
+                const currentMealType = getMealTypeByHour();
 
                 const formData = new FormData();
                 formData.append('file', compressedBlob, 'meal.jpg');
                 formData.append('user', uid);
-                formData.append('meal_type', '餐膳快檢');
+                formData.append('meal_type', currentMealType);
 
-                const response = await fetch(proxyUrl, {
+                const response = await fetch(endpointUrl, {
                     method: 'POST',
                     body: formData
                 });
@@ -1327,7 +1329,7 @@
                 const rawOutputs = await response.json();
                 const outputs = parseDifyOutput(rawOutputs);
 
-                const foodName = outputs.food || outputs.food_name || outputs.FoodName || outputs.meal || "奶茶/飲品";
+                const foodName = outputs.food || outputs.food_name || outputs.FoodName || outputs.meal || "分析食物";
                 const iddsiLevel = outputs.iddsi_level || outputs.iddsi || outputs.IDDSI_Level || "Level 0 - 稀薄液體";
                 const confidence = outputs.confidence !== undefined ? outputs.confidence : 0.94;
 
@@ -1335,7 +1337,7 @@
                     food: foodName,
                     iddsi_level: iddsiLevel,
                     confidence: confidence,
-                    visual_reason: outputs.visual_reason || outputs.reason || "實時影像特徵符合流動液體與微稠特徵。",
+                    visual_reason: outputs.visual_reason || outputs.reason || "實時影像特徵符合流動液體特徵。",
                     recommended_official_test: outputs.recommended_official_test || outputs.test_name || "標準針筒流速測試"
                 };
 
@@ -1383,7 +1385,6 @@
             alert("✅ 質地紀錄與安全提示已儲存於安全日誌！");
         };
 
-        // 語音播報 (TTS)
         function speakVoiceCoach(text) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
@@ -1394,7 +1395,6 @@
             }
         }
 
-        // 全語音免提聲控導航
         window.isVoiceNavActive = false;
         window.voiceNavRecognizer = null;
 
@@ -1472,7 +1472,6 @@
             }
         }
 
-        // 口腔發音生物反饋 (Pa-Ta-Ka 測試)
         window.startBiofeedbackPractice = function(targetWord) {
             const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRec) {
@@ -1511,7 +1510,6 @@
             rec.start();
         };
 
-        // 成就徽章
         function unlockBadge(badgeId) {
             const badge = window.badgeList.find(b => b.id === badgeId);
             if (badge && !badge.unlocked) {
@@ -1553,7 +1551,6 @@
             document.getElementById('badgeModal').classList.remove('active');
         };
 
-        // 照顧者專區
         window.openCaregiverDashboard = function() {
             updateCaregiverSafetySummary();
             document.getElementById('caregiverModal').classList.add('active');
@@ -1595,10 +1592,9 @@
             window.open(`https://wa.me/?text=${text}`, '_blank');
         };
 
-        // 系統與私隱設定 (Render 端點管理)
         window.openSettingsModal = function() {
             document.getElementById('chkPureOfflineMode').checked = window.isPureOfflineMode;
-            document.getElementById('cfgProxyUrl').value = cleanUrlString(localStorage.getItem('lohas_ai_proxy_url') || CORRECT_RENDER_PROXY);
+            document.getElementById('cfgProxyUrl').value = cleanUrlString(localStorage.getItem('lohas_ai_proxy_url') || DEFAULT_FIREBASE_FUNCTION_URL);
             document.getElementById('connTestResult').style.display = 'none';
             document.getElementById('settingsModal').classList.add('active');
         };
@@ -1607,31 +1603,29 @@
             document.getElementById('settingsModal').classList.remove('active');
         };
 
-        // 測試 Render 連線按鈕
-        window.testRenderConnection = async function() {
+        window.testServerConnection = async function() {
             const resultBox = document.getElementById('connTestResult');
             const btn = document.getElementById('btnTestConn');
-            const proxyInput = cleanUrlString(document.getElementById('cfgProxyUrl').value.trim() || CORRECT_RENDER_PROXY);
-            const rootUrl = proxyInput.replace(/\/api\/analyze\/?$/, '');
+            const targetUrl = cleanUrlString(document.getElementById('cfgProxyUrl').value.trim() || DEFAULT_FIREBASE_FUNCTION_URL);
 
             resultBox.style.display = 'block';
             resultBox.style.color = '#0284C7';
-            resultBox.innerText = '⏳ 正在測試伺服器連線（若休眠喚醒約需 20-30 秒）...';
+            resultBox.innerText = '⏳ 正在測試 Firebase Cloud Function 連線...';
             btn.disabled = true;
 
             try {
-                const res = await fetch(rootUrl);
+                const res = await fetch(targetUrl);
                 if (res.ok) {
                     const text = await res.text();
                     resultBox.style.color = '#16A34A';
-                    resultBox.innerText = '✅ 伺服器在線！' + text;
+                    resultBox.innerText = '✅ 伺服器在線！\n' + text.replace(/<br>/g, ' | ');
                 } else {
                     resultBox.style.color = '#DC2626';
                     resultBox.innerText = '⚠️ 伺服器回應異常：狀態碼 ' + res.status;
                 }
             } catch (err) {
                 resultBox.style.color = '#DC2626';
-                resultBox.innerText = '❌ 連線失敗 (' + err.message + ')。請確認 Render 服務已啟動。';
+                resultBox.innerText = '❌ 連線失敗 (' + err.message + ')。請確認 Functions 已成功部署。';
             } finally {
                 btn.disabled = false;
             }
@@ -1649,13 +1643,12 @@
         };
 
         window.saveSystemSettings = function() {
-            const proxy = cleanUrlString(document.getElementById('cfgProxyUrl').value.trim() || CORRECT_RENDER_PROXY);
+            const proxy = cleanUrlString(document.getElementById('cfgProxyUrl').value.trim() || DEFAULT_FIREBASE_FUNCTION_URL);
             localStorage.setItem('lohas_ai_proxy_url', proxy);
             closeSettingsModal();
             alert("✅ 連線端點已更新為：\n" + proxy);
         };
 
-        // 一鍵抹除個人資料 (PDPO 被遺忘權)
         window.clearUserCloudLogs = async function() {
             if (!confirm("⚠️【PDPO 隱私抹除確認】\n\n確定要一鍵永久抹除您在本機與伺服器上的所有練習紀錄與日誌嗎？此操作不可還原。")) return;
             
@@ -1675,7 +1668,6 @@
             }
         };
 
-        // ─── 畫面導航與詳情渲染 ───
         window.navigateTo = function(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
@@ -1916,7 +1908,6 @@
             }
         });
 
-        // 燈箱控制
         let lbScale = 1, lbRotation = 0, lbPosX = 0, lbPosY = 0;
         function applyLbTransform() {
             const img = document.getElementById('activeLbImage');
@@ -1944,11 +1935,9 @@
             resetImageTransform();
         };
 
-        // 載入預設 LOGO
         const defaultLogoUrl = getStorageUrl('Designer.jpeg');
         document.getElementById('cover-img-container').innerHTML = `<img src="${defaultLogoUrl}" alt="630樂活科技" onerror="this.outerHTML='<svg width=\\'78\\' height=\\'78\\'><circle cx=\\'39\\' cy=\\'39\\' r=\\'34\\' fill=\\'#FF9F1C\\'/></svg>'">`;
 
-        // 臨床篩查合規
         window.checkConsentStatus = function() {
             const c1 = document.getElementById('chkMedicalConsent').checked;
             const c2 = document.getElementById('chkPrivacyConsent').checked;
@@ -1972,7 +1961,6 @@
             }
         });
 
-        // ─── PWA 自動檢測更新機制 ───
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./service-worker.js').then((registration) => {
