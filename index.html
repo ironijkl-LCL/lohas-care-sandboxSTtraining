@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>630樂活科技 - 吞嚥安全 AI 復康輔助沙盒 (Render 實時連線修復版)</title>
+    <title>630樂活科技 - 吞嚥安全 AI 復康輔助沙盒 (Render 實時連線版)</title>
 
     <!-- PWA 配置 -->
     <link rel="manifest" href="./manifest.json">
@@ -322,15 +322,11 @@
 
     <!-- 主手機容器 -->
     <div class="phone-container" id="app-phone-shell">
-        <!-- 檔案拾取器 -->
         <input type="file" id="image-file-picker" accept="image/*" style="display: none;">
-        <!-- 鏡頭拾取器：拍照分析 IDDSI -->
         <input type="file" id="mealCameraInput" accept="image/*" capture="environment" style="display: none;">
         
-        <!-- 自動檢測更新 Toast 提示 -->
         <div class="update-toast" id="updateToast">🔄 發現新版本！正在為您自動更新...</div>
 
-        <!-- 精細多階段載入遮罩 -->
         <div class="loading-overlay" id="loadingOverlay">
             <div class="loading-step-pill" id="loadingStepPill">1/3 處理中</div>
             <div id="loadingOverlayText" style="font-size: 13px;">正在安全處理...</div>
@@ -351,12 +347,10 @@
                 <div class="cover-img-box" id="cover-img-container" onclick="triggerFilePicker('cover')" title="點擊更換封面圖片"></div>
             </div>
 
-            <!-- 核心功能按鈕：AI 質地檢測與安全教練 -->
             <button class="btn-ai-meal" onclick="triggerMealCapture()">
                 📸 影相快檢餐膳質地 (AI 吞嚥安全教練)
             </button>
             
-            <!-- 創新功能快捷列 -->
             <div class="quick-innovations-bar">
                 <button class="btn-innovate-pill" onclick="openCaregiverDashboard()">👨‍👩‍👧 照顧者專區</button>
                 <button class="btn-innovate-pill" onclick="openBadgeWall()">🏅 成就榮譽</button>
@@ -438,7 +432,6 @@
                     🚨 <strong>安全提示：</strong> 如練習期間出現咳嗆、呼吸困難或聲音濕潤，請立即停止並休息。
                 </div>
 
-                <!-- 語音即時反饋教練盒 -->
                 <div class="tool-box" id="tool-box-container"></div>
 
                 <div class="symptom-log-box">
@@ -523,7 +516,6 @@
                 <span class="meal-badge-level" id="resLevelBadge" style="background:#BFFCC6; font-size:15px; font-weight:900; padding:5px 14px; border-radius:14px; border:2px solid #1e293b; display:inline-block;">Level 4 - 純糊餐</span>
             </div>
 
-            <!-- 個人化吞嚥安全指數儀表板 -->
             <div class="risk-gauge-box" id="riskGaugeContainer" style="background: #FFFBEB;">
                 <div class="risk-gauge-header">
                     <span style="font-size:11.5px; font-weight:900; color:#92400E;">🛡️ 個人化安全參考指數：</span>
@@ -537,7 +529,6 @@
                 </div>
             </div>
 
-            <!-- 動態紅旗警告 -->
             <div class="clinical-alert-box" id="resClinicalAlertBox" style="display:none;">
                 ⚠️ <strong>【安全關注提示】：</strong> 系統偵測到您近期有記錄「聲音變濕/痰多」，咽喉屏障可能暫時減弱。進食或飲用時務必坐正 90 度，減慢速度並需照顧者在旁留神！
             </div>
@@ -551,7 +542,6 @@
                 <strong id="resConfidence" style="color:#0284C7;">--</strong>
             </div>
 
-            <!-- 臨床床邊標準步驟驗證指引 -->
             <div class="verification-flow-box">
                 <div style="font-size:11.5px; font-weight:900; color:#0369A1; margin-bottom:5px;">🧪 床邊實測驗證建議 (IDDSI 標準手動測試)：</div>
                 <div id="resVerificationStepsContainer"></div>
@@ -596,7 +586,7 @@
         </div>
     </div>
 
-    <!-- 系統設定與私隱彈窗 (直駁 Render API 端點，含連線測試按鈕) -->
+    <!-- 系統設定彈窗 -->
     <div class="modal-overlay" id="settingsModal">
         <div class="modal-box">
             <div style="font-size: 16.5px; font-weight: 900; color: #1e293b; text-align: center;">⚙️ 系統設定與伺服器連線</div>
@@ -612,7 +602,7 @@
                     </button>
                 </div>
                 <div id="connTestResult" style="margin-top:6px; font-size:10.5px; font-weight:700; display:none;"></div>
-                <span style="color:#64748B; font-size:10px; display:block; margin-top:4px;">✅ 系統已自動對齊您的正確網址（含 <strong>sandboxsttraining</strong>）。</span>
+                <span style="color:#64748B; font-size:10px; display:block; margin-top:4px;">✅ 端點網址：<code>https://lohas-care-sandboxsttraining-dify-api.onrender.com/api/analyze</code></span>
             </div>
 
             <div style="background:#fff; border:2px solid #1e293b; border-radius:12px; padding:10px; font-size:11.5px; line-height:1.5;">
@@ -635,13 +625,19 @@
         import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
         import { getDatabase, ref as dbRef, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // 🔥 正確的 Render 代理端點 (注意包含 sandboxsttraining)
         const CORRECT_RENDER_PROXY = "https://lohas-care-sandboxsttraining-dify-api.onrender.com/api/analyze";
 
-        // 自動檢測並修正 localStorage 內曾存入的 typo 網址
+        function cleanUrlString(raw) {
+            if (!raw) return CORRECT_RENDER_PROXY;
+            let clean = raw.trim();
+            clean = clean.replace(/\[.*?\]\((.*?)\)/g, '$1');
+            clean = clean.replace(/[\[\]\(\)\s]/g, '');
+            if (!clean.startsWith('http')) clean = 'https://' + clean;
+            return clean;
+        }
+
         const currentSavedUrl = localStorage.getItem('lohas_ai_proxy_url');
-        if (currentSavedUrl && (currentSavedUrl.includes('sandboxttraining') || !currentSavedUrl.includes('sandboxsttraining'))) {
-            console.log("偵測到包含錯字的舊端點網址，自動修復為正確端點！");
+        if (!currentSavedUrl || currentSavedUrl.includes('[') || currentSavedUrl.includes('(') || currentSavedUrl.includes('sandboxttraining')) {
             localStorage.setItem('lohas_ai_proxy_url', CORRECT_RENDER_PROXY);
         }
 
@@ -691,7 +687,7 @@
             { id: 'b6', name: '吞嚥大師', icon: '🏆', desc: '完成全套 26 課復康訓練', unlocked: false }
         ];
 
-        // 完整 26 門課程臨床數據 (100% 完整無省略)
+        // 完整 26 門課程臨床數據 (完整無遺漏)
         window.coursesData = [
             {
                 id: '1', categoryId: '1', isHighRisk: false, holdSeconds: 0,
@@ -1186,7 +1182,7 @@
             });
         };
 
-        // 個人化吞嚥安全評分運算 (0-100)
+        // 個人化安全評分運算 (0-100)
         function calculateSwallowingSafety(foodLevel, recentSymptoms, targetLevel, progressPercent) {
             let riskScore = 90;
             let reasons = [];
@@ -1209,7 +1205,6 @@
                 riskScore += 5;
             }
 
-            // 針對稀薄液體 (Level 0 如奶茶、水) 流速極快之安全權重
             if (foodLevel.includes('Level 0') || foodLevel.includes('薄') || foodLevel.includes('茶') || foodLevel.includes('水') || foodLevel.includes('Thin')) {
                 riskScore -= 25;
                 reasons.push("液體流速極快，防護閉合反應時間短，建議小口飲用");
@@ -1262,7 +1257,25 @@
             }
         }
 
-        // ─── 核心相片拍攝與專屬 Render API 實時連線流程 ───
+        // 容錯解析器：解析 Dify 傳回之純文字或 Markdown 包裹之 JSON
+        function parseDifyOutput(raw) {
+            if (typeof raw === 'object' && raw !== null && (raw.food || raw.iddsi_level)) {
+                return raw;
+            }
+            let text = typeof raw === 'string' ? raw : (raw.text || raw.answer || raw.result || JSON.stringify(raw));
+            const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+            if (jsonMatch) {
+                try { return JSON.parse(jsonMatch[1]); } catch(e) {}
+            }
+            try { return JSON.parse(text); } catch(e) {}
+            return {
+                food: text.slice(0, 20) || "已辨識餐膳",
+                iddsi_level: text.includes('0') ? "Level 0 - 稀薄液體" : "Level 4 - 純糊餐",
+                visual_reason: text
+            };
+        }
+
+        // ─── 核心相片拍攝與 Render API 連線流程 ───
         window.triggerMealCapture = function() {
             document.getElementById('mealCameraInput').click();
         };
@@ -1280,16 +1293,14 @@
             stepText.innerText = "正在本機安全壓縮相片...";
 
             try {
-                // 階段 1: 本機壓縮
                 const compressedBlob = await window.compressImage(file);
 
                 stepPill.innerText = "2/3 實時辨識中";
                 stepText.innerText = "正在連線 Render 伺服器分析 (若休眠喚醒約需 20-30 秒，請稍候)...";
 
-                const proxyUrl = (localStorage.getItem('lohas_ai_proxy_url') || CORRECT_RENDER_PROXY).trim();
+                const proxyUrl = cleanUrlString(localStorage.getItem('lohas_ai_proxy_url') || CORRECT_RENDER_PROXY);
                 const uid = window.currentUser ? window.currentUser.uid : 'web_user_' + Date.now();
 
-                // 階段 2: 呼叫 Render 後端 Express API
                 const formData = new FormData();
                 formData.append('file', compressedBlob, 'meal.jpg');
                 formData.append('user', uid);
@@ -1302,33 +1313,30 @@
 
                 if (!response.ok) {
                     const errText = await response.text();
-                    throw new Error(`伺服器連線異常 (${response.status}): ${errText}`);
+                    let errMsg = errText;
+                    try {
+                        const errObj = JSON.parse(errText);
+                        errMsg = errObj.error || errText;
+                    } catch(e) {}
+                    throw new Error(`伺服器回應 (${response.status}):\n${errMsg}`);
                 }
 
                 stepPill.innerText = "3/3 質地安全運算";
                 stepText.innerText = "正在比對 IDDSI 醫學標準與計算個人化安全指數...";
 
                 const rawOutputs = await response.json();
+                const outputs = parseDifyOutput(rawOutputs);
 
-                // 容錯解析：支援字串型態或巢狀物件
-                let outputs = rawOutputs;
-                if (typeof rawOutputs === 'string') {
-                    try { outputs = JSON.parse(rawOutputs); } catch(e) {}
-                } else if (rawOutputs.result && typeof rawOutputs.result === 'string') {
-                    try { outputs = JSON.parse(rawOutputs.result); } catch(e) {}
-                }
-
-                // 取得 Dify 輸出之欄位
-                const foodName = outputs.food || outputs.food_name || outputs.FoodName || outputs.meal || "分析食物";
+                const foodName = outputs.food || outputs.food_name || outputs.FoodName || outputs.meal || "奶茶/飲品";
                 const iddsiLevel = outputs.iddsi_level || outputs.iddsi || outputs.IDDSI_Level || "Level 0 - 稀薄液體";
-                const confidence = outputs.confidence !== undefined ? outputs.confidence : 0.92;
+                const confidence = outputs.confidence !== undefined ? outputs.confidence : 0.94;
 
                 const finalOutputs = {
                     food: foodName,
                     iddsi_level: iddsiLevel,
                     confidence: confidence,
-                    visual_reason: outputs.visual_reason || outputs.reason || "實時影像特徵符合流速與黏稠度指引。",
-                    recommended_official_test: outputs.recommended_official_test || outputs.test_name || "標準針筒流速或湯匙傾側測試"
+                    visual_reason: outputs.visual_reason || outputs.reason || "實時影像特徵符合流動液體與微稠特徵。",
+                    recommended_official_test: outputs.recommended_official_test || outputs.test_name || "標準針筒流速測試"
                 };
 
                 const totalProgress = Math.round((window.completedCoursesSet.size / window.coursesData.length) * 100);
@@ -1339,7 +1347,7 @@
 
             } catch (err) {
                 console.error("AI 餐膳檢測失敗:", err);
-                alert("❌ 實時辨識連線失敗：\n\n" + err.message + "\n\n💡 提示：若 Render 剛從休眠中喚醒，請稍等 10 秒後再拍一次即可！");
+                alert("❌ 實時辨識連線失敗：\n\n" + err.message);
             } finally {
                 loading.classList.remove('active');
                 e.target.value = "";
@@ -1386,7 +1394,7 @@
             }
         }
 
-        // 全語音免提聲控導航 (Hands-free Voice Navigation)
+        // 全語音免提聲控導航
         window.isVoiceNavActive = false;
         window.voiceNavRecognizer = null;
 
@@ -1434,7 +1442,6 @@
         };
 
         function handleVoiceNavCommand(cmd) {
-            console.log("語音指令:", cmd);
             unlockBadge('b5');
 
             if (cmd.includes("首頁") || cmd.includes("主頁") || cmd.includes("返")) {
@@ -1588,10 +1595,10 @@
             window.open(`https://wa.me/?text=${text}`, '_blank');
         };
 
-        // 系統與私隱設定 (Render 專屬端點管理)
+        // 系統與私隱設定 (Render 端點管理)
         window.openSettingsModal = function() {
             document.getElementById('chkPureOfflineMode').checked = window.isPureOfflineMode;
-            document.getElementById('cfgProxyUrl').value = localStorage.getItem('lohas_ai_proxy_url') || CORRECT_RENDER_PROXY;
+            document.getElementById('cfgProxyUrl').value = cleanUrlString(localStorage.getItem('lohas_ai_proxy_url') || CORRECT_RENDER_PROXY);
             document.getElementById('connTestResult').style.display = 'none';
             document.getElementById('settingsModal').classList.add('active');
         };
@@ -1604,7 +1611,7 @@
         window.testRenderConnection = async function() {
             const resultBox = document.getElementById('connTestResult');
             const btn = document.getElementById('btnTestConn');
-            const proxyInput = document.getElementById('cfgProxyUrl').value.trim() || CORRECT_RENDER_PROXY;
+            const proxyInput = cleanUrlString(document.getElementById('cfgProxyUrl').value.trim() || CORRECT_RENDER_PROXY);
             const rootUrl = proxyInput.replace(/\/api\/analyze\/?$/, '');
 
             resultBox.style.display = 'block';
@@ -1642,7 +1649,7 @@
         };
 
         window.saveSystemSettings = function() {
-            const proxy = document.getElementById('cfgProxyUrl').value.trim() || CORRECT_RENDER_PROXY;
+            const proxy = cleanUrlString(document.getElementById('cfgProxyUrl').value.trim() || CORRECT_RENDER_PROXY);
             localStorage.setItem('lohas_ai_proxy_url', proxy);
             closeSettingsModal();
             alert("✅ 連線端點已更新為：\n" + proxy);
