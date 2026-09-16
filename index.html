@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>630樂活科技 - 吞嚥安全 AI 復康輔助沙盒 (2026 合規版)</title>
+    <title>630樂活科技 - 吞嚥安全 AI 復康輔助沙盒 (自動更新合規版)</title>
 
     <!-- PWA 配置 -->
     <link rel="manifest" href="./manifest.json">
@@ -256,6 +256,16 @@
         .loading-overlay.active { display: flex; flex-direction: column; gap: 10px; }
         .loading-step-pill { background: rgba(255, 255, 255, 0.2); padding: 4px 12px; border-radius: 20px; font-size: 12px; }
 
+        /* 🔄 自動檢測更新提示 Toast */
+        .update-toast {
+            display: none; position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.94); color: #38BDF8; padding: 9px 18px; border-radius: 24px;
+            font-size: 12px; font-weight: 900; z-index: 50000; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border: 2px solid #38BDF8; backdrop-filter: blur(8px); text-align: center; white-space: nowrap;
+            animation: fadeInDown 0.3s ease;
+        }
+        @keyframes fadeInDown { from { opacity: 0; transform: translate(-50%, -10px); } to { opacity: 1; transform: translate(-50%, 0); } }
+
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.88); z-index: 40000; justify-content: center; align-items: center; padding: 14px; backdrop-filter: blur(5px); }
         .modal-overlay.active { display: flex; }
         .modal-box { background: #FAF6F0; border: 4px solid #1e293b; border-radius: 26px; width: 100%; max-width: 375px; padding: 18px; box-shadow: 6px 6px 0 #1e293b; display: flex; flex-direction: column; gap: 9px; max-height: 90vh; overflow-y: auto; }
@@ -317,6 +327,9 @@
         <!-- 鏡頭拾取器：拍照分析 IDDSI -->
         <input type="file" id="mealCameraInput" accept="image/*" capture="environment" style="display: none;">
         
+        <!-- 自動檢測更新 Toast 提示 -->
+        <div class="update-toast" id="updateToast">🔄 發現新版本！正在為您自動更新...</div>
+
         <!-- 精細多階段載入遮罩 -->
         <div class="loading-overlay" id="loadingOverlay">
             <div class="loading-step-pill" id="loadingStepPill">1/3 處理中</div>
@@ -655,7 +668,7 @@
             { id: 'b6', name: '吞嚥大師', icon: '🏆', desc: '完成全套 26 課復康訓練', unlocked: false }
         ];
 
-        // 完整保留 26 門課程臨床數據 (完整無遺漏)
+        // 完整 26 門課程臨床數據
         window.coursesData = [
             {
                 id: '1', categoryId: '1', isHighRisk: false, holdSeconds: 0,
@@ -1239,7 +1252,7 @@
                 stepPill.innerText = "2/3 影像比對";
                 stepText.innerText = "正在提取餐膳質地與黏稠外觀特徵...";
 
-                // 階段 2: 檢查代理端點 (2026 安全架構：不在前端硬編碼機密金鑰)
+                // 階段 2: 檢查代理端點
                 const proxyUrl = localStorage.getItem('lohas_ai_proxy_url');
                 let outputs = null;
 
@@ -1256,9 +1269,9 @@
                     }
                 }
 
-                // 離線/沙盒安全輔助預設數據 (保證永遠不中斷練習)
+                // 離線/沙盒安全輔助預設數據
                 if (!outputs || !outputs.iddsi_level) {
-                    await new Promise(r => setTimeout(r, 600)); // 平滑動畫
+                    await new Promise(r => setTimeout(r, 600));
                     outputs = {
                         food: "南瓜嫩肉滑泥 (Puree Demo)",
                         iddsi_level: "Level 4 - 高稠純糊餐",
@@ -1876,8 +1889,47 @@
             }
         });
 
+        // ─── 🔄 PWA 自動檢測更新機制 (免手動按 Shift + Ctrl + R) ───
+        function showUpdateNotification() {
+            const toast = document.getElementById('updateToast');
+            if (toast) {
+                toast.style.display = 'block';
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1200);
+            } else {
+                window.location.reload();
+            }
+        }
+
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(console.error));
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js').then((registration) => {
+                    // 主動向 GitHub 伺服器核對 service-worker.js 位元組
+                    registration.update();
+
+                    // 當偵測到 GitHub 有新版本開始下載
+                    registration.onupdatefound = () => {
+                        const installingWorker = registration.installing;
+                        if (!installingWorker) return;
+                        installingWorker.onstatechange = () => {
+                            // 當新版本下載安裝完畢，且當前已有正在控制的舊版本，代表這是一次新版本更新
+                            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                showUpdateNotification();
+                            }
+                        };
+                    };
+                }).catch(console.error);
+
+                // 控制權轉移時自動平滑刷新
+                let refreshing = false;
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    if (!refreshing) {
+                        refreshing = true;
+                        window.location.reload();
+                    }
+                });
+            });
         }
     </script>
 </body>
