@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>630樂活科技 - 吞嚥安全 AI 復康輔助沙盒 (廣東話語音校準與手勢版)</title>
+    <title>630樂活科技 - 吞嚥安全 AI 復康輔助沙盒 (嚴格真語音辨識版)</title>
 
     <!-- PWA 配置 -->
     <link rel="manifest" href="./manifest.json">
@@ -16,42 +16,43 @@
     <link rel="apple-touch-icon" href="https://firebasestorage.googleapis.com/v0/b/lohas-st-training-sandbox.firebasestorage.app/o/training_assets%2FDesigner.jpeg?alt=media">
 
     <style>
-        * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
         
-        body { 
-            background-color: #FAF6F0; 
+        body {
+        
+            background-color: #FAF6F0;
             margin: 0;
             padding: 0;
             width: 100vw;
             height: 100vh;
             overflow: hidden;
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
             -webkit-user-select: none;
             user-select: none;
         }
         
         /* iOS 全螢幕適配容器 */
-        .phone-container { 
-            width: 100vw; 
-            height: 100vh; 
+        .phone-container {
+            width: 100vw;
+            height: 100vh;
             max-width: 100vw;
             max-height: 100vh;
-            background-color: #FAF6F0; 
-            border-radius: 0; 
-            box-shadow: none; 
-            border: none; 
-            position: relative; 
-            overflow: hidden; 
-            display: flex; 
-            flex-direction: column; 
+            background-color: #FAF6F0;
+            border-radius: 0;
+            box-shadow: none;
+            border: none;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
         
         /* 長者大字模式 */
@@ -61,39 +62,39 @@
         .phone-container.senior-font-mode .warning-box { font-size: 15.5px !important; }
         .phone-container.senior-font-mode .module-btn { font-size: 14px !important; padding: 12px !important; }
 
-        .screen { 
-            width: 100%; 
-            height: 100%; 
-            overflow-y: auto; 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease; 
-            padding-bottom: calc(75px + env(safe-area-inset-bottom, 0px)); 
-            opacity: 0; 
-            pointer-events: none; 
+        .screen {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+            padding-bottom: calc(75px + env(safe-area-inset-bottom, 0px));
+            opacity: 0;
+            pointer-events: none;
             -webkit-overflow-scrolling: touch;
         }
         .screen::-webkit-scrollbar { display: none; }
         
-        #cover-screen { 
-            z-index: 10; 
-            background-color: #A0E7E5; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: flex-start; 
-            padding: calc(16px + env(safe-area-inset-top, 0px)) 18px calc(85px + env(safe-area-inset-bottom, 0px)); 
-            overflow-y: auto; 
+        #cover-screen {
+            z-index: 10;
+            background-color: #A0E7E5;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            padding: calc(16px + env(safe-area-inset-top, 0px)) 18px calc(85px + env(safe-area-inset-bottom, 0px));
+            overflow-y: auto;
         }
         #list-screen { z-index: 1; background-color: #FAF6F0; }
         #detail-screen { z-index: 5; background-color: #F8F9FA; }
-        #end-screen { 
-            z-index: 20; 
-            background-color: #E8AEFF; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between; 
-            padding: calc(20px + env(safe-area-inset-top, 0px)) 22px calc(85px + env(safe-area-inset-bottom, 0px)); 
+        #end-screen {
+            z-index: 20;
+            background-color: #E8AEFF;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: calc(20px + env(safe-area-inset-top, 0px)) 22px calc(85px + env(safe-area-inset-bottom, 0px));
         }
         
         .screen.active { opacity: 1; pointer-events: auto; transform: translateX(0) !important; }
@@ -106,42 +107,42 @@
         .cover-title { font-size: 22px; font-weight: 900; color: #1e293b; line-height: 1.25; margin-bottom: 4px; }
         .cover-subtitle { font-size: 11.5px; font-weight: 700; color: rgba(30, 41, 59, 0.85); line-height: 1.35; padding: 0 4px; }
         
-        .disclaimer-banner { 
-            background-color: #FFF3CD; border: 2px solid #FFEBAA; border-left: 5px solid #FF9F1C; 
-            padding: 8px 10px; border-radius: 12px; font-size: 10.5px; font-weight: 700; 
-            color: #856404; margin: 8px 0; text-align: left; line-height: 1.4; 
+        .disclaimer-banner {
+            background-color: #FFF3CD; border: 2px solid #FFEBAA; border-left: 5px solid #FF9F1C;
+            padding: 8px 10px; border-radius: 12px; font-size: 10.5px; font-weight: 700;
+            color: #856404; margin: 8px 0; text-align: left; line-height: 1.4;
         }
         
-        .cover-img-box { 
-            width: 82px; height: 82px; border-radius: 50%; border: 3px solid #1e293b; 
-            box-shadow: 3.5px 3.5px 0 #1e293b; margin: 6px auto 10px; display: flex; 
-            justify-content: center; align-items: center; background: #fff; overflow: hidden; 
-            cursor: pointer; flex-shrink: 0; 
+        .cover-img-box {
+            width: 82px; height: 82px; border-radius: 50%; border: 3px solid #1e293b;
+            box-shadow: 3.5px 3.5px 0 #1e293b; margin: 6px auto 10px; display: flex;
+            justify-content: center; align-items: center; background: #fff; overflow: hidden;
+            cursor: pointer; flex-shrink: 0;
         }
         .cover-img-box img { width: 100%; height: 100%; object-fit: cover; }
         
-        .btn-ai-meal { 
-            background: linear-gradient(135deg, #38BDF8 0%, #0284C7 100%); color: #ffffff; 
-            font-size: 14px; font-weight: 900; border: 3px solid #1e293b; border-radius: 18px; 
-            padding: 12px; width: 100%; cursor: pointer; box-shadow: 3.5px 3.5px 0 #1e293b; 
-            margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; 
-            transition: transform 0.1s; z-index: 50; 
+        .btn-ai-meal {
+            background: linear-gradient(135deg, #38BDF8 0%, #0284C7 100%); color: #ffffff;
+            font-size: 14px; font-weight: 900; border: 3px solid #1e293b; border-radius: 18px;
+            padding: 12px; width: 100%; cursor: pointer; box-shadow: 3.5px 3.5px 0 #1e293b;
+            margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 6px;
+            transition: transform 0.1s; z-index: 50;
         }
         .btn-ai-meal:active { transform: translate(2px, 2px); box-shadow: 1.5px 1.5px 0 #1e293b; }
 
         .quick-innovations-bar { display: flex; gap: 8px; margin-bottom: 12px; }
-        .btn-innovate-pill { 
-            flex: 1; padding: 8px 4px; font-size: 11px; font-weight: 900; border: 2px solid #1e293b; 
-            border-radius: 14px; background: #fff; color: #1e293b; cursor: pointer; 
-            box-shadow: 2px 2px 0 #1e293b; display: flex; align-items: center; justify-content: center; gap: 4px; 
+        .btn-innovate-pill {
+            flex: 1; padding: 8px 4px; font-size: 11px; font-weight: 900; border: 2px solid #1e293b;
+            border-radius: 14px; background: #fff; color: #1e293b; cursor: pointer;
+            box-shadow: 2px 2px 0 #1e293b; display: flex; align-items: center; justify-content: center; gap: 4px;
         }
         .btn-innovate-pill.active { background: #FF9F1C; color: #fff; }
 
         .cover-btn-group { display: flex; flex-direction: column; gap: 8px; width: 100%; z-index: 50; margin-bottom: 10px; }
-        .module-btn { 
-            display: block; width: 100%; padding: 11px 14px; color: #1e293b; font-size: 12.5px; 
-            font-weight: 800; border: 3px solid #1e293b; border-radius: 18px; cursor: pointer; 
-            box-shadow: 3px 3px 0 #1e293b; text-align: left; line-height: 1.35; transition: transform 0.1s; 
+        .module-btn {
+            display: block; width: 100%; padding: 11px 14px; color: #1e293b; font-size: 12.5px;
+            font-weight: 800; border: 3px solid #1e293b; border-radius: 18px; cursor: pointer;
+            box-shadow: 3px 3px 0 #1e293b; text-align: left; line-height: 1.35; transition: transform 0.1s;
         }
         .module-btn:active { transform: translate(2px, 2px); box-shadow: 1.5px 1.5px 0 #1e293b; }
         
@@ -150,47 +151,47 @@
         .btn-m3 { background-color: #FFB7B2; }
         .btn-m4 { background-color: #BFFCC6; }
 
-        .action-btn { 
-            display: block; width: 100%; padding: 13px; background-color: #FF9F1C; color: #1e293b; 
-            font-size: 14.5px; font-weight: 900; border: 3px solid #1e293b; border-radius: 18px; 
-            cursor: pointer; box-shadow: 3px 3px 0 #1e293b; text-align: center; position: relative; z-index: 50; 
+        .action-btn {
+            display: block; width: 100%; padding: 13px; background-color: #FF9F1C; color: #1e293b;
+            font-size: 14.5px; font-weight: 900; border: 3px solid #1e293b; border-radius: 18px;
+            cursor: pointer; box-shadow: 3px 3px 0 #1e293b; text-align: center; position: relative; z-index: 50;
         }
         .action-btn:active { transform: translate(2px, 2px); box-shadow: 1.5px 1.5px 0 #1e293b; }
         .end-card-box { background: white; border: 3px solid #1e293b; border-radius: 22px; padding: 14px; box-shadow: 4px 4px 0 #1e293b; margin-top: 10px; }
         
-        .header-title-container { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: calc(14px + env(safe-area-inset-top, 0px)) 18px 10px; 
+        .header-title-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: calc(14px + env(safe-area-inset-top, 0px)) 18px 10px;
         }
         .header-title { font-size: 17.5px; font-weight: 900; color: #1a1a1a; flex-shrink: 0; }
         .nav-btn-group { display: flex; align-items: center; gap: 6px; }
-        .nav-circle-btn { 
-            background: #ffffff; border: 2px solid #1e293b; border-radius: 50%; width: 36px; height: 36px; 
-            font-size: 13px; font-weight: 900; cursor: pointer; box-shadow: 2px 2px 0 #1e293b; 
-            display: flex; justify-content: center; align-items: center; color: #1e293b; 
+        .nav-circle-btn {
+            background: #ffffff; border: 2px solid #1e293b; border-radius: 50%; width: 36px; height: 36px;
+            font-size: 13px; font-weight: 900; cursor: pointer; box-shadow: 2px 2px 0 #1e293b;
+            display: flex; justify-content: center; align-items: center; color: #1e293b;
         }
         
-        .bottom-bar { 
-            position: absolute; 
-            bottom: 0; 
-            left: 0; 
-            width: 100%; 
-            height: calc(58px + env(safe-area-inset-bottom, 0px)); 
+        .bottom-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: calc(58px + env(safe-area-inset-bottom, 0px));
             padding-bottom: env(safe-area-inset-bottom, 0px);
-            background: #FFF; 
-            border-top: 3px solid #1e293b; 
-            display: flex; 
-            justify-content: space-around; 
-            align-items: center; 
-            z-index: 100; 
+            background: #FFF;
+            border-top: 3px solid #1e293b;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
             padding-left: 6px;
             padding-right: 6px;
         }
-        .bottom-bar-btn { 
-            font-size: 11.5px; font-weight: 900; color: #1e293b; background: none; border: none; 
-            cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; 
+        .bottom-bar-btn {
+            font-size: 11.5px; font-weight: 900; color: #1e293b; background: none; border: none;
+            cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px;
         }
         .bottom-bar-btn.voice-active { color: #dc2626; animation: voicePulse 1.2s infinite; }
         @keyframes voicePulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
@@ -204,56 +205,56 @@
         .target-input { width: 110px; padding: 4px 6px; border: 1.5px solid #1e293b; border-radius: 8px; font-size: 11.5px; font-weight: 800; text-align: center; }
 
         .recipe-list { padding: 0 16px; }
-        .recipe-card { 
-            height: auto; min-height: 130px; border-radius: 22px 14px 22px 22px; margin-bottom: 12px; 
-            position: relative; cursor: pointer; border: 2.5px solid #1e293b; box-shadow: 3.5px 3.5px 0 #1e293b; 
-            padding: 12px 95px 12px 14px; transition: all 0.2s; 
+        .recipe-card {
+            height: auto; min-height: 130px; border-radius: 22px 14px 22px 22px; margin-bottom: 12px;
+            position: relative; cursor: pointer; border: 2.5px solid #1e293b; box-shadow: 3.5px 3.5px 0 #1e293b;
+            padding: 12px 95px 12px 14px; transition: all 0.2s;
         }
         .recipe-card.completed-card { opacity: 0.9; }
-        .recipe-card.completed-card::after { 
-            content: "已練習 🏆"; position: absolute; right: 10px; top: 10px; background: #128C7E; 
-            color: white; padding: 2px 7px; font-size: 10px; font-weight: 900; border-radius: 8px; 
-            border: 1.5px solid #1e293b; box-shadow: 1.5px 1.5px 0 #1e293b; transform: rotate(3deg); 
+        .recipe-card.completed-card::after {
+            content: "已練習 🏆"; position: absolute; right: 10px; top: 10px; background: #128C7E;
+            color: white; padding: 2px 7px; font-size: 10px; font-weight: 900; border-radius: 8px;
+            border: 1.5px solid #1e293b; box-shadow: 1.5px 1.5px 0 #1e293b; transform: rotate(3deg);
         }
         .recipe-card.locked-card { opacity: 0.6; filter: grayscale(80%); pointer-events: none; }
-        .recipe-card.locked-card::after { 
-            content: "安全鎖定 🔒"; position: absolute; right: 10px; top: 10px; background: #DC2626; 
-            color: white; padding: 2px 7px; font-size: 10px; font-weight: 900; border-radius: 8px; 
-            border: 1.5px solid #1e293b; 
+        .recipe-card.locked-card::after {
+            content: "安全鎖定 🔒"; position: absolute; right: 10px; top: 10px; background: #DC2626;
+            color: white; padding: 2px 7px; font-size: 10px; font-weight: 900; border-radius: 8px;
+            border: 1.5px solid #1e293b;
         }
 
         .card-content { color: #1e293b; }
         .card-title-line1 { font-size: 11px; font-weight: 800; color: rgba(30, 41, 59, 0.75); letter-spacing: 0.5px; }
         .card-title-line2 { font-size: 14.5px; font-weight: 900; color: #1e293b; display: block; margin-top: 1px; margin-bottom: 3px; }
         .card-desc { font-size: 11px; font-weight: 600; opacity: 0.85; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-        .card-img-wrapper { 
-            position: absolute; right: 8px; bottom: 10px; width: 72px; height: 72px; 
-            border-radius: 50%; border: 2.5px solid #1e293b; box-shadow: 2px 2px 0 #1e293b; 
-            overflow: hidden; background: #fff; display: flex; justify-content: center; align-items: center; 
+        .card-img-wrapper {
+            position: absolute; right: 8px; bottom: 10px; width: 72px; height: 72px;
+            border-radius: 50%; border: 2.5px solid #1e293b; box-shadow: 2px 2px 0 #1e293b;
+            overflow: hidden; background: #fff; display: flex; justify-content: center; align-items: center;
         }
         .card-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
         
-        .detail-top-bar { 
-            height: calc(180px + env(safe-area-inset-top, 0px)); 
+        .detail-top-bar {
+            height: calc(180px + env(safe-area-inset-top, 0px));
             padding-top: env(safe-area-inset-top, 0px);
-            border-radius: 0 0 28px 28px; 
-            border-bottom: 3px solid #1e293b; 
-            position: relative; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            overflow: hidden; 
-            background-color: #FAF6F0; 
+            border-radius: 0 0 28px 28px;
+            border-bottom: 3px solid #1e293b;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background-color: #FAF6F0;
             flex-shrink: 0;
         }
-        .back-btn { 
-            position: absolute; 
-            left: 14px; 
-            top: calc(14px + env(safe-area-inset-top, 0px)); 
-            width: 36px; height: 36px; background-color: #FAF6F0; 
-            border: 2px solid #1e293b; border-radius: 50%; color: #1e293b; font-size: 17px; 
-            font-weight: 900; cursor: pointer; display: flex; justify-content: center; align-items: center; 
-            box-shadow: 2px 2px 0 #1e293b; z-index: 30; 
+        .back-btn {
+            position: absolute;
+            left: 14px;
+            top: calc(14px + env(safe-area-inset-top, 0px));
+            width: 36px; height: 36px; background-color: #FAF6F0;
+            border: 2px solid #1e293b; border-radius: 50%; color: #1e293b; font-size: 17px;
+            font-weight: 900; cursor: pointer; display: flex; justify-content: center; align-items: center;
+            box-shadow: 2px 2px 0 #1e293b; z-index: 30;
         }
         
         .detail-main-img { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; cursor: pointer; padding: 8px; }
@@ -262,71 +263,71 @@
         .img-action-badge { background: #FAF6F0; border: 2px solid #1e293b; padding: 4px 10px; font-size: 10.5px; font-weight: 800; border-radius: 12px; box-shadow: 2px 2px 0 #1e293b; cursor: pointer; }
 
         /* 原生地圖級燈箱檢視器 */
-        .lightbox-modal { 
-            display: none; 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100vw; 
-            height: 100vh; 
-            background-color: #0b0f19; 
-            z-index: 999999; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-            touch-action: none; 
-            user-select: none; 
+        .lightbox-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #0b0f19;
+            z-index: 999999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            touch-action: none;
+            user-select: none;
             overflow: hidden;
         }
         .lightbox-modal.active { display: flex; }
-        .lightbox-top-bar { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100vw; 
-            height: calc(55px + env(safe-area-inset-top, 0px)); 
+        .lightbox-top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: calc(55px + env(safe-area-inset-top, 0px));
             padding-top: env(safe-area-inset-top, 0px);
-            background: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent); 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding-left: 16px; 
-            padding-right: 16px; 
-            z-index: 1000001; 
+            background: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-left: 16px;
+            padding-right: 16px;
+            z-index: 1000001;
             pointer-events: auto;
         }
         .lightbox-title-text { color: #fff; font-size: 13.5px; font-weight: 800; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
-        .lightbox-close-btn { 
-            background: #fff; 
-            border: 2px solid #1e293b; 
-            border-radius: 16px; 
-            padding: 5px 12px; 
-            font-size: 12.5px; 
-            font-weight: 900; 
-            color: #1e293b; 
-            cursor: pointer; 
+        .lightbox-close-btn {
+            background: #fff;
+            border: 2px solid #1e293b;
+            border-radius: 16px;
+            padding: 5px 12px;
+            font-size: 12.5px;
+            font-weight: 900;
+            color: #1e293b;
+            cursor: pointer;
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
-        .lightbox-stage { 
-            width: 100vw; 
-            height: 100vh; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            overflow: hidden; 
-            position: relative; 
-            cursor: grab; 
+        .lightbox-stage {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            cursor: grab;
             touch-action: none;
         }
         .lightbox-stage:active { cursor: grabbing; }
         
-        .lightbox-img { 
-            width: 95vw; 
-            max-width: 1200px; 
-            max-height: 80vh; 
-            object-fit: contain; 
-            border-radius: 12px; 
-            transform-origin: center center; 
+        .lightbox-img {
+            width: 95vw;
+            max-width: 1200px;
+            max-height: 80vh;
+            object-fit: contain;
+            border-radius: 12px;
+            transform-origin: center center;
             touch-action: none;
             user-select: none;
             -webkit-user-drag: none;
@@ -334,40 +335,40 @@
             will-change: transform;
         }
 
-        .lightbox-bottom-toolbar { 
-            position: fixed; 
-            bottom: calc(20px + env(safe-area-inset-bottom, 0px)); 
-            left: 50%; 
-            transform: translateX(-50%); 
-            background: rgba(30, 41, 59, 0.94); 
-            border: 2px solid rgba(255, 255, 255, 0.25); 
-            border-radius: 26px; 
-            padding: 5px 12px; 
-            display: flex; 
-            align-items: center; 
-            gap: 6px; 
-            z-index: 1000001; 
+        .lightbox-bottom-toolbar {
+            position: fixed;
+            bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 41, 59, 0.94);
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            border-radius: 26px;
+            padding: 5px 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 1000001;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             backdrop-filter: blur(8px);
         }
-        .lb-tool-btn { 
-            background: #fff; 
-            color: #1e293b; 
-            border: 1.5px solid #1e293b; 
-            border-radius: 14px; 
-            padding: 5px 10px; 
-            font-size: 11.5px; 
-            font-weight: 900; 
-            cursor: pointer; 
+        .lb-tool-btn {
+            background: #fff;
+            color: #1e293b;
+            border: 1.5px solid #1e293b;
+            border-radius: 14px;
+            padding: 5px 10px;
+            font-size: 11.5px;
+            font-weight: 900;
+            cursor: pointer;
         }
 
-        /* AI 質地檢測報告彈窗 (IDDSI 國際標準色 + 人工校對選單) */
+        /* 🍽️ AI 質地檢測報告彈窗 (IDDSI 國際標準色 + 人工校對選單) */
         .meal-result-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.88); z-index: 30000; justify-content: center; align-items: center; padding: 16px; backdrop-filter: blur(5px); }
         .meal-result-modal.active { display: flex; }
         .meal-result-card { background: #FAF6F0; border: 4px solid #1e293b; border-radius: 26px; width: 100%; max-width: 375px; padding: 18px; box-shadow: 6px 6px 0 #1e293b; display: flex; flex-direction: column; gap: 8px; max-height: 90vh; overflow-y: auto; }
         
         .meal-badge-level {
-            font-size: 15px; font-weight: 900; padding: 6px 16px; border-radius: 14px; 
+            font-size: 15px; font-weight: 900; padding: 6px 16px; border-radius: 14px;
             border: 2px solid #1e293b; display: inline-block; box-shadow: 2px 2px 0 #1e293b;
             letter-spacing: 0.5px;
         }
@@ -415,7 +416,7 @@
         
         .btn-action-tool { width: 100%; padding: 11px; font-size: 13px; font-weight: 900; border: 2px solid #1e293b; border-radius: 14px; cursor: pointer; box-shadow: 2px 2px 0 #1e293b; display: flex; align-items: center; justify-content: center; gap: 6px; background-color: #A0E7E5; color: #1e293b; transition: all 0.15s ease; }
         .btn-action-tool:active { transform: translate(1.5px, 1.5px); box-shadow: 1px 1px 0 #1e293b; }
-        .speech-feedback-pill { font-size: 12px; font-weight: 800; color: #0369A1; background: #E0F2FE; border: 1.5px solid #0284C7; padding: 7px 10px; border-radius: 10px; text-align: center; display: none; line-height: 1.45; }
+        .speech-feedback-pill { font-size: 12px; font-weight: 800; padding: 8px 12px; border-radius: 12px; text-align: center; display: none; line-height: 1.45; border: 2px solid transparent; }
 
         .symptom-log-box { margin-top: 10px; background: #FEF3C7; border: 2px solid #F59E0B; border-radius: 14px; padding: 10px; }
         .symptom-title { font-size: 12px; font-weight: 900; color: #78350F; margin-bottom: 5px; }
@@ -863,14 +864,14 @@
             console.warn("Firebase 啟動提示 (離線依然可運作):", fbErr);
         }
 
-        const getStorageUrl = (fileName) => 
+        const getStorageUrl = (fileName) =>
             `https://firebasestorage.googleapis.com/v0/b/lohas-st-training-sandbox.firebasestorage.app/o/${encodeURIComponent('training_assets/' + fileName)}?alt=media`;
 
         window.currentUser = null;
         window.isPureOfflineMode = localStorage.getItem('lohas_pure_offline_mode') === 'true';
         window.isCloudSyncEnabled = !window.isPureOfflineMode;
         window.isHighRiskLocked = localStorage.getItem('lohas_risk_locked') === 'true';
-        window.uploadTargetMode = "cover"; 
+        window.uploadTargetMode = "cover";
         window.currentActiveCourse = null;
         window.currentCategoryId = '1';
         window.dbImageCache = {};
@@ -1472,7 +1473,7 @@
         window.getCalibratedHistoryPrompt = function() {
             const list = JSON.parse(localStorage.getItem('calibrated_meal_records') || '[]');
             if (list.length === 0) return "";
-            return list.slice(0, 5).map((item, idx) => 
+            return list.slice(0, 5).map((item, idx) =>
                 `${idx + 1}. 餐膳「${item.food}」經實測標準等級為【${item.iddsi_level}】`
             ).join("\n");
         };
@@ -1633,7 +1634,7 @@
         window.toggleHandsFreeVoiceNav = function() {
             const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRec) {
-                alert("提示：iOS 限制 App 內網頁不可使用連續聲控，請使用畫面觸控按鈕進行操作！");
+                alert("提示：此環境不支援連續聲控，請使用畫面按鈕操作。");
                 return;
             }
 
@@ -1708,14 +1709,14 @@
             }
         }
 
-        // 廣東話短音同音字與模糊辨識容錯對照表
+        // 廣東話短音同音字容錯對照表
         const CANTONESE_HOMOPHONE_MAP = {
             '用力吞': ['用力吞', '用力', '力吞', '吞', '痛', '通'],
             '下巴壓球': ['下巴壓球', '下巴', '壓球', '低頭'],
             '低頭壓球': ['低頭壓球', '低頭', '壓球'],
             '伸舌吞': ['伸舌吞', '伸舌', '吞'],
             '張口吞': ['張口吞', '張口', '張嘴', '開口'],
-            '伊': ['伊', '一', '依', '衣', '醫', 'E', 'e', '1', '二', '易', '煙', '微'],
+            '伊': ['伊', '一', '依', '衣', '醫', 'E', 'e', '1', '二', '易', '煙'],
             '低頭吞': ['低頭吞', '低頭', '吞'],
             '憋氣吞': ['憋氣吞', '憋氣', '閉氣', '吞'],
             '提喉結': ['提喉結', '喉結', '提喉'],
@@ -1724,7 +1725,7 @@
             '伸舌頭': ['伸舌頭', '舌頭', '伸舌'],
             '左右動': ['左右動', '左右', '動'],
             '頂上顎': ['頂上顎', '上顎', '頂上', '頂顎'],
-            '咔': ['咔', '卡', '㗎', 'Ka', 'ka', 'car', '下', '架', '嘉', '家'],
+            '咔': ['咔', '卡', '㗎', 'Ka', 'ka', 'car', '下', '架', '嘉'],
             '舔一圈': ['舔一圈', '一圈', '舔'],
             '噠': ['噠', '達', '嗒', '大', 'Ta', 'ta', '打', '得', '搭'],
             '嗚': ['嗚', '烏', '污', '湖', 'Wu', 'wu', '話', '五', '屋'],
@@ -1745,15 +1746,18 @@
             if (clean.includes(target) || target.includes(clean)) return true;
 
             const allowed = CANTONESE_HOMOPHONE_MAP[targetWord] || [];
-            return allowed.some(candidate => 
+            return allowed.some(candidate =>
                 clean.includes(candidate.toLowerCase()) || candidate.toLowerCase().includes(clean)
             );
         }
 
-        // 語音辨識反饋練習 (切斷 TTS 雜音 + 支援實體麥克風音量感應)
+        let activeRecognitionInstance = null;
+
+        // 🎙️ 嚴格語音文字辨識（辨識成功才通過，講錯或無聲絕不放行）
         window.startBiofeedbackPractice = function(targetWord) {
+            // 立即停止所有正播放的朗讀聲音，防止喇叭輸出被麥克風接收
             if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel(); // 立即靜音，避免喇叭聲音干擾麥克風
+                window.speechSynthesis.cancel();
             }
 
             const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1761,84 +1765,95 @@
             const btn = document.getElementById('btnSttAction');
             const pill = document.getElementById('speechFeedbackPill');
 
-            btn.innerText = `🛑 正在聆聽... 請大聲發出「${targetWord}」`;
+            if (!SpeechRec) {
+                alert("此瀏覽器環境未開啟語音辨識功能，請使用 Chrome 或 Safari 開啟測試。");
+                return;
+            }
+
+            if (activeRecognitionInstance) {
+                try { activeRecognitionInstance.abort(); } catch(e) {}
+                activeRecognitionInstance = null;
+            }
+
+            const rec = new SpeechRec();
+            activeRecognitionInstance = rec;
+            rec.lang = 'zh-HK';
+            rec.continuous = false;
+            rec.interimResults = false;
+            rec.maxAlternatives = 5;
+
+            btn.innerText = `🛑 正在聆聽... 請發出「${targetWord}」`;
             btn.style.backgroundColor = "#FDE047";
             wave.style.visibility = "visible";
             pill.style.display = "none";
 
-            // 模式 A：支援 Web Speech API (Mac / 桌面瀏覽器)
-            if (SpeechRec) {
-                try {
-                    const rec = new SpeechRec();
-                    rec.lang = 'zh-HK';
-                    rec.continuous = false;
-                    rec.interimResults = false;
-                    rec.maxAlternatives = 5;
-
-                    rec.onresult = (e) => {
-                        wave.style.visibility = "hidden";
-                        pill.style.display = "block";
-                        btn.style.backgroundColor = "#A0E7E5";
-                        btn.innerText = "按此再次練習 🎙️";
-
-                        let candidates = [];
-                        for (let i = 0; i < e.results[0].length; i++) {
-                            candidates.push(e.results[0][i].transcript.trim());
-                        }
-                        const primaryResult = candidates[0] || "";
-                        const isMatch = candidates.some(text => isPronunciationMatch(text, targetWord));
-
-                        if (isMatch) {
-                            pill.innerHTML = `🌟 <strong>發音準確清晰！</strong><br>識別結果：「${primaryResult}」<br>喉咽閉合爆發力完全達標！`;
-                            speakVoiceCoach("讀得好準！發音好清晰，閉合非常穩！");
-                            unlockBadge('b5');
-                        } else {
-                            pill.innerHTML = `💡 識別結果：「${primaryResult}」<br>目標發音為：「${targetWord}」，請再試一次！`;
-                            speakVoiceCoach("雙唇再抿緊一點，我們再來一次！");
-                        }
-                    };
-
-                    rec.onerror = (e) => {
-                        runAudioFallback(targetWord);
-                    };
-
-                    rec.start();
-                    return;
-                } catch(err) {
-                    runAudioFallback(targetWord);
-                }
-            } else {
-                runAudioFallback(targetWord);
-            }
-        };
-
-        async function runAudioFallback(targetWord) {
-            const wave = document.getElementById('liveWave');
-            const btn = document.getElementById('btnSttAction');
-            const pill = document.getElementById('speechFeedbackPill');
-
-            let stream = null;
-            try {
-                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                    stream = await navigator.mediaDevices.getUserMedia({ 
-                        audio: { echoCancellation: true, noiseSuppression: true } 
-                    });
-                }
-            } catch(e) {}
-
-            setTimeout(() => {
-                if (stream) {
-                    stream.getTracks().forEach(t => t.stop());
-                }
+            rec.onresult = (e) => {
                 wave.style.visibility = "hidden";
                 pill.style.display = "block";
                 btn.style.backgroundColor = "#A0E7E5";
-                pill.innerHTML = `🌟 <strong>發音肌力達標！</strong><br>目標練習：「${targetWord}」<br>喉咽與舌唇發力充足，吞嚥防護力加分！`;
-                speakVoiceCoach("好犀利！發音力量好充足，喉頭閉合完全達標！");
                 btn.innerText = "按此再次練習 🎙️";
-                unlockBadge('b5');
-            }, 2600);
-        }
+
+                let recognizedCandidates = [];
+                for (let i = 0; i < e.results[0].length; i++) {
+                    recognizedCandidates.push(e.results[0][i].transcript.trim());
+                }
+                const primaryResult = recognizedCandidates[0] || "";
+
+                // 檢查是否有任一候選字符合目標詞或廣東話同音字
+                const matched = recognizedCandidates.some(txt => isPronunciationMatch(txt, targetWord));
+
+                if (matched) {
+                    pill.style.backgroundColor = "#DCFCE7";
+                    pill.style.borderColor = "#16A34A";
+                    pill.style.color = "#166534";
+                    pill.innerHTML = `🌟 <strong>發音準確清晰！</strong><br>識別結果：「${primaryResult}」<br>完全符合目標「${targetWord}」，發力極佳！`;
+                    speakVoiceCoach("讀得好準！發音好清晰，閉合非常穩！");
+                    unlockBadge('b5');
+                } else {
+                    pill.style.backgroundColor = "#FEF2F2";
+                    pill.style.borderColor = "#EF4444";
+                    pill.style.color = "#991B1B";
+                    pill.innerHTML = `❌ <strong>發音不符，請重試！</strong><br>剛才識別為：「${primaryResult}」<br>目標發音應為：「${targetWord}」，請看清示範再試一次！`;
+                    speakVoiceCoach(`聽出係${primaryResult}。請雙唇用力，再試一次讀${targetWord}！`);
+                }
+                activeRecognitionInstance = null;
+            };
+
+            rec.onerror = (e) => {
+                wave.style.visibility = "hidden";
+                btn.style.backgroundColor = "#A0E7E5";
+                btn.innerText = "按此重新開始練習 🎙️";
+                pill.style.display = "block";
+                pill.style.backgroundColor = "#FEF2F2";
+                pill.style.borderColor = "#EF4444";
+                pill.style.color = "#991B1B";
+
+                if (e.error === 'no-speech') {
+                    pill.innerHTML = `⚠️ <strong>未偵測到聲音</strong><br>請靠近麥克風，大聲清晰讀出「${targetWord}」！`;
+                    speakVoiceCoach(`聽唔到聲音。請靠近少少，大聲讀出${targetWord}！`);
+                } else if (e.error === 'not-allowed') {
+                    pill.innerHTML = `⚠️ <strong>麥克風存取被拒絕</strong><br>請在系統或瀏覽器設定中允許取用麥克風。`;
+                } else {
+                    pill.innerHTML = `⚠️ <strong>收音辨識未成功 (${e.error})</strong><br>請按按鈕重新嘗試。`;
+                }
+                activeRecognitionInstance = null;
+            };
+
+            rec.onnomatch = () => {
+                wave.style.visibility = "hidden";
+                btn.style.backgroundColor = "#A0E7E5";
+                btn.innerText = "按此再次練習 🎙️";
+                pill.style.display = "block";
+                pill.style.backgroundColor = "#FEF2F2";
+                pill.style.borderColor = "#EF4444";
+                pill.style.color = "#991B1B";
+                pill.innerHTML = `❌ <strong>未能聽清內容</strong><br>請大聲、清晰發出「${targetWord}」！`;
+                speakVoiceCoach(`未能聽清。請雙唇抿緊，大聲讀出${targetWord}！`);
+                activeRecognitionInstance = null;
+            };
+
+            rec.start();
+        };
 
         function unlockBadge(badgeId) {
             const badge = window.badgeList.find(b => b.id === badgeId);
@@ -2196,7 +2211,7 @@
             }
         });
 
-        // 原生地圖級圖片縮放引擎 (支援捏合、平移、雙擊)
+        // 原生地圖級圖片縮放引擎
         let lbScale = 1, lbRotation = 0, lbPosX = 0, lbPosY = 0;
         let isDragging = false, isPinching = false;
         let startDist = 0, initialScale = 1;
@@ -2210,28 +2225,28 @@
             img.style.transform = `translate(${lbPosX}px, ${lbPosY}px) rotate(${lbRotation}deg) scale(${lbScale})`;
         }
 
-        window.zoomInImage = () => { 
-            lbScale = Math.min(lbScale * 1.35, 6.0); 
-            applyLbTransform(true); 
+        window.zoomInImage = () => {
+            lbScale = Math.min(lbScale * 1.35, 6.0);
+            applyLbTransform(true);
         };
 
-        window.zoomOutImage = () => { 
-            lbScale = Math.max(lbScale / 1.35, 0.8); 
-            if (lbScale <= 1.05) { lbScale = 1; lbPosX = 0; lbPosY = 0; } 
-            applyLbTransform(true); 
+        window.zoomOutImage = () => {
+            lbScale = Math.max(lbScale / 1.35, 0.8);
+            if (lbScale <= 1.05) { lbScale = 1; lbPosX = 0; lbPosY = 0; }
+            applyLbTransform(true);
         };
 
-        window.rotateImage = () => { 
-            lbRotation = (lbRotation + 90) % 360; 
-            applyLbTransform(true); 
+        window.rotateImage = () => {
+            lbRotation = (lbRotation + 90) % 360;
+            applyLbTransform(true);
         };
 
-        window.resetImageTransform = (animate = true) => { 
-            lbScale = 1; 
-            lbRotation = 0; 
-            lbPosX = 0; 
-            lbPosY = 0; 
-            applyLbTransform(animate); 
+        window.resetImageTransform = (animate = true) => {
+            lbScale = 1;
+            lbRotation = 0;
+            lbPosX = 0;
+            lbPosY = 0;
+            applyLbTransform(animate);
         };
 
         function initLightboxGestures() {
@@ -2354,8 +2369,8 @@
         };
 
         window.acceptComplianceTerms = function() {
-            const lock = document.getElementById('chkRiskTrach').checked || 
-                         document.getElementById('chkRiskDementia').checked || 
+            const lock = document.getElementById('chkRiskTrach').checked ||
+                         document.getElementById('chkRiskDementia').checked ||
                          document.getElementById('chkRiskBP').checked;
             window.isHighRiskLocked = lock;
             localStorage.setItem('lohas_risk_locked', lock ? 'true' : 'false');
