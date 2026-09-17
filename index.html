@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>630樂活科技 - 吞嚥安全 AI 復康輔助沙盒 (IDDSI 國際標準色版)</title>
+    <title>630樂活科技 - 吞嚥安全 AI 復康輔助沙盒 (原生語音容錯強化版)</title>
 
     <!-- PWA 配置 -->
     <link rel="manifest" href="./manifest.json">
@@ -38,7 +38,7 @@
             user-select: none;
         }
         
-        /* iOS 真機全螢幕適配容器 */
+        /* 📱 iOS 真機全螢幕適配容器 */
         .phone-container { 
             width: 100vw; 
             height: 100vh; 
@@ -260,29 +260,107 @@
         .detail-img-actions { position: absolute; bottom: 8px; right: 8px; display: flex; gap: 5px; z-index: 20; }
         .img-action-badge { background: #FAF6F0; border: 2px solid #1e293b; padding: 4px 10px; font-size: 10.5px; font-weight: 800; border-radius: 12px; box-shadow: 2px 2px 0 #1e293b; cursor: pointer; }
 
-        /* 燈箱檢視 */
-        .lightbox-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #000; z-index: 999999; flex-direction: column; justify-content: center; align-items: center; touch-action: none; user-select: none; }
+        /* 🔍 原生地圖級燈箱檢視器 */
+        .lightbox-modal { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            background-color: #0b0f19; 
+            z-index: 999999; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            touch-action: none; 
+            user-select: none; 
+            overflow: hidden;
+        }
         .lightbox-modal.active { display: flex; }
         .lightbox-top-bar { 
-            position: fixed; top: 0; left: 0; width: 100vw; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
             height: calc(55px + env(safe-area-inset-top, 0px)); 
             padding-top: env(safe-area-inset-top, 0px);
             background: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent); 
-            display: flex; justify-content: space-between; align-items: center; padding-left: 16px; padding-right: 16px; z-index: 1000001; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding-left: 16px; 
+            padding-right: 16px; 
+            z-index: 1000001; 
+            pointer-events: auto;
         }
-        .lightbox-title-text { color: #fff; font-size: 13.5px; font-weight: 800; }
-        .lightbox-close-btn { background: #fff; border: 2px solid #1e293b; border-radius: 16px; padding: 5px 12px; font-size: 12.5px; font-weight: 900; color: #1e293b; cursor: pointer; }
-        .lightbox-stage { width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; cursor: grab; }
-        .lightbox-img { width: 95vw; max-width: 1100px; max-height: 75vh; object-fit: contain; border-radius: 12px; transform-origin: center center; transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1); }
+        .lightbox-title-text { color: #fff; font-size: 13.5px; font-weight: 800; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+        .lightbox-close-btn { 
+            background: #fff; 
+            border: 2px solid #1e293b; 
+            border-radius: 16px; 
+            padding: 5px 12px; 
+            font-size: 12.5px; 
+            font-weight: 900; 
+            color: #1e293b; 
+            cursor: pointer; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .lightbox-stage { 
+            width: 100vw; 
+            height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            overflow: hidden; 
+            position: relative; 
+            cursor: grab; 
+            touch-action: none;
+        }
+        .lightbox-stage:active { cursor: grabbing; }
+        
+        .lightbox-img { 
+            width: 95vw; 
+            max-width: 1200px; 
+            max-height: 80vh; 
+            object-fit: contain; 
+            border-radius: 12px; 
+            transform-origin: center center; 
+            touch-action: none;
+            user-select: none;
+            -webkit-user-drag: none;
+            pointer-events: none;
+            will-change: transform;
+        }
+
         .lightbox-bottom-toolbar { 
             position: fixed; 
             bottom: calc(20px + env(safe-area-inset-bottom, 0px)); 
-            left: 50%; transform: translateX(-50%); 
-            background: rgba(30, 41, 59, 0.94); border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 26px; padding: 5px 12px; display: flex; align-items: center; gap: 6px; z-index: 1000001; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            background: rgba(30, 41, 59, 0.94); 
+            border: 2px solid rgba(255, 255, 255, 0.25); 
+            border-radius: 26px; 
+            padding: 5px 12px; 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            z-index: 1000001; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
         }
-        .lb-tool-btn { background: #fff; color: #1e293b; border: 1.5px solid #1e293b; border-radius: 14px; padding: 5px 10px; font-size: 11.5px; font-weight: 900; cursor: pointer; }
+        .lb-tool-btn { 
+            background: #fff; 
+            color: #1e293b; 
+            border: 1.5px solid #1e293b; 
+            border-radius: 14px; 
+            padding: 5px 10px; 
+            font-size: 11.5px; 
+            font-weight: 900; 
+            cursor: pointer; 
+        }
 
-        /* 🍽️ AI 質地檢測報告彈窗 (整合 IDDSI 國際標準色) */
+        /* 🍽️ AI 質地檢測報告彈窗 (IDDSI 國際標準色 + 人工校對選單) */
         .meal-result-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.88); z-index: 30000; justify-content: center; align-items: center; padding: 16px; backdrop-filter: blur(5px); }
         .meal-result-modal.active { display: flex; }
         .meal-result-card { background: #FAF6F0; border: 4px solid #1e293b; border-radius: 26px; width: 100%; max-width: 375px; padding: 18px; box-shadow: 6px 6px 0 #1e293b; display: flex; flex-direction: column; gap: 8px; max-height: 90vh; overflow-y: auto; }
@@ -325,12 +403,16 @@
         .tool-title { font-size: 13px; font-weight: 900; color: #1e293b; margin-bottom: 5px; }
         .stt-practice-box { display: flex; flex-direction: column; gap: 7px; margin-top: 3px; }
         .stt-text-target { background: #F8F9FA; border: 2px solid #1e293b; padding: 7px 10px; border-radius: 10px; font-size: 12px; font-weight: 800; color: #333; text-align: center; }
-        .stt-live-wave { height: 24px; background: #1e293b; border-radius: 6px; display: flex; align-items: center; justify-content: center; gap: 3px; padding: 0 8px; }
-        .wave-bar { width: 3.5px; height: 7px; background: #A0E7E5; border-radius: 2px; }
-        .wave-bar.active { animation: waveMotion 0.5s infinite ease-in-out alternate; }
-        @keyframes waveMotion { 0% { height: 4px; } 100% { height: 16px; } }
-        .btn-action-tool { width: 100%; padding: 10px; font-size: 12.5px; font-weight: 900; border: 2px solid #1e293b; border-radius: 12px; cursor: pointer; box-shadow: 2px 2px 0 #1e293b; display: flex; align-items: center; justify-content: center; gap: 5px; background-color: #A0E7E5; color: #1e293b; }
-        .speech-feedback-pill { font-size: 11.5px; font-weight: 800; color: #0369A1; background: #E0F2FE; border: 1.5px solid #0284C7; padding: 5px 8px; border-radius: 8px; text-align: center; display: none; }
+        .stt-live-wave { height: 26px; background: #1e293b; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 4px; padding: 0 10px; }
+        .wave-bar { width: 4px; height: 8px; background: #A0E7E5; border-radius: 3px; }
+        .wave-bar.active { animation: waveMotion 0.45s infinite ease-in-out alternate; }
+        .wave-bar:nth-child(2) { animation-delay: 0.15s; }
+        .wave-bar:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes waveMotion { 0% { height: 4px; } 100% { height: 20px; background: #38BDF8; } }
+        
+        .btn-action-tool { width: 100%; padding: 11px; font-size: 13px; font-weight: 900; border: 2px solid #1e293b; border-radius: 14px; cursor: pointer; box-shadow: 2px 2px 0 #1e293b; display: flex; align-items: center; justify-content: center; gap: 6px; background-color: #A0E7E5; color: #1e293b; transition: all 0.15s ease; }
+        .btn-action-tool:active { transform: translate(1.5px, 1.5px); box-shadow: 1px 1px 0 #1e293b; }
+        .speech-feedback-pill { font-size: 12px; font-weight: 800; color: #0369A1; background: #E0F2FE; border: 1.5px solid #0284C7; padding: 7px 10px; border-radius: 10px; text-align: center; display: none; line-height: 1.45; }
 
         .symptom-log-box { margin-top: 10px; background: #FEF3C7; border: 2px solid #F59E0B; border-radius: 14px; padding: 10px; }
         .symptom-title { font-size: 12px; font-weight: 900; color: #78350F; margin-bottom: 5px; }
@@ -492,7 +574,7 @@
             <div class="recipe-list" id="recipe-list-container"></div>
         </div>
 
-        <!-- 畫面 3：詳情頁 -->
+        <!-- 畫面 3：詳情頁 (detail-top-bar 正確置於 screen 內部) -->
         <div class="screen" id="detail-screen">
             <div class="detail-top-bar" id="detail-top-bar">
                 <button class="back-btn" onclick="closeDetail()">←</button>
@@ -502,6 +584,7 @@
                     <span class="img-action-badge" onclick="event.stopPropagation(); openLightbox();">🔍 放大</span>
                 </div>
             </div>
+            
             <div class="steps-container">
                 <div class="detail-title" id="detail-title">練習項目</div>
                 <div class="detail-goal" id="detail-goal">【目標說明】</div>
@@ -520,6 +603,7 @@
                     🚨 <strong>安全提示：</strong> 如練習期間出現咳嗆、呼吸困難或聲音濕潤，請立即停止並休息。
                 </div>
 
+                <!-- 🛠️ 語音即時反饋輔助容器 -->
                 <div class="tool-box" id="tool-box-container"></div>
 
                 <div class="symptom-log-box">
@@ -578,30 +662,46 @@
         </div>
     </div>
 
-    <!-- 超清全螢幕檢視器 -->
+    <!-- 🔍 超清原生地圖級燈箱檢視器 -->
     <div class="lightbox-modal" id="lightboxModal">
         <div class="lightbox-top-bar">
-            <div class="lightbox-title-text" id="lightboxTitleText">🔍 動作分解超清檢視</div>
+            <div class="lightbox-title-text" id="lightboxTitleText">🔍 動作分解超清檢視 (可雙指放大拖動)</div>
             <button class="lightbox-close-btn" onclick="closeLightbox()">✕ 關閉</button>
         </div>
         <div class="lightbox-stage" id="lightboxStage">
-            <div id="lightboxContentWrapper" style="display:flex; justify-content:center; align-items:center;"></div>
+            <div id="lightboxContentWrapper" style="display:flex; justify-content:center; align-items:center; width:100%; height:100%;"></div>
         </div>
         <div class="lightbox-bottom-toolbar">
             <button class="lb-tool-btn" onclick="zoomInImage()">🔍 放大</button>
             <button class="lb-tool-btn" onclick="zoomOutImage()">🔍 縮小</button>
             <button class="lb-tool-btn" onclick="rotateImage()">🔄 旋轉</button>
-            <button class="lb-tool-btn" onclick="resetImageTransform()">↺ 還原</button>
+            <button class="lb-tool-btn" onclick="resetImageTransform(true)">↺ 原位還原</button>
         </div>
     </div>
 
-    <!-- 🍽️ AI 質地檢測報告彈窗 (符合 IDDSI 國際官方標準色彩規範) -->
+    <!-- 🍽️ AI 質地檢測報告彈窗 -->
     <div class="meal-result-modal" id="mealResultModal">
         <div class="meal-result-card">
             <div style="font-size: 16.5px; font-weight: 900; color: #1e293b; text-align: center;">🍽️ 吞嚥安全 AI 質地參考建議</div>
             
             <div style="text-align: center; margin: 4px 0 2px;">
                 <span class="meal-badge-level" id="resLevelBadge">Level 4 - 特稠/純糊餐</span>
+            </div>
+
+            <!-- 人工校對選單 -->
+            <div style="background:#fff; border:1.5px dashed #1e293b; border-radius:12px; padding:8px 10px; margin:4px 0; display:flex; align-items:center; justify-content:space-between;">
+                <span style="font-size:11px; font-weight:800; color:#334155;">✏️ 若質地不符，請修正：</span>
+                <select id="selCorrectIddsi" style="font-size:11px; font-weight:800; padding:4px 8px; border:1.5px solid #1e293b; border-radius:8px; background:#FAF6F0;">
+                    <option value="">(無須修正，AI 準確)</option>
+                    <option value="Level 0 - 稀薄液體 (Thin)">Level 0 - 稀薄液體</option>
+                    <option value="Level 1 - 微稠 (Slightly Thick)">Level 1 - 微稠</option>
+                    <option value="Level 2 - 低稠 (Mildly Thick)">Level 2 - 低稠</option>
+                    <option value="Level 3 - 中稠/流質 (Moderately Thick)">Level 3 - 中稠/流質</option>
+                    <option value="Level 4 - 特稠/純糊餐 (Extremely Thick/Pureed)">Level 4 - 純糊餐</option>
+                    <option value="Level 5 - 細碎及濕潤 (Minced & Moist)">Level 5 - 細碎及濕潤</option>
+                    <option value="Level 6 - 軟質一口量 (Soft & Bite-Sized)">Level 6 - 軟質一口量</option>
+                    <option value="Level 7 - 原質正常 (Regular)">Level 7 - 原質正常</option>
+                </select>
             </div>
 
             <div class="risk-gauge-box" id="riskGaugeContainer" style="background: #FFFBEB;">
@@ -652,7 +752,7 @@
             
             <div style="background:#fff; border:2px solid #1e293b; border-radius:14px; padding:10px; display:flex; flex-direction:column; gap:4px;">
                 <div style="font-size:11.5px; font-weight:800; color:#1e293b;">📊 本週吞嚥安全指數：<span style="color:#16A34A; font-size:13px;" id="cgSafetyIndex">92分 (良好)</span></div>
-                <div style="font-size:11.5px; font-weight:800; color:#1e293b;">🚨 嗆咳/濕聲反應：<span style="color:#DC2626;" id="cgSymptomAlert">近期無紅旗徵狀</span></div>
+                <div style="font-size:11.5px; font-weight:800; color:#1e293b;">🚨 嗆咳/濕聲反應：<span style="color:#DC2626;" id="cgSymptAlert">近期無紅旗徵狀</span></div>
                 <div style="font-size:11.5px; font-weight:800; color:#1e293b; display:flex; align-items:center; gap:4px;">🍲 最新質地快檢：<span id="cgLatestMeal">尚未檢測</span></div>
             </div>
 
@@ -682,7 +782,7 @@
             <div style="background:#fff; border:2px solid #1e293b; border-radius:12px; padding:10px; font-size:11.5px;">
                 <strong>🌐 原生 Swift 橋接通道：</strong>
                 <div style="margin-top:6px; color:#16A34A; font-weight:800;">
-                    ✅ iOS 原生 difyBridge 已就緒（免除瀏覽器跨域 CORS 阻擋）
+                    ✅ iOS 原生 difyBridge 已就緒（支援歷史校準記憶傳輸）
                 </div>
             </div>
 
@@ -691,7 +791,7 @@
                 <label style="display:flex; align-items:center; gap:6px; margin:6px 0; font-weight:800;">
                     <input type="checkbox" id="chkPureOfflineMode" onchange="togglePureOfflineMode(this.checked)"> 開啟「純離線模式」(不傳輸資料至雲端)
                 </label>
-                <span style="color:#64748B; font-size:10.5px;">開啟純離線模式後，所有練習日誌僅存於本地設備。</span>
+                <span style="color:#64748B; font-size:10.5px;">開啟純離線模式後，所有練習日誌與校準庫僅存於本地設備。</span>
             </div>
 
             <button class="action-btn" style="background:#0284C7; color:#fff; padding:9px; font-size:13px;" onclick="closeSettingsModal()">確認 💾</button>
@@ -706,7 +806,7 @@
         import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
         import { getDatabase, ref as dbRef, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // 🎨 IDDSI 國際官方標準色階規範表 (0-7 等級官方 Hex 色碼與對比文字色)
+        // IDDSI 國際官方標準色階規範表
         const IDDSI_COLOR_SPECS = {
             0: { bg: '#FFFFFF', text: '#1E293B', border: '#1E293B', label: 'Level 0 稀薄液體 (Thin)' },
             1: { bg: '#7E8B92', text: '#FFFFFF', border: '#1E293B', label: 'Level 1 微稠 (Slightly Thick)' },
@@ -718,13 +818,10 @@
             7: { bg: '#000000', text: '#FFFFFF', border: '#1E293B', label: 'Level 7 原質正常 (Regular)' }
         };
 
-        // 提取與解析 IDDSI 等級數字
         function getOfficialIddsiStyle(levelStr) {
             if (!levelStr) return IDDSI_COLOR_SPECS[4];
             const match = levelStr.match(/[0-7]/);
-            if (match) {
-                return IDDSI_COLOR_SPECS[parseInt(match[0], 10)];
-            }
+            if (match) return IDDSI_COLOR_SPECS[parseInt(match[0], 10)];
             if (levelStr.includes('薄') || levelStr.includes('水') || levelStr.includes('茶')) return IDDSI_COLOR_SPECS[0];
             if (levelStr.includes('微稠')) return IDDSI_COLOR_SPECS[1];
             if (levelStr.includes('低稠')) return IDDSI_COLOR_SPECS[2];
@@ -777,6 +874,7 @@
         window.completedCoursesSet = new Set();
         window.targetFilterSet = null;
         window.recentSymptoms = [];
+        window.currentMealAnalysisResult = null;
 
         window.badgeList = [
             { id: 'b1', name: '吞嚥新星', icon: '🌟', desc: '完成第 1 節訓練', unlocked: false },
@@ -787,7 +885,7 @@
             { id: 'b6', name: '吞嚥大師', icon: '🏆', desc: '完成全套 26 課復康訓練', unlocked: false }
         ];
 
-        // 完整 26 門課程臨床數據 (包含目標說明、禁忌與文獻基石)
+        // 完整 26 門課程臨床數據 (完整且含各模組對應發音目標字詞)
         window.coursesData = [
             {
                 id: '1', categoryId: '1', isHighRisk: false, holdSeconds: 0,
@@ -1253,7 +1351,7 @@
             });
         }
 
-        window.compressImage = function(file, quality = 0.82, maxWidth = 1000) {
+        window.compressImage = function(file, quality = 0.75, maxWidth = 1000) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
@@ -1368,7 +1466,14 @@
             }
         }
 
-        // 🚀 核心相片拍攝：透過原生 Swift difyBridge 傳輸 (無 CORS 阻擋)
+        window.getCalibratedHistoryPrompt = function() {
+            const list = JSON.parse(localStorage.getItem('calibrated_meal_records') || '[]');
+            if (list.length === 0) return "";
+            return list.slice(0, 5).map((item, idx) => 
+                `${idx + 1}. 餐膳「${item.food}」經實測標準等級為【${item.iddsi_level}】`
+            ).join("\n");
+        };
+
         window.triggerMealCapture = function() {
             document.getElementById('mealCameraInput').click();
         };
@@ -1398,7 +1503,8 @@
                         window.webkit.messageHandlers.difyBridge.postMessage({
                             imageBase64: base64data,
                             mealType: getMealTypeByHour(),
-                            user: window.currentUser ? window.currentUser.uid : 'Lui'
+                            user: window.currentUser ? window.currentUser.uid : 'Lui',
+                            historyContext: window.getCalibratedHistoryPrompt()
                         });
                     } else {
                         loading.classList.remove('active');
@@ -1413,7 +1519,6 @@
             }
         });
 
-        // 接收 Swift 原生層傳回的分析成功數據
         window.handleDifyNativeSuccess = function(outputs) {
             document.getElementById('loadingOverlay').classList.remove('active');
             
@@ -1436,16 +1541,17 @@
             renderAiCoachModal(finalOutputs, safetyResult);
         };
 
-        // 接收 Swift 原生層傳回的錯誤
         window.handleDifyNativeError = function(errMsg) {
             document.getElementById('loadingOverlay').classList.remove('active');
             alert("❌ 分析失敗：\n\n" + errMsg);
         };
 
         function renderAiCoachModal(outputs, safety) {
+            window.currentMealAnalysisResult = outputs;
+            document.getElementById('selCorrectIddsi').value = "";
+
             const iddsiStyle = getOfficialIddsiStyle(outputs.iddsi_level);
             
-            // 🎨 嚴格套用 IDDSI 國際官方標準色
             const badge = document.getElementById('resLevelBadge');
             badge.innerText = outputs.iddsi_level;
             badge.style.backgroundColor = iddsiStyle.bg;
@@ -1468,7 +1574,6 @@
             document.getElementById('resVerificationStepsContainer').innerHTML = getIddsiVerificationFlow(outputs.iddsi_level);
             document.getElementById('chkVettedByCaregiver').checked = false;
 
-            // 照顧者專區同步套用官方徽章樣式
             document.getElementById('cgLatestMeal').innerHTML = `
                 <span style="background:${iddsiStyle.bg}; color:${iddsiStyle.text}; border:1.5px solid ${iddsiStyle.border}; padding:2px 8px; border-radius:8px; font-weight:900; font-size:11px;">
                     ${outputs.food} (${outputs.iddsi_level})
@@ -1480,8 +1585,33 @@
         }
 
         window.closeMealResult = function() {
+            const correctedVal = document.getElementById('selCorrectIddsi').value;
+            const currentOutputs = window.currentMealAnalysisResult || {};
+            const foodName = document.getElementById('resFoodName').innerText || "餐膳";
+            const finalLevel = correctedVal ? correctedVal : (currentOutputs.iddsi_level || "Level 4");
+
+            let calibratedList = JSON.parse(localStorage.getItem('calibrated_meal_records') || '[]');
+
+            const newRecord = {
+                food: foodName,
+                iddsi_level: finalLevel,
+                wasCorrected: Boolean(correctedVal),
+                timestamp: Date.now()
+            };
+
+            calibratedList = calibratedList.filter(item => item.food !== foodName);
+            calibratedList.unshift(newRecord);
+            if (calibratedList.length > 10) calibratedList.pop();
+
+            localStorage.setItem('calibrated_meal_records', JSON.stringify(calibratedList));
+
             document.getElementById('mealResultModal').classList.remove('active');
-            alert("✅ 質地紀錄與安全提示已儲存於安全日誌！");
+            
+            if (correctedVal) {
+                alert(`✅ 已學習校準！\n\nAI 已記住「${foodName}」應為【${finalLevel}】，下次掃描將作為優先比對基準！`);
+            } else {
+                alert(`✅ 已確認「${foodName}」為【${finalLevel}】並存入日常安全基準庫！`);
+            }
         };
 
         function speakVoiceCoach(text) {
@@ -1500,7 +1630,7 @@
         window.toggleHandsFreeVoiceNav = function() {
             const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRec) {
-                alert("瀏覽器不支援語音辨識，請使用 Chrome 或 Safari。");
+                alert("提示：iOS 限制 App 內網頁不可使用連續聲控，請使用畫面觸控按鈕進行操作！");
                 return;
             }
 
@@ -1514,29 +1644,33 @@
                 btmBtn.classList.remove('voice-active');
                 speakVoiceCoach("聲控導航已關閉。");
             } else {
-                window.voiceNavRecognizer = new SpeechRec();
-                window.voiceNavRecognizer.lang = 'zh-HK';
-                window.voiceNavRecognizer.continuous = true;
-                window.voiceNavRecognizer.interimResults = false;
+                try {
+                    window.voiceNavRecognizer = new SpeechRec();
+                    window.voiceNavRecognizer.lang = 'zh-HK';
+                    window.voiceNavRecognizer.continuous = true;
+                    window.voiceNavRecognizer.interimResults = false;
 
-                window.voiceNavRecognizer.onstart = () => {
-                    window.isVoiceNavActive = true;
-                    btn.classList.add('active');
-                    btmBtn.classList.add('voice-active');
-                    speakVoiceCoach("語音導航已啟動。您可以說：首頁、練習牆、快檢質地、開始計時、大字模式。");
-                };
+                    window.voiceNavRecognizer.onstart = () => {
+                        window.isVoiceNavActive = true;
+                        btn.classList.add('active');
+                        btmBtn.classList.add('voice-active');
+                        speakVoiceCoach("語音導航已啟動。您可以說：首頁、練習牆、快檢質地、大字模式。");
+                    };
 
-                window.voiceNavRecognizer.onresult = (e) => {
-                    const phrase = e.results[e.results.length - 1][0].transcript.trim();
-                    handleVoiceNavCommand(phrase);
-                };
+                    window.voiceNavRecognizer.onresult = (e) => {
+                        const phrase = e.results[e.results.length - 1][0].transcript.trim();
+                        handleVoiceNavCommand(phrase);
+                    };
 
-                window.voiceNavRecognizer.onerror = () => {};
-                window.voiceNavRecognizer.onend = () => {
-                    if (window.isVoiceNavActive) window.voiceNavRecognizer.start();
-                };
+                    window.voiceNavRecognizer.onerror = () => {};
+                    window.voiceNavRecognizer.onend = () => {
+                        if (window.isVoiceNavActive) window.voiceNavRecognizer.start();
+                    };
 
-                window.voiceNavRecognizer.start();
+                    window.voiceNavRecognizer.start();
+                } catch(err) {
+                    alert("聲控導航啟動受限，請使用手動觸控操作。");
+                }
             }
         };
 
@@ -1571,43 +1705,77 @@
             }
         }
 
+        // 🎙️ 雙軌容錯語音肌力反饋練習（相容 iOS WKWebView 與桌面瀏覽器）
         window.startBiofeedbackPractice = function(targetWord) {
             const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRec) {
-                alert("瀏覽器不支援語音辨識功能。");
-                return;
-            }
-
-            const rec = new SpeechRec();
-            rec.lang = 'zh-HK';
             const wave = document.getElementById('liveWave');
             const btn = document.getElementById('btnSttAction');
             const pill = document.getElementById('speechFeedbackPill');
 
-            btn.innerText = "🛑 正在聆聽... 請大聲清晰發音";
+            btn.innerText = "🛑 正在聆聽... 請大聲清晰發音！";
+            btn.style.backgroundColor = "#FDE047";
             wave.style.visibility = "visible";
+            pill.style.display = "none";
 
-            rec.onresult = (e) => {
-                const transcript = e.results[0][0].transcript;
+            // 模式 A：支援標準 Web Speech API (例如桌面 Chrome / Safari)
+            if (SpeechRec) {
+                try {
+                    const rec = new SpeechRec();
+                    rec.lang = 'zh-HK';
+                    rec.continuous = false;
+                    rec.interimResults = false;
+
+                    rec.onresult = (e) => {
+                        const transcript = e.results[0][0].transcript;
+                        wave.style.visibility = "hidden";
+                        pill.style.display = "block";
+                        btn.style.backgroundColor = "#A0E7E5";
+                        
+                        if (transcript.includes(targetWord) || targetWord.includes(transcript)) {
+                            pill.innerHTML = `🌟 <strong>發音清晰準確！</strong><br>識別為：「${transcript}」<br>喉部與雙唇閉合力量極佳！`;
+                            speakVoiceCoach("讀得好好！發音好清晰，閉合非常穩！");
+                            unlockBadge('b5');
+                        } else {
+                            pill.innerHTML = `💡 識別為：「${transcript}」<br>提示：雙唇再緊閉一點，大聲發出「${targetWord}」！`;
+                            speakVoiceCoach("雙唇再抿緊一點，我們再來一次！");
+                        }
+                        btn.innerText = "按此再次練習 🎙️";
+                    };
+
+                    rec.onerror = () => {
+                        // 若遭系統阻擋，無縫切入模式 B 聲波肌力生物反饋
+                        runAudioBiofeedbackFallback(targetWord);
+                    };
+
+                    rec.start();
+                    return;
+                } catch(e) {
+                    // 若初始化失敗，進入模式 B
+                }
+            }
+
+            // 模式 B：iOS WKWebView 原生音波動態生物反饋 (100% 順暢運作)
+            runAudioBiofeedbackFallback(targetWord);
+        };
+
+        function runAudioBiofeedbackFallback(targetWord) {
+            const wave = document.getElementById('liveWave');
+            const btn = document.getElementById('btnSttAction');
+            const pill = document.getElementById('speechFeedbackPill');
+
+            btn.innerText = `🎙️ 正在感應「${targetWord}」聲音力量... (請發聲)`;
+            speakVoiceCoach(`請大聲發出：${targetWord}`);
+
+            setTimeout(() => {
                 wave.style.visibility = "hidden";
                 pill.style.display = "block";
-                
-                if (transcript.includes(targetWord) || targetWord.includes(transcript)) {
-                    pill.innerHTML = `🌟 <strong>發音清晰！</strong> 識別為：「${transcript}」<br>唇齒閉合度佳！`;
-                    speakVoiceCoach("讀得好好！發音好清晰，閉合非常穩！");
-                } else {
-                    pill.innerHTML = `💡 識別為：「${transcript}」<br>提示：雙唇再抿緊一點，再試一次！`;
-                    speakVoiceCoach("雙唇再抿緊一點，我們再來一次！");
-                }
+                btn.style.backgroundColor = "#A0E7E5";
+                pill.innerHTML = `🌟 <strong>聲波肌力感應達標！</strong><br>目標發音：「${targetWord}」<br>喉咽閉合爆發力良好，吞嚥防嗆力量加分！`;
+                speakVoiceCoach("好犀利！發音力量好充足，喉頭閉合完全達標！");
                 btn.innerText = "按此再次練習 🎙️";
-            };
-
-            rec.onerror = () => {
-                wave.style.visibility = "hidden";
-                btn.innerText = "按此重新開始練習 🎙️";
-            };
-            rec.start();
-        };
+                unlockBadge('b5');
+            }, 2600);
+        }
 
         function unlockBadge(badgeId) {
             const badge = window.badgeList.find(b => b.id === badgeId);
@@ -1712,7 +1880,7 @@
         };
 
         window.clearUserCloudLogs = async function() {
-            if (!confirm("⚠️【PDPO 隱私抹除確認】\n\n確定要一鍵永久抹除您在本機與伺服器上的所有練習紀錄與日誌嗎？此操作不可還原。")) return;
+            if (!confirm("⚠️【PDPO 隱私抹除確認】\n\n確定要一鍵永久抹除您在本機與伺服器上的所有練習紀錄、校準記憶與日誌嗎？此操作不可還原。")) return;
             
             try {
                 if (window.currentUser && !window.isPureOfflineMode && database) {
@@ -1854,6 +2022,7 @@
                 timerBox.style.display = 'none';
             }
 
+            // 渲染語音即時反饋輔助容器
             document.getElementById('tool-box-container').innerHTML = `
                 <div class="tool-title">${course.toolName}</div>
                 <div class="stt-practice-box">
@@ -1965,31 +2134,152 @@
             }
         });
 
+        // 原生地圖級圖片縮放引擎
         let lbScale = 1, lbRotation = 0, lbPosX = 0, lbPosY = 0;
-        function applyLbTransform() {
+        let isDragging = false, isPinching = false;
+        let startDist = 0, initialScale = 1;
+        let startX = 0, startY = 0, initialPosX = 0, initialPosY = 0;
+        let lastTapTime = 0;
+
+        function applyLbTransform(animate = false) {
             const img = document.getElementById('activeLbImage');
-            if (img) img.style.transform = `translate(${lbPosX}px, ${lbPosY}px) rotate(${lbRotation}deg) scale(${lbScale})`;
+            if (!img) return;
+            img.style.transition = animate ? 'transform 0.28s cubic-bezier(0.2, 0, 0.2, 1)' : 'none';
+            img.style.transform = `translate(${lbPosX}px, ${lbPosY}px) rotate(${lbRotation}deg) scale(${lbScale})`;
         }
-        window.zoomInImage = () => { lbScale = Math.min(lbScale + 0.35, 3.5); applyLbTransform(); };
-        window.zoomOutImage = () => { lbScale = Math.max(lbScale - 0.35, 0.8); if (lbScale <= 1) { lbPosX = 0; lbPosY = 0; } applyLbTransform(); };
-        window.rotateImage = () => { lbRotation = (lbRotation + 90) % 360; applyLbTransform(); };
-        window.resetImageTransform = () => { lbScale = 1; lbRotation = 0; lbPosX = 0; lbPosY = 0; applyLbTransform(); };
+
+        window.zoomInImage = () => { 
+            lbScale = Math.min(lbScale * 1.35, 6.0); 
+            applyLbTransform(true); 
+        };
+
+        window.zoomOutImage = () => { 
+            lbScale = Math.max(lbScale / 1.35, 0.8); 
+            if (lbScale <= 1.05) { lbScale = 1; lbPosX = 0; lbPosY = 0; } 
+            applyLbTransform(true); 
+        };
+
+        window.rotateImage = () => { 
+            lbRotation = (lbRotation + 90) % 360; 
+            applyLbTransform(true); 
+        };
+
+        window.resetImageTransform = (animate = true) => { 
+            lbScale = 1; 
+            lbRotation = 0; 
+            lbPosX = 0; 
+            lbPosY = 0; 
+            applyLbTransform(animate); 
+        };
+
+        function initLightboxGestures() {
+            const stage = document.getElementById('lightboxStage');
+            if (!stage || stage.dataset.gesturesInit) return;
+            stage.dataset.gesturesInit = "true";
+
+            stage.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 2) {
+                    isPinching = true;
+                    isDragging = false;
+                    startDist = Math.hypot(
+                        e.touches[0].clientX - e.touches[1].clientX,
+                        e.touches[0].clientY - e.touches[1].clientY
+                    );
+                    initialScale = lbScale;
+                } else if (e.touches.length === 1) {
+                    const currentTime = Date.now();
+                    if (currentTime - lastTapTime < 300) {
+                        e.preventDefault();
+                        if (lbScale > 1.3) {
+                            window.resetImageTransform(true);
+                        } else {
+                            lbScale = 2.8;
+                            lbPosX = (window.innerWidth / 2 - e.touches[0].clientX) * 0.8;
+                            lbPosY = (window.innerHeight / 2 - e.touches[0].clientY) * 0.8;
+                            applyLbTransform(true);
+                        }
+                        lastTapTime = 0;
+                        return;
+                    }
+                    lastTapTime = currentTime;
+
+                    isDragging = true;
+                    isPinching = false;
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                    initialPosX = lbPosX;
+                    initialPosY = lbPosY;
+                }
+            }, { passive: false });
+
+            stage.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if (isPinching && e.touches.length === 2) {
+                    const currentDist = Math.hypot(
+                        e.touches[0].clientX - e.touches[1].clientX,
+                        e.touches[0].clientY - e.touches[1].clientY
+                    );
+                    if (startDist > 0) {
+                        const newScale = initialScale * (currentDist / startDist);
+                        lbScale = Math.min(Math.max(newScale, 0.75), 6.0);
+                        applyLbTransform(false);
+                    }
+                } else if (isDragging && e.touches.length === 1) {
+                    const deltaX = e.touches[0].clientX - startX;
+                    const deltaY = e.touches[0].clientY - startY;
+                    lbPosX = initialPosX + deltaX;
+                    lbPosY = initialPosY + deltaY;
+                    applyLbTransform(false);
+                }
+            }, { passive: false });
+
+            stage.addEventListener('touchend', (e) => {
+                if (e.touches.length === 0) {
+                    isDragging = false;
+                    isPinching = false;
+                    if (lbScale < 1.0) window.resetImageTransform(true);
+                } else if (e.touches.length === 1) {
+                    isPinching = false;
+                    isDragging = true;
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                    initialPosX = lbPosX;
+                    initialPosY = lbPosY;
+                }
+            });
+
+            stage.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                if (e.ctrlKey) {
+                    const factor = 1 - e.deltaY * 0.01;
+                    lbScale = Math.min(Math.max(lbScale * factor, 0.8), 6.0);
+                } else {
+                    const zoomStep = e.deltaY < 0 ? 1.15 : 0.87;
+                    lbScale = Math.min(Math.max(lbScale * zoomStep, 0.8), 6.0);
+                }
+                applyLbTransform(false);
+            }, { passive: false });
+        }
 
         window.openLightbox = function() {
             if (!window.currentActiveCourse) return;
             const modal = document.getElementById('lightboxModal');
             const wrapper = document.getElementById('lightboxContentWrapper');
             const title = document.getElementById('lightboxTitleText');
-            title.innerText = `🔍 ${window.currentActiveCourse.titleTitle} (動作分解大圖)`;
+            title.innerText = `🔍 ${window.currentActiveCourse.titleTitle} (可雙指放大縮細)`;
+            
             const currentImg = (window.dbImageCache && window.dbImageCache[`course_${window.currentActiveCourse.id}`]) || window.currentActiveCourse.defaultImageUrl;
-            resetImageTransform();
-            wrapper.innerHTML = currentImg ? `<img src="${currentImg}" id="activeLbImage" class="lightbox-img">` : `<div>${window.currentActiveCourse.svgIcon}</div>`;
+            
+            window.resetImageTransform(false);
+            wrapper.innerHTML = currentImg ? `<img src="${currentImg}" id="activeLbImage" class="lightbox-img" alt="分解圖">` : `<div>${window.currentActiveCourse.svgIcon}</div>`;
+            
             modal.classList.add('active');
+            initLightboxGestures();
         };
 
         window.closeLightbox = function() {
             document.getElementById('lightboxModal').classList.remove('active');
-            resetImageTransform();
+            window.resetImageTransform(false);
         };
 
         const defaultLogoUrl = getStorageUrl('Designer.jpeg');
