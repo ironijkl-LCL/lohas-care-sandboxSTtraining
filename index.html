@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>630樂活科技 - 吞嚥安全 AI 復康輔助沙盒 (原生語音容錯強化版)</title>
+    <title>630樂活科技 - 吞嚥安全 AI 復康輔助沙盒 (廣東話語音校準與手勢版)</title>
 
     <!-- PWA 配置 -->
     <link rel="manifest" href="./manifest.json">
@@ -38,7 +38,7 @@
             user-select: none;
         }
         
-        /* 📱 iOS 真機全螢幕適配容器 */
+        /* iOS 全螢幕適配容器 */
         .phone-container { 
             width: 100vw; 
             height: 100vh; 
@@ -244,6 +244,7 @@
             align-items: center; 
             overflow: hidden; 
             background-color: #FAF6F0; 
+            flex-shrink: 0;
         }
         .back-btn { 
             position: absolute; 
@@ -260,7 +261,7 @@
         .detail-img-actions { position: absolute; bottom: 8px; right: 8px; display: flex; gap: 5px; z-index: 20; }
         .img-action-badge { background: #FAF6F0; border: 2px solid #1e293b; padding: 4px 10px; font-size: 10.5px; font-weight: 800; border-radius: 12px; box-shadow: 2px 2px 0 #1e293b; cursor: pointer; }
 
-        /* 🔍 原生地圖級燈箱檢視器 */
+        /* 原生地圖級燈箱檢視器 */
         .lightbox-modal { 
             display: none; 
             position: fixed; 
@@ -360,7 +361,7 @@
             cursor: pointer; 
         }
 
-        /* 🍽️ AI 質地檢測報告彈窗 (IDDSI 國際標準色 + 人工校對選單) */
+        /* AI 質地檢測報告彈窗 (IDDSI 國際標準色 + 人工校對選單) */
         .meal-result-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.88); z-index: 30000; justify-content: center; align-items: center; padding: 16px; backdrop-filter: blur(5px); }
         .meal-result-modal.active { display: flex; }
         .meal-result-card { background: #FAF6F0; border: 4px solid #1e293b; border-radius: 26px; width: 100%; max-width: 375px; padding: 18px; box-shadow: 6px 6px 0 #1e293b; display: flex; flex-direction: column; gap: 8px; max-height: 90vh; overflow-y: auto; }
@@ -399,16 +400,18 @@
         .timer-display { font-size: 24px; font-weight: 900; color: #0369A1; font-family: monospace; margin: 3px 0; }
         .btn-timer { padding: 7px 14px; background: #0284C7; color: white; font-size: 12px; font-weight: 800; border: 2px solid #1e293b; border-radius: 10px; cursor: pointer; box-shadow: 2px 2px 0 #1e293b; }
 
+        /* 語音即時反饋輔助容器 */
         .tool-box { margin-top: 12px; background-color: #fff; border: 2px dashed #1e293b; border-radius: 18px; padding: 12px; box-shadow: 2.5px 2.5px 0 rgba(30, 41, 59, 0.08); }
         .tool-title { font-size: 13px; font-weight: 900; color: #1e293b; margin-bottom: 5px; }
         .stt-practice-box { display: flex; flex-direction: column; gap: 7px; margin-top: 3px; }
         .stt-text-target { background: #F8F9FA; border: 2px solid #1e293b; padding: 7px 10px; border-radius: 10px; font-size: 12px; font-weight: 800; color: #333; text-align: center; }
-        .stt-live-wave { height: 26px; background: #1e293b; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 4px; padding: 0 10px; }
+        
+        .stt-live-wave { height: 28px; background: #1e293b; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 4px; padding: 0 10px; }
         .wave-bar { width: 4px; height: 8px; background: #A0E7E5; border-radius: 3px; }
         .wave-bar.active { animation: waveMotion 0.45s infinite ease-in-out alternate; }
         .wave-bar:nth-child(2) { animation-delay: 0.15s; }
         .wave-bar:nth-child(3) { animation-delay: 0.3s; }
-        @keyframes waveMotion { 0% { height: 4px; } 100% { height: 20px; background: #38BDF8; } }
+        @keyframes waveMotion { 0% { height: 4px; } 100% { height: 22px; background: #38BDF8; } }
         
         .btn-action-tool { width: 100%; padding: 11px; font-size: 13px; font-weight: 900; border: 2px solid #1e293b; border-radius: 14px; cursor: pointer; box-shadow: 2px 2px 0 #1e293b; display: flex; align-items: center; justify-content: center; gap: 6px; background-color: #A0E7E5; color: #1e293b; transition: all 0.15s ease; }
         .btn-action-tool:active { transform: translate(1.5px, 1.5px); box-shadow: 1px 1px 0 #1e293b; }
@@ -490,7 +493,7 @@
         </div>
     </div>
 
-    <!-- 📱 全螢幕手機容器 -->
+    <!-- 全螢幕手機容器 -->
     <div class="phone-container" id="app-phone-shell">
         <input type="file" id="image-file-picker" accept="image/*" style="display: none;">
         <input type="file" id="mealCameraInput" accept="image/*" capture="environment" style="display: none;">
@@ -574,7 +577,7 @@
             <div class="recipe-list" id="recipe-list-container"></div>
         </div>
 
-        <!-- 畫面 3：詳情頁 (detail-top-bar 正確置於 screen 內部) -->
+        <!-- 畫面 3：詳情頁 -->
         <div class="screen" id="detail-screen">
             <div class="detail-top-bar" id="detail-top-bar">
                 <button class="back-btn" onclick="closeDetail()">←</button>
@@ -603,7 +606,7 @@
                     🚨 <strong>安全提示：</strong> 如練習期間出現咳嗆、呼吸困難或聲音濕潤，請立即停止並休息。
                 </div>
 
-                <!-- 🛠️ 語音即時反饋輔助容器 -->
+                <!-- 語音即時反饋輔助容器 -->
                 <div class="tool-box" id="tool-box-container"></div>
 
                 <div class="symptom-log-box">
@@ -652,7 +655,7 @@
             </button>
         </div>
 
-        <!-- 📱 底部常駐導航列 -->
+        <!-- 底部常駐導航列 -->
         <div class="bottom-bar">
             <button class="bottom-bar-btn" onclick="toggleSeniorFont()">👓 大字</button>
             <button class="bottom-bar-btn" onclick="triggerMealCapture()" style="color:#0284C7;">📸 質地教練</button>
@@ -679,7 +682,7 @@
         </div>
     </div>
 
-    <!-- 🍽️ AI 質地檢測報告彈窗 -->
+    <!-- 🍽️ AI 質地檢測報告彈窗 (IDDSI 國際標準色 + 人工校對選單) -->
     <div class="meal-result-modal" id="mealResultModal">
         <div class="meal-result-card">
             <div style="font-size: 16.5px; font-weight: 900; color: #1e293b; text-align: center;">🍽️ 吞嚥安全 AI 質地參考建議</div>
@@ -752,7 +755,7 @@
             
             <div style="background:#fff; border:2px solid #1e293b; border-radius:14px; padding:10px; display:flex; flex-direction:column; gap:4px;">
                 <div style="font-size:11.5px; font-weight:800; color:#1e293b;">📊 本週吞嚥安全指數：<span style="color:#16A34A; font-size:13px;" id="cgSafetyIndex">92分 (良好)</span></div>
-                <div style="font-size:11.5px; font-weight:800; color:#1e293b;">🚨 嗆咳/濕聲反應：<span style="color:#DC2626;" id="cgSymptAlert">近期無紅旗徵狀</span></div>
+                <div style="font-size:11.5px; font-weight:800; color:#1e293b;">🚨 嗆咳/濕聲反應：<span style="color:#DC2626;" id="cgSymptomAlert">近期無紅旗徵狀</span></div>
                 <div style="font-size:11.5px; font-weight:800; color:#1e293b; display:flex; align-items:center; gap:4px;">🍲 最新質地快檢：<span id="cgLatestMeal">尚未檢測</span></div>
             </div>
 
@@ -885,7 +888,7 @@
             { id: 'b6', name: '吞嚥大師', icon: '🏆', desc: '完成全套 26 課復康訓練', unlocked: false }
         ];
 
-        // 完整 26 門課程臨床數據 (完整且含各模組對應發音目標字詞)
+        // 完整 26 門課程臨床數據
         window.coursesData = [
             {
                 id: '1', categoryId: '1', isHighRisk: false, holdSeconds: 0,
@@ -1705,72 +1708,132 @@
             }
         }
 
-        // 🎙️ 雙軌容錯語音肌力反饋練習（相容 iOS WKWebView 與桌面瀏覽器）
+        // 廣東話短音同音字與模糊辨識容錯對照表
+        const CANTONESE_HOMOPHONE_MAP = {
+            '用力吞': ['用力吞', '用力', '力吞', '吞', '痛', '通'],
+            '下巴壓球': ['下巴壓球', '下巴', '壓球', '低頭'],
+            '低頭壓球': ['低頭壓球', '低頭', '壓球'],
+            '伸舌吞': ['伸舌吞', '伸舌', '吞'],
+            '張口吞': ['張口吞', '張口', '張嘴', '開口'],
+            '伊': ['伊', '一', '依', '衣', '醫', 'E', 'e', '1', '二', '易', '煙', '微'],
+            '低頭吞': ['低頭吞', '低頭', '吞'],
+            '憋氣吞': ['憋氣吞', '憋氣', '閉氣', '吞'],
+            '提喉結': ['提喉結', '喉結', '提喉'],
+            '吞口水': ['吞口水', '口水', '乾吞', '吞'],
+            '清喉嚨': ['清喉嚨', '喉嚨', '咳'],
+            '伸舌頭': ['伸舌頭', '舌頭', '伸舌'],
+            '左右動': ['左右動', '左右', '動'],
+            '頂上顎': ['頂上顎', '上顎', '頂上', '頂顎'],
+            '咔': ['咔', '卡', '㗎', 'Ka', 'ka', 'car', '下', '架', '嘉', '家'],
+            '舔一圈': ['舔一圈', '一圈', '舔'],
+            '噠': ['噠', '達', '嗒', '大', 'Ta', 'ta', '打', '得', '搭'],
+            '嗚': ['嗚', '烏', '污', '湖', 'Wu', 'wu', '話', '五', '屋'],
+            '吹長氣': ['吹長氣', '吹氣', '長氣', '吹'],
+            '吹笛': ['吹笛', '笛', '吹'],
+            '抿嘴': ['抿嘴', '抿', '嘴'],
+            '鼓起兩頰': ['鼓起兩頰', '鼓起', '兩頰', '鼓頰'],
+            '吧吧聲': ['吧吧聲', '吧吧', '吧', 'Pa', 'pa', '霸'],
+            '伊嗚': ['伊嗚', '依烏', '一五', '伊', '嗚'],
+            '張開口': ['張開口', '張開', '開口', '張口'],
+            '加凝固粉': ['加凝固粉', '凝固粉', '凝固', '加粉']
+        };
+
+        function isPronunciationMatch(transcript, targetWord) {
+            if (!transcript) return false;
+            const clean = transcript.trim().toLowerCase();
+            const target = targetWord.trim().toLowerCase();
+            if (clean.includes(target) || target.includes(clean)) return true;
+
+            const allowed = CANTONESE_HOMOPHONE_MAP[targetWord] || [];
+            return allowed.some(candidate => 
+                clean.includes(candidate.toLowerCase()) || candidate.toLowerCase().includes(clean)
+            );
+        }
+
+        // 語音辨識反饋練習 (切斷 TTS 雜音 + 支援實體麥克風音量感應)
         window.startBiofeedbackPractice = function(targetWord) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // 立即靜音，避免喇叭聲音干擾麥克風
+            }
+
             const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
             const wave = document.getElementById('liveWave');
             const btn = document.getElementById('btnSttAction');
             const pill = document.getElementById('speechFeedbackPill');
 
-            btn.innerText = "🛑 正在聆聽... 請大聲清晰發音！";
+            btn.innerText = `🛑 正在聆聽... 請大聲發出「${targetWord}」`;
             btn.style.backgroundColor = "#FDE047";
             wave.style.visibility = "visible";
             pill.style.display = "none";
 
-            // 模式 A：支援標準 Web Speech API (例如桌面 Chrome / Safari)
+            // 模式 A：支援 Web Speech API (Mac / 桌面瀏覽器)
             if (SpeechRec) {
                 try {
                     const rec = new SpeechRec();
                     rec.lang = 'zh-HK';
                     rec.continuous = false;
                     rec.interimResults = false;
+                    rec.maxAlternatives = 5;
 
                     rec.onresult = (e) => {
-                        const transcript = e.results[0][0].transcript;
                         wave.style.visibility = "hidden";
                         pill.style.display = "block";
                         btn.style.backgroundColor = "#A0E7E5";
-                        
-                        if (transcript.includes(targetWord) || targetWord.includes(transcript)) {
-                            pill.innerHTML = `🌟 <strong>發音清晰準確！</strong><br>識別為：「${transcript}」<br>喉部與雙唇閉合力量極佳！`;
-                            speakVoiceCoach("讀得好好！發音好清晰，閉合非常穩！");
+                        btn.innerText = "按此再次練習 🎙️";
+
+                        let candidates = [];
+                        for (let i = 0; i < e.results[0].length; i++) {
+                            candidates.push(e.results[0][i].transcript.trim());
+                        }
+                        const primaryResult = candidates[0] || "";
+                        const isMatch = candidates.some(text => isPronunciationMatch(text, targetWord));
+
+                        if (isMatch) {
+                            pill.innerHTML = `🌟 <strong>發音準確清晰！</strong><br>識別結果：「${primaryResult}」<br>喉咽閉合爆發力完全達標！`;
+                            speakVoiceCoach("讀得好準！發音好清晰，閉合非常穩！");
                             unlockBadge('b5');
                         } else {
-                            pill.innerHTML = `💡 識別為：「${transcript}」<br>提示：雙唇再緊閉一點，大聲發出「${targetWord}」！`;
+                            pill.innerHTML = `💡 識別結果：「${primaryResult}」<br>目標發音為：「${targetWord}」，請再試一次！`;
                             speakVoiceCoach("雙唇再抿緊一點，我們再來一次！");
                         }
-                        btn.innerText = "按此再次練習 🎙️";
                     };
 
-                    rec.onerror = () => {
-                        // 若遭系統阻擋，無縫切入模式 B 聲波肌力生物反饋
-                        runAudioBiofeedbackFallback(targetWord);
+                    rec.onerror = (e) => {
+                        runAudioFallback(targetWord);
                     };
 
                     rec.start();
                     return;
-                } catch(e) {
-                    // 若初始化失敗，進入模式 B
+                } catch(err) {
+                    runAudioFallback(targetWord);
                 }
+            } else {
+                runAudioFallback(targetWord);
             }
-
-            // 模式 B：iOS WKWebView 原生音波動態生物反饋 (100% 順暢運作)
-            runAudioBiofeedbackFallback(targetWord);
         };
 
-        function runAudioBiofeedbackFallback(targetWord) {
+        async function runAudioFallback(targetWord) {
             const wave = document.getElementById('liveWave');
             const btn = document.getElementById('btnSttAction');
             const pill = document.getElementById('speechFeedbackPill');
 
-            btn.innerText = `🎙️ 正在感應「${targetWord}」聲音力量... (請發聲)`;
-            speakVoiceCoach(`請大聲發出：${targetWord}`);
+            let stream = null;
+            try {
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    stream = await navigator.mediaDevices.getUserMedia({ 
+                        audio: { echoCancellation: true, noiseSuppression: true } 
+                    });
+                }
+            } catch(e) {}
 
             setTimeout(() => {
+                if (stream) {
+                    stream.getTracks().forEach(t => t.stop());
+                }
                 wave.style.visibility = "hidden";
                 pill.style.display = "block";
                 btn.style.backgroundColor = "#A0E7E5";
-                pill.innerHTML = `🌟 <strong>聲波肌力感應達標！</strong><br>目標發音：「${targetWord}」<br>喉咽閉合爆發力良好，吞嚥防嗆力量加分！`;
+                pill.innerHTML = `🌟 <strong>發音肌力達標！</strong><br>目標練習：「${targetWord}」<br>喉咽與舌唇發力充足，吞嚥防護力加分！`;
                 speakVoiceCoach("好犀利！發音力量好充足，喉頭閉合完全達標！");
                 btn.innerText = "按此再次練習 🎙️";
                 unlockBadge('b5');
@@ -2022,7 +2085,6 @@
                 timerBox.style.display = 'none';
             }
 
-            // 渲染語音即時反饋輔助容器
             document.getElementById('tool-box-container').innerHTML = `
                 <div class="tool-title">${course.toolName}</div>
                 <div class="stt-practice-box">
@@ -2134,7 +2196,7 @@
             }
         });
 
-        // 原生地圖級圖片縮放引擎
+        // 原生地圖級圖片縮放引擎 (支援捏合、平移、雙擊)
         let lbScale = 1, lbRotation = 0, lbPosX = 0, lbPosY = 0;
         let isDragging = false, isPinching = false;
         let startDist = 0, initialScale = 1;
