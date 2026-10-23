@@ -50,5 +50,5 @@
 
 若您對本私隱政策或個人資料處理有任何疑問，請透過以下方式與我們聯絡：
 
-* 支援電郵：support@lohas-care.org (或填寫你的聯絡電郵)
+* 支援電郵：ironijkl@gmail.com (或填寫你的聯絡電郵)
 * 機構名稱：樂活科技 (Lohascare Gerontech)
