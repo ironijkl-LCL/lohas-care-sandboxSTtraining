@@ -1,24 +1,3 @@
-<!DOCTYPE html>
-<html lang="zh-HK">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lohas IDDSIClassifier - 客戶支援與幫助中心 (Customer Support)</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; padding: 24px; max-width: 800px; margin: 0 auto; color: #333; background: #fafafa; }
-        .card { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        h1 { color: #d97706; }
-        h2 { border-bottom: 2px solid #f3f4f6; padding-bottom: 8px; color: #1f2937; }
-        .contact-box { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 16px; border-radius: 4px; }
-    </style>
-</head>
-<body>
-    <div class="card">
-        <h1>Lohas IDDSIClassifier 客戶支援服務</h1>
-        <p>歡迎使用 Lohas IDDSIClassifier。本應用程式專為吞嚥障礙長者、照護者及專業語言治療師設計，提供 IDDSI 飲食質地分類與口肌復康指引。</p>
-    </div>
-
-    <div class="card">
         <h2>常見問題與使用指引 (FAQ)</h2>
         <h3>1. 口肌動作追蹤如何運作？</h3>
         <p>口肌練習功能透過前置原深感測鏡頭（TrueDepth 相機）進行即時嘴部動作偵測。所有運算僅在裝置本機即時處理，系統絕不儲存、上傳或分享任何臉部影像與特徵數據。</p>
